@@ -1,6 +1,6 @@
 # Dassets
 
-TODO: Write a gem description
+Digest and serve asset files.
 
 ## Usage
 
