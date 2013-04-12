@@ -21,7 +21,7 @@ Dassets.configure do |c|
   c.files_path '/path/to/not/public' # default: '{root_path}/app/assets/public'
 
   # you can choose the file to write the digests to, if you want
-  c.digests_file '/path/to/.digests' # default: '{files_path}/app/assets/.digests'
+  c.digests_file_path '/path/to/.digests' # default: '{files_path}/app/assets/.digests'
 
 end
 ```
