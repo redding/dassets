@@ -8,8 +8,8 @@ Gem::Specification.new do |gem|
   gem.version     = Dassets::VERSION
   gem.authors     = ["Kelly Redding", "Collin Redding"]
   gem.email       = ["kelly@kellyredding.com", "collin.redding@me.com"]
-  gem.description = %q{Digest and serve asset files}
-  gem.summary     = %q{Digested Assets}
+  gem.description = %q{Digest and serve HTML asset files}
+  gem.summary     = %q{Digested asset files}
   gem.homepage    = "http://github.com/redding/dassets"
 
   gem.files         = `git ls-files`.split($/)
