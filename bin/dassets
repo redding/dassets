@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+#
+# Copyright (c) 2013-Present Kelly Redding and Collin Redding
+#
+
+require 'dassets/cli'
+Dassets::CLI.run *ARGV
