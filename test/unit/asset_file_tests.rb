@@ -7,14 +7,14 @@ class Dassets::AssetFile
     desc "Dassets::AssetFile"
     setup do
       @file_path = File.join(Dassets.config.files_path, 'file1.txt')
-      @asset_file = Dassets::AssetFile.new(@file_path)
+      @asset_file = Dassets::AssetFile.new(@file_path, "#{Dassets.config.files_path}/")
     end
     subject{ @asset_file }
 
     should have_imeths :path, :md5
 
-    should "know its path" do
-      assert_equal @file_path, subject.path
+    should "track it's path relative to its given relative path" do
+      assert_equal 'file1.txt', subject.path
     end
 
     should "compute its md5 checksum" do

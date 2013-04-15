@@ -1,4 +1,5 @@
 require 'dassets'
+require 'dassets/runner/digest_command'
 
 module Dassets; end
 class Dassets::Runner
@@ -19,6 +20,8 @@ class Dassets::Runner
     DassetsConfigFile.new(@root_path).require_if_exists
 
     case @cmd_name
+    when 'digest'
+      DigestCommand.new(@cmd_args).run
     when 'null'
       NullCommand.new.run
     else
