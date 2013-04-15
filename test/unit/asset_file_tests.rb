@@ -6,19 +6,25 @@ class Dassets::AssetFile
   class BaseTests < Assert::Context
     desc "Dassets::AssetFile"
     setup do
-      @file_path = File.join(Dassets.config.files_path, 'file1.txt')
-      @asset_file = Dassets::AssetFile.new(@file_path, "#{Dassets.config.files_path}/")
+      @asset_file = Dassets::AssetFile.new('file1.txt', 'abc123')
     end
     subject{ @asset_file }
 
-    should have_imeths :path, :md5
+    should have_cmeths :from_abs_path
+    should have_readers :path, :md5
 
-    should "track it's path relative to its given relative path" do
+    should "know its given path and md5" do
       assert_equal 'file1.txt', subject.path
+      assert_equal 'abc123', subject.md5
     end
 
-    should "compute its md5 checksum" do
-      assert_equal 'daa05c683a4913b268653f7a7e36a5b4', subject.md5
+    should "be created from absolute file paths and have md5 computed" do
+      abs_file_path = File.join(Dassets.config.files_path, 'file1.txt')
+      exp_md5 = 'daa05c683a4913b268653f7a7e36a5b4'
+      file = Dassets::AssetFile.from_abs_path(abs_file_path)
+
+      assert_equal 'file1.txt', file.path
+      assert_equal exp_md5, file.md5
     end
 
   end
