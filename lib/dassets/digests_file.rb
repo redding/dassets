@@ -14,9 +14,15 @@ class Dassets::DigestsFile
   def []=(*args); @hash.send('[]=', *args); end
   def delete(*args); @hash.delete(*args);   end
 
+  def each(*args, &block); @hash.each(*args, &block); end
+
   def keys;   @hash.keys;   end
   def values; @hash.values; end
   def empty?; @hash.empty?; end
+
+  def asset_files
+    @hash.map{ |path, md5| Dassets::AssetFile.new(path, md5) }
+  end
 
   def to_hash
     Hash.new.tap do |to_hash|
