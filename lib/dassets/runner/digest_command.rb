@@ -43,7 +43,7 @@ class Dassets::Runner::DigestCommand
     fuzzy_paths(paths).
       select{ |p| is_asset_file?(p) }.
       sort.
-      map{ |p| Dassets::AssetFile.new(p, file_root_path) }
+      map{ |p| Dassets::AssetFile.from_abs_path(p) }
   end
 
   def fuzzy_paths(paths)
@@ -54,11 +54,7 @@ class Dassets::Runner::DigestCommand
   end
 
   def is_asset_file?(path)
-    File.file?(path) && path.include?(file_root_path)
-  end
-
-  def file_root_path
-    "#{Dassets.config.files_path}/"
+    File.file?(path) && path.include?("#{Dassets.config.files_path}/")
   end
 
 end
