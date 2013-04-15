@@ -13,7 +13,7 @@ class Dassets::DigestsFile
     subject{ @digests }
 
     should have_imeths :path, :to_hash, :save!
-    should have_imeths :[], :[]=, :index_of, :keys, :values, :empty?
+    should have_imeths :[], :[]=, :delete, :keys, :values, :empty?
 
     should "know its path" do
       assert_equal @file_path, subject.path
@@ -30,6 +30,13 @@ class Dassets::DigestsFile
     should "write values with the index operator" do
       subject['/path/to/test'] = 'testytest'
       assert_equal 'testytest', subject['/path/to/test']
+    end
+
+    should "remove values with the delete method" do
+      assert_includes '/path/to/file1', subject.keys
+
+      subject.delete '/path/to/file1'
+      assert_not_includes '/path/to/file1', subject.keys
     end
 
     should "know its hash representation" do

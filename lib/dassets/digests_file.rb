@@ -12,7 +12,7 @@ class Dassets::DigestsFile
 
   def [](*args);  @hash.send('[]', *args);  end
   def []=(*args); @hash.send('[]=', *args); end
-  def index_of(*args); @hash.send('index_of', *args); end
+  def delete(*args); @hash.delete(*args);   end
 
   def keys;   @hash.keys;   end
   def values; @hash.values; end
