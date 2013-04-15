@@ -1,5 +1,6 @@
 require 'assert'
 require 'dassets'
+require 'dassets/digests_file'
 
 class Dassets::Digests
 
@@ -13,18 +14,18 @@ class Dassets::Digests
       subject.reset
     end
 
-    should have_imeths :init, :reset, :hash, :empty?, :[]
+    should have_imeths :init, :digests_file, :reset, :empty?, :[]
 
     should "be a singleton" do
       assert_includes Singleton, subject.included_modules
     end
 
-    should "know its full hash" do
-      digests_hash = subject.hash
+    should "know its digests file" do
+      digests_file = subject.digests_file
 
-      assert_kind_of Hash, digests_hash
-      assert_not_empty digests_hash
-      assert_equal digests_hash[digests_hash.keys.first], subject[digests_hash.keys.first]
+      assert_kind_of Dassets::DigestsFile, digests_file
+      assert_not_empty digests_file
+      assert_equal digests_file[digests_file.keys.first], subject[digests_file.keys.first]
     end
 
   end
