@@ -1,6 +1,6 @@
 {
-  "grumpy_cat.jpg": "b0d1f399a916f7a25c4c0f693c619013",
   "file1.txt": "daa05c683a4913b268653f7a7e36a5b4",
   "nested/file3.txt": "d41d8cd98f00b204e9800998ecf8427e",
-  "file2.txt": "9bbe1047cffbb590f59e0e5aeff46ae4"
+  "file2.txt": "9bbe1047cffbb590f59e0e5aeff46ae4",
+  "grumpy_cat.jpg": "b0d1f399a916f7a25c4c0f693c619013"
 }
