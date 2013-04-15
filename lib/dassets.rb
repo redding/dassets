@@ -1,10 +1,10 @@
 require 'pathname'
 require 'singleton'
 require 'ns-options'
-require 'multi_json'
 
 require 'dassets/version'
 require 'dassets/root_path'
+require 'dassets/digests_file'
 
 module Dassets
 
@@ -30,23 +30,14 @@ module Dassets
     include Singleton
 
     def init(file_path)
-      @hash = MultiJson.decode(File.read(file_path))
+      @digests_file = DigestsFile.new(file_path)
     end
 
-    def reset
-      @hash = {}
-    end
+    def digests_file; @digests_file || {}; end
+    def reset; @digests_file = nil; end
 
-    # all objs define #hash so need to override it b/c method missing below won't work
-    def self.hash; self.instance.hash; end
-    def hash; @hash || {}; end
-
-    def empty?; self.hash.empty?; end
-    def [](*args); self.hash.send('[]', *args); end
-
-    def reset
-      @hash = {}
-    end
+    def empty?; self.digests_file.empty?; end
+    def [](*args); self.digests_file.send('[]', *args); end
 
     # nice singleton api
 
