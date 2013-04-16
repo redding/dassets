@@ -14,7 +14,7 @@ class Dassets::DigestsFile
     subject{ @digests }
 
     should have_reader :path
-    should have_imeths :asset_files, :to_hash, :save!
+    should have_imeths :asset_files, :asset_file, :to_hash, :save!
     should have_imeths :[], :[]=, :delete, :each, :keys, :values, :empty?
 
     should "know its path" do
@@ -24,6 +24,14 @@ class Dassets::DigestsFile
     should "know its asset files" do
       assert_equal subject.keys.size, subject.asset_files.size
       assert_kind_of Dassets::AssetFile, subject.asset_files.first
+    end
+
+    should "get a specific asset file from its data" do
+      file = subject.asset_file('/path/to/file1')
+
+      assert_kind_of Dassets::AssetFile, file
+      assert_equal '/path/to/file1', file.path
+      assert_equal subject['/path/to/file1'], file.md5
     end
 
     should "know whether it is empty or not" do

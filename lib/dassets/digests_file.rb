@@ -22,6 +22,10 @@ module Dassets
       @hash.map{ |path, md5| Dassets::AssetFile.new(path, md5) }
     end
 
+    def asset_file(path)
+      Dassets::AssetFile.new(path, @hash[path] || '')
+    end
+
     def to_hash
       Hash.new.tap do |to_hash|
         @hash.each{ |k, v| to_hash[k] = v }

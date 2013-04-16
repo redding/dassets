@@ -19,6 +19,9 @@ module Dassets
   end
 
   def self.digests; @digests_file || NullDigestsFile.new; end
+  def self.[](asset_path)
+    self.digests.asset_file(asset_path)
+  end
 
   class Config
     include NsOptions::Proxy
