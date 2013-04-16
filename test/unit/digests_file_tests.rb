@@ -1,6 +1,7 @@
 require 'assert'
 require 'fileutils'
 require 'dassets/digests_file'
+require 'dassets/asset_file'
 
 class Dassets::DigestsFile
 
@@ -12,11 +13,17 @@ class Dassets::DigestsFile
     end
     subject{ @digests }
 
-    should have_imeths :path, :to_hash, :save!
-    should have_imeths :[], :[]=, :delete, :keys, :values, :empty?
+    should have_reader :path
+    should have_imeths :asset_files, :to_hash, :save!
+    should have_imeths :[], :[]=, :delete, :each, :keys, :values, :empty?
 
     should "know its path" do
       assert_equal @file_path, subject.path
+    end
+
+    should "know its asset files" do
+      assert_equal subject.keys.size, subject.asset_files.size
+      assert_kind_of Dassets::AssetFile, subject.asset_files.first
     end
 
     should "know whether it is empty or not" do

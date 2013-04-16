@@ -1,8 +1,9 @@
 require 'set'
-require 'dassets/runner'
 require 'dassets/asset_file'
 require 'dassets/digests_file'
 
+module Dassets; end
+class Dassets::Runner; end
 class Dassets::Runner::DigestCommand
 
   attr_reader :asset_files, :digests_file
@@ -25,8 +26,7 @@ class Dassets::Runner::DigestCommand
       @asset_files.each{ |f| @digests_file[f.path] = f.md5 }
 
       @digests_file.save! if save
-    rescue Dassets::Runner::CmdError => e
-      raise e
+      return save
     rescue Exception => e
       $stderr.puts e, *e.backtrace
       $stderr.puts ""

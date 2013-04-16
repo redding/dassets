@@ -22,6 +22,8 @@ class Dassets::Runner
     case @cmd_name
     when 'digest'
       DigestCommand.new(@cmd_args).run
+    when 'cache'
+      CacheCommand.new(@cmd_args.first).run
     when 'null'
       NullCommand.new.run
     else
