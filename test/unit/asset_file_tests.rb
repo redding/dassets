@@ -11,24 +11,32 @@ class Dassets::AssetFile
     subject{ @asset_file }
 
     should have_cmeths :from_abs_path
-    should have_readers :path, :md5
-    should have_imeth :cache_path
+    should have_readers :path, :md5, :dirname, :extname, :basename
+    should have_readers :cache_path, :href
 
     should "know its given path and md5" do
       assert_equal 'file1.txt', subject.path
       assert_equal 'abc123', subject.md5
     end
 
+    should "know its dirname, extname, and basename" do
+      assert_equal '.',     subject.dirname
+      assert_equal '.txt',  subject.extname
+      assert_equal 'file1', subject.basename
+    end
+
     should "build it's cache_path from the path and the md5" do
-      path = subject.path
-      fingerprint = subject.md5
+      assert_equal "file1-abc123.txt", subject.cache_path
 
-      dirname  = File.dirname(path)
-      extname  = File.extname(path)
-      basename = File.basename(path, extname)
-      exp_path = File.join(dirname, "#{basename}-#{fingerprint}#{extname}")
+      nested = Dassets::AssetFile.new('nested/file1.txt', 'abc123')
+      assert_equal "nested/file1-abc123.txt", nested.cache_path
+    end
 
-      assert_equal exp_path, subject.cache_path
+    should "build it's href from the cache path" do
+      assert_equal "/file1-abc123.txt", subject.href
+
+      nested = Dassets::AssetFile.new('nested/file1.txt', 'abc123')
+      assert_equal "/nested/file1-abc123.txt", nested.href
     end
 
     should "be created from absolute file paths and have md5 computed" do
