@@ -38,8 +38,8 @@ Use the CLI to build your digests file.  Protip: use guard to auto rebuild diges
 ### Link To
 
 ```rb
-Dassets['css/site.css'].href       # => "css/site-123abc.css"
-Dassets['img/logos/main.jpg'].href # => "img/logos/main-a1b2c3.jpg"
+Dassets['css/site.css'].href       # => "/css/site-123abc.css"
+Dassets['img/logos/main.jpg'].href # => "/img/logos/main-a1b2c3.jpg"
 ```
 
 ### Serve
