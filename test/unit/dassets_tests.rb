@@ -15,11 +15,11 @@ module Dassets
     end
 
     should "read/parse the digests on init" do
-      Dassets.digests.reset
-      assert_empty Dassets.digests
+      subject.reset
+      assert_empty subject.digests
 
       subject.init
-      assert_not_empty Dassets.digests
+      assert_not_empty subject.digests
     end
 
   end
