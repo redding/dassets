@@ -4,4 +4,3 @@ gemspec
 
 gem 'rake'
 gem 'pry'
-gem 'yajl-ruby'

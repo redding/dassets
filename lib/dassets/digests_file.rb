@@ -1,13 +1,10 @@
-require 'multi_json'
-
 module Dassets; end
 class Dassets::DigestsFile
 
   attr_reader :path
 
   def initialize(file_path)
-    @path = file_path
-    @hash = MultiJson.decode(File.read(file_path))
+    @path, @hash = file_path, decode(file_path)
   end
 
   def [](*args);  @hash.send('[]', *args);  end
@@ -31,7 +28,24 @@ class Dassets::DigestsFile
   end
 
   def save!
-    File.open(@path, 'w'){ |f| f.write(MultiJson.encode(@hash, :pretty => true)) }
+    encode(@hash, @path)
+  end
+
+  private
+
+  def decode(file_path)
+    Hash.new.tap do |h|
+      File.open(file_path, 'r').each_line do |l|
+        path, md5 = l.split(','); path ||= ''; path.strip!; md5 ||= ''; md5.strip!
+        h[path] = md5 if !path.empty?
+      end
+    end
+  end
+
+  def encode(hash, file_path)
+    File.open(file_path, 'w') do |f|
+      hash.keys.sort.each{ |path| f.write("#{path.strip},#{hash[path].strip}\n") }
+    end
   end
 
 end

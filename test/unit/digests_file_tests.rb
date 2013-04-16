@@ -8,7 +8,7 @@ class Dassets::DigestsFile
   class BaseTests < Assert::Context
     desc "Dassets::DigestsFile"
     setup do
-      @file_path = File.join(ROOT_PATH, 'test/support/digests.json')
+      @file_path = File.join(ROOT_PATH, 'test/support/example.digests')
       @digests = Dassets::DigestsFile.new(@file_path)
     end
     subject{ @digests }
