@@ -20,6 +20,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency("assert", ["~> 2.0"])
 
   gem.add_dependency('ns-options',    ["~> 1.1"])
-  gem.add_dependency('multi_json',  ['~> 1.3'])
 
 end
