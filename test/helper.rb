@@ -8,4 +8,6 @@ $LOAD_PATH.unshift(ROOT_PATH)
 # require pry for debugging (`binding.pry`)
 require 'pry'
 
+ENV['DASSETS_ROOT_PATH'] ||= Dir.pwd
+
 require 'test/support/config/dassets.rb'
