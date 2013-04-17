@@ -13,7 +13,7 @@ class Dassets::Runner
     @opts = opts
     @cmd_name = args.shift || ""
     @cmd_args = args
-    @root_path = @opts.delete('root_path') || Dir.pwd
+    @root_path = @opts.delete('root_path') || ENV['DASSETS_ROOT_PATH']
   end
 
   def run
