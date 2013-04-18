@@ -1,3 +1,5 @@
+require 'dassets/asset_file'
+
 module Dassets
 
   class DigestsFile
