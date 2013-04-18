@@ -25,7 +25,7 @@ module Dassets
         $stderr.puts "#{err.message}\n\n"
         $stderr.puts help
         exit(1)
-      rescue Dassets::NotConfiguredError, Dassets::Runner::CmdError => err
+      rescue Dassets::Runner::CmdError => err
         $stderr.puts "#{err.message}"
         exit(1)
       rescue Dassets::Runner::CmdFail => err

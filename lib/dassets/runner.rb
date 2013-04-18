@@ -1,5 +1,6 @@
 require 'dassets'
 require 'dassets/runner/digest_command'
+require 'dassets/runner/cache_command'
 
 ENV['DASSETS_CONFIG_FILE'] ||= 'config/assets'
 
