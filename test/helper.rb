@@ -2,12 +2,10 @@
 # put any test helpers here
 
 # add the root dir to the load path
-ROOT_PATH = File.expand_path("../..", __FILE__)
-$LOAD_PATH.unshift(ROOT_PATH)
+$LOAD_PATH.unshift(File.expand_path("../..", __FILE__))
 
 # require pry for debugging (`binding.pry`)
 require 'pry'
 
-ENV['DASSETS_ROOT_PATH'] ||= Dir.pwd
-
-require 'test/support/config/dassets.rb'
+ENV['DASSETS_CONFIG_FILE'] = 'test/support/config/assets'
+require ENV['DASSETS_CONFIG_FILE']

@@ -3,6 +3,5 @@
 # Copyright (c) 2013-Present Kelly Redding and Collin Redding
 #
 
-ENV['DASSETS_ROOT_PATH'] ||= Dir.pwd
 require 'dassets/cli'
 Dassets::CLI.run *ARGV

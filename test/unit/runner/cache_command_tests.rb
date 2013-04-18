@@ -7,7 +7,7 @@ class Dassets::Runner::CacheCommand
   class BaseTests < Assert::Context
     desc "Dassets::Runner::CacheCommand"
     setup do
-      @cache_root_path = File.join(ROOT_PATH, 'test/support/public')
+      @cache_root_path = File.join(Dassets.config.root_path, 'public')
       FileUtils.mkdir_p @cache_root_path
       @cmd = Dassets::Runner::CacheCommand.new(@cache_root_path)
     end
