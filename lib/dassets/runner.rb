@@ -1,7 +1,5 @@
 require 'dassets'
 
-ENV['DASSETS_CONFIG_FILE'] ||= 'config/assets'
-
 module Dassets; end
 class Dassets::Runner
   UnknownCmdError = Class.new(ArgumentError)
@@ -17,7 +15,7 @@ class Dassets::Runner
   end
 
   def run
-    require ENV['DASSETS_CONFIG_FILE']
+    Dassets.init
 
     case @cmd_name
     when 'digest'

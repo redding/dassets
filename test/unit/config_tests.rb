@@ -9,7 +9,8 @@ class Dassets::Config
     desc "Dassets::Config"
     subject{ Dassets::Config }
 
-    should have_option  :root_path, Pathname, :required => true
+    should have_option  :assets_file, Pathname, :default => ENV['DASSETS_ASSETS_FILE']
+    should have_option  :root_path,   Pathname, :required => true
     should have_options :files_path, :digests_file_path
 
     should "should use `apps/assets/public` as the default files path" do
