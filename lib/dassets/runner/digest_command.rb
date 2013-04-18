@@ -9,6 +9,7 @@ class Dassets::Runner::DigestCommand
   attr_reader :asset_files, :digests_file
 
   def initialize(file_paths)
+    @pwd = ENV['PWD']
     @asset_files = if (file_paths || []).empty?
       get_asset_files([*Dassets.config.files_path])
     else
@@ -26,10 +27,14 @@ class Dassets::Runner::DigestCommand
       @asset_files.each{ |f| @digests_file[f.path] = f.md5 }
 
       @digests_file.save! if save
+      unless ENV['DASSETS_TEST_MODE']
+        $stdout.puts "digested #{@asset_files.size} assets, saved to #{@digests_file.path}"
+      end
       return save
     rescue Exception => e
-      $stderr.puts e, *e.backtrace
-      $stderr.puts ""
+      unless ENV['DASSETS_TEST_MODE']
+        $stderr.puts e, *e.backtrace; $stderr.puts ""
+      end
       raise Dassets::Runner::CmdFail
     end
   end
@@ -48,7 +53,7 @@ class Dassets::Runner::DigestCommand
 
   def fuzzy_paths(paths)
     paths.inject(Set.new) do |paths, path|
-      p = File.expand_path(path, Dir.pwd)
+      p = File.expand_path(path, @pwd)
       paths += Dir.glob("#{p}*") + Dir.glob("#{p}*/**/*")
     end
   end

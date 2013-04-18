@@ -42,9 +42,11 @@ module Dassets
 
     def decode(file_path)
       Hash.new.tap do |h|
-        File.open(file_path, 'r').each_line do |l|
-          path, md5 = l.split(','); path ||= ''; path.strip!; md5 ||= ''; md5.strip!
-          h[path] = md5 if !path.empty?
+        if File.exists?(file_path)
+          File.open(file_path, 'r').each_line do |l|
+            path, md5 = l.split(','); path ||= ''; path.strip!; md5 ||= ''; md5.strip!
+            h[path] = md5 if !path.empty?
+          end
         end
       end
     end

@@ -1,5 +1,4 @@
 require 'dassets'
-require 'dassets/runner/digest_command'
 
 ENV['DASSETS_CONFIG_FILE'] ||= 'config/assets'
 
@@ -22,8 +21,10 @@ class Dassets::Runner
 
     case @cmd_name
     when 'digest'
+      require 'dassets/runner/digest_command'
       DigestCommand.new(@cmd_args).run
     when 'cache'
+      require 'dassets/runner/cache_command'
       CacheCommand.new(@cmd_args.first).run
     when 'null'
       NullCommand.new.run

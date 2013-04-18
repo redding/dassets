@@ -11,7 +11,7 @@ class Dassets::Runner::CacheCommand
 
   def initialize(cache_root_path)
     unless cache_root_path && File.directory?(cache_root_path)
-      raise Dassets::Runner::CmdError, "specify a directoy to write the cached files to"
+      raise Dassets::Runner::CmdError, "specify an existing cache directory"
     end
 
     @files_root_path = Pathname.new(Dassets.config.files_path)
@@ -31,10 +31,14 @@ class Dassets::Runner::CacheCommand
           FileUtils.cp(files_path, cache_path)
         end
       end
+      unless ENV['DASSETS_TEST_MODE']
+        $stdout.puts "#{@asset_files.size} files written to #{@cache_root_path}"
+      end
       return write_files
     rescue Exception => e
-      $stderr.puts e, *e.backtrace
-      $stderr.puts ""
+      unless ENV['DASSETS_TEST_MODE']
+        $stderr.puts e, *e.backtrace; $stderr.puts ""
+      end
       raise Dassets::Runner::CmdFail
     end
   end
