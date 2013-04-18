@@ -7,6 +7,7 @@ $LOAD_PATH.unshift(File.expand_path("../..", __FILE__))
 # require pry for debugging (`binding.pry`)
 require 'pry'
 
-ENV['DASSETS_TEST_MODE'] = 'yes'
-ENV['DASSETS_CONFIG_FILE'] = 'test/support/config/assets'
-require ENV['DASSETS_CONFIG_FILE']
+ENV['DASSETS_TEST_MODE']   = 'yes'
+ENV['DASSETS_ASSETS_FILE'] = 'test/support/config/assets'
+require 'dassets'
+Dassets.init
