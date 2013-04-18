@@ -38,6 +38,7 @@ Use the CLI to build your digests file.  Protip: use guard to auto rebuild diges
 ### Link To
 
 ```rb
+Dassets.init
 Dassets['css/site.css'].href       # => "/css/site-123abc.css"
 Dassets['img/logos/main.jpg'].href # => "/img/logos/main-a1b2c3.jpg"
 ```
@@ -46,7 +47,11 @@ Dassets['img/logos/main.jpg'].href # => "/img/logos/main-a1b2c3.jpg"
 
 In development, use the Dassets middleware to serve your digested asset files:
 
-TODO: setup code example
+```ruby
+# `app` is a rack application
+require 'dassets/server'
+app.use Dassets::Server
+```
 
 In production, use the CLI to cache your digested asset files to the public dir:
 

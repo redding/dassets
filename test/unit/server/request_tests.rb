@@ -30,7 +30,7 @@ class Dassets::Server::Request
       assert req.for_asset_file?
 
       # find not nested path with matching md5
-      req = file_request('GET', '/file1-daa05c683a4913b268653f7a7e36a5b4.txt')
+      req = file_request('HEAD', '/file1-daa05c683a4913b268653f7a7e36a5b4.txt')
       assert req.for_asset_file?
 
       # find even if md5 is *not* matching - just need to have any md5
@@ -42,7 +42,7 @@ class Dassets::Server::Request
       assert_not req.for_asset_file?
 
       # no find on missing md5
-      req = file_request('GET', '/file1.txt')
+      req = file_request('HEAD', '/file1.txt')
       assert_not req.for_asset_file?
 
       # no find on unknown file
