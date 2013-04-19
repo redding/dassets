@@ -8,24 +8,19 @@ class Dassets::Runner::DigestCommand
 
   attr_reader :asset_files, :digests_file
 
-  def initialize(file_paths)
+  def initialize(requested_paths)
     @pwd = ENV['PWD']
-    @asset_files = if (file_paths || []).empty?
-      get_asset_files([*Dassets.config.files_path])
-    else
-      get_asset_files(file_paths)
-    end
     @digests_file = Dassets::DigestsFile.new(Dassets.config.digests_file_path)
+    @asset_files = @requested_files = get_asset_files(requested_paths || [])
+    if @asset_files.empty?
+      @asset_files = @current_files = get_asset_files([*Dassets.config.files_path])
+    end
   end
 
   def run(save=true)
     begin
-      digest_paths = @digests_file.keys
-      asset_paths  = @asset_files.map{ |f| f.path }
-
-      (digest_paths - asset_paths).each{ |file| @digests_file.delete(file) }
-      @asset_files.each{ |f| @digests_file[f.path] = f.md5 }
-
+      prune_digests if @requested_files.empty?
+      update_digests(@asset_files)
       @digests_file.save! if save
       unless ENV['DASSETS_TEST_MODE']
         $stdout.puts "digested #{@asset_files.size} assets, saved to #{@digests_file.path}"
@@ -40,6 +35,17 @@ class Dassets::Runner::DigestCommand
   end
 
   private
+
+  def update_digests(files)
+    files.each{ |f| @digests_file[f.path] = f.md5 }
+  end
+
+  def prune_digests
+    # prune paths in digests not in current files
+    (@digests_file.keys - @current_files.map{ |f| f.path }).each do |file|
+      @digests_file.delete(file)
+    end
+  end
 
   # Get all file paths fuzzy-matching the given paths.  Each path must be a
   # file that exists and is in the `config.files_path` tree.  Return them
