@@ -16,7 +16,7 @@ class Dassets::Runner::CacheCommand
 
     @files_root_path = Pathname.new(Dassets.config.files_path)
     @cache_root_path = Pathname.new(cache_root_path)
-    @digests_file = Dassets::DigestsFile.new(Dassets.config.digests_file_path)
+    @digests_file = Dassets::DigestsFile.new(Dassets.config.digests_path)
     @asset_files = @digests_file.asset_files
   end
 
