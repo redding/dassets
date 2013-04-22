@@ -10,8 +10,8 @@ module Dassets
 
     should have_imeths :config, :configure, :init, :digests, :[]
 
-    should "return its `Config` class with the `config` method" do
-      assert_same Config, subject.config
+    should "return a `Config` instance with the `config` method" do
+      assert_kind_of Config, subject.config
     end
 
     should "read/parse the digests on init" do
