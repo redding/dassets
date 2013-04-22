@@ -10,7 +10,7 @@ class Dassets::Runner::DigestCommand
 
   def initialize(requested_paths)
     @pwd = ENV['PWD']
-    @digests_file = Dassets::DigestsFile.new(Dassets.config.digests_file_path)
+    @digests_file = Dassets::DigestsFile.new(Dassets.config.digests_path)
     @asset_files = @requested_files = get_asset_files(requested_paths || [])
     if @asset_files.empty?
       @asset_files = @current_files = get_asset_files([*Dassets.config.files_path])

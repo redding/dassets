@@ -9,12 +9,12 @@ ENV['DASSETS_ASSETS_FILE'] ||= 'config/assets'
 
 module Dassets
 
-  def self.config; Config; end
-  def self.configure(&block); Config.define(&block); end
+  def self.config; @config ||= Config.new; end
+  def self.configure(&block); self.config.define(&block); end
 
   def self.init
     require self.config.assets_file
-    @digests_file = DigestsFile.new(self.config.digests_file_path)
+    @digests_file = DigestsFile.new(self.config.digests_path)
   end
 
   def self.reset
@@ -29,10 +29,27 @@ module Dassets
   class Config
     include NsOptions::Proxy
 
-    option :assets_file, Pathname, :default => ENV['DASSETS_ASSETS_FILE']
-    option :root_path,   Pathname, :required => true
+    option :root_path,    Pathname, :required => true
+    option :digests_path, Pathname, :required => true
+
+    option :assets_file,  Pathname, :default => ENV['DASSETS_ASSETS_FILE']
+    option :source_path,  RootPath, :default => proc{ "app/assets" }
+    option :source_filter, Proc, :default => proc{ |paths| paths }
+
+    def initialize
+      super({
+        :digests_path => proc{ File.join(self.source_path, '.digests') },
+        :output_path  => proc{ File.join(self.source_path, 'public')   }
+      })
+    end
+
+    def sources(path=nil, &block)
+      self.source_path   = path  if path
+      self.source_filter = block if block
+    end
+
+    # deprecated
     option :files_path,  RootPath, :default => proc{ "app/assets/public" }
-    option :digests_file_path, RootPath, :default => proc{ "app/assets/.digests" }
 
   end
 
