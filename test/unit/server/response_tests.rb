@@ -53,9 +53,9 @@ class Dassets::Server::Response
       resp = file_response(af)
 
       assert_equal 404, resp.status
-      assert_equal [], resp.body
+      assert_equal ['Not Found'], resp.body
       assert_equal Rack::Utils::HeaderHash.new, resp.headers
-      assert_equal [ 404, {}, [] ], resp.to_rack
+      assert_equal [ 404, {}, ['Not Found'] ], resp.to_rack
     end
 
     protected

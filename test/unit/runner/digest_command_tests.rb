@@ -19,7 +19,6 @@ class Dassets::Runner::DigestCommand
 
     should "get it's asset files from the config path by default" do
       assert_equal 4, subject.asset_files.size
-      assert_equal 4, subject.digests_file.keys.size
     end
 
     should "get it's asset files from the args if passed" do
@@ -76,6 +75,22 @@ class Dassets::Runner::DigestCommand
       assert_includes @addfile, subject.digests_file.keys
       assert_not_includes @rmfile, subject.digests_file.keys
       assert_not_equal @orig_updfile_md5, subject.digests_file[@updfile]
+    end
+
+    should "update the digests_file when run on a single file" do
+      assert_equal 4, subject.digests_file.keys.size
+      assert_not_includes @addfile, subject.digests_file.keys
+
+      # recreate the cmd to reload asset files
+      @cmd = Dassets::Runner::DigestCommand.new([@addfile_path])
+      # run without writing the file
+      subject.run(false)
+
+      # see the add, don't change anything else
+      assert_equal 5, subject.digests_file.keys.size
+      assert_includes @addfile, subject.digests_file.keys
+      assert_includes @rmfile, subject.digests_file.keys
+      assert_equal    @orig_updfile_md5, subject.digests_file[@updfile]
     end
 
   end

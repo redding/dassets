@@ -14,7 +14,7 @@ class Dassets::Server
       @status, @headers, @body = if env['HTTP_IF_MODIFIED_SINCE'] == mtime
         [ 304, Rack::Utils::HeaderHash.new, [] ]
       elsif !@asset_file.exists?
-        [ 404, Rack::Utils::HeaderHash.new, [] ]
+        [ 404, Rack::Utils::HeaderHash.new, ["Not Found"] ]
       else
         [ 200,
           Rack::Utils::HeaderHash.new.tap do |h|
