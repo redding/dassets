@@ -15,7 +15,7 @@ class Dassets::Config
     should have_option :root_path,   Pathname, :required => true
     should have_option :assets_file, Pathname, :default => ENV['DASSETS_ASSETS_FILE']
     should have_options :source_path, :output_path, :digests_path
-    should have_imeth :sources
+    should have_imeth :source
 
     should "should use `apps/assets` as the default source path" do
       exp_path = Dassets.config.root_path.join("app/assets").to_s
@@ -36,7 +36,7 @@ class Dassets::Config
       path = Dassets::RootPath.new 'app/asset_files'
       filter = proc{ |paths| [] }
 
-      subject.sources(path, &filter)
+      subject.source(path, &filter)
       assert_equal path, subject.source_path
       assert_equal filter, subject.source_filter
     end

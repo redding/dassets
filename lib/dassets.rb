@@ -48,9 +48,9 @@ module Dassets
       })
     end
 
-    def sources(path=nil, &block)
+    def source(path=nil, &filter)
       self.source_path   = path  if path
-      self.source_filter = block if block
+      self.source_filter = filter if filter
     end
 
     # deprecated
