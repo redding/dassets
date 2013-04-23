@@ -60,9 +60,9 @@ class Dassets::Runner::DigestCommand
     end
 
     should "update the digests on run" do
-      assert_equal 4, subject.digests.keys.size
-      assert_not_includes @addfile, subject.digests.keys
-      assert_includes @rmfile, subject.digests.keys
+      assert_equal 4, subject.digests.paths.size
+      assert_not_includes @addfile, subject.digests.paths
+      assert_includes @rmfile, subject.digests.paths
       assert_equal @orig_updfile_md5, subject.digests[@updfile]
 
       # recreate the cmd to reload asset files
@@ -71,15 +71,15 @@ class Dassets::Runner::DigestCommand
       subject.run(false)
 
       # see the add, update and removal
-      assert_equal 4, subject.digests.keys.size
-      assert_includes @addfile, subject.digests.keys
-      assert_not_includes @rmfile, subject.digests.keys
+      assert_equal 4, subject.digests.paths.size
+      assert_includes @addfile, subject.digests.paths
+      assert_not_includes @rmfile, subject.digests.paths
       assert_not_equal @orig_updfile_md5, subject.digests[@updfile]
     end
 
     should "update the digests when run on a single file" do
-      assert_equal 4, subject.digests.keys.size
-      assert_not_includes @addfile, subject.digests.keys
+      assert_equal 4, subject.digests.paths.size
+      assert_not_includes @addfile, subject.digests.paths
 
       # recreate the cmd to reload asset files
       @cmd = Dassets::Runner::DigestCommand.new([@addfile_path])
@@ -87,9 +87,9 @@ class Dassets::Runner::DigestCommand
       subject.run(false)
 
       # see the add, don't change anything else
-      assert_equal 5, subject.digests.keys.size
-      assert_includes @addfile, subject.digests.keys
-      assert_includes @rmfile, subject.digests.keys
+      assert_equal 5, subject.digests.paths.size
+      assert_includes @addfile, subject.digests.paths
+      assert_includes @rmfile, subject.digests.paths
       assert_equal    @orig_updfile_md5, subject.digests[@updfile]
     end
 

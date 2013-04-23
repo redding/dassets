@@ -42,7 +42,7 @@ class Dassets::Runner::DigestCommand
 
   def prune_digests
     # prune paths in digests not in current files
-    (@digests.keys - @current_files.map{ |f| f.path }).each do |file|
+    (@digests.paths - @current_files.map{ |f| f.path }).each do |file|
       @digests.delete(file)
     end
   end

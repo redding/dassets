@@ -4,38 +4,32 @@ module Dassets
 
   class Digests
 
-    attr_reader :path
+    attr_reader :file_path
 
     def initialize(file_path)
-      @path, @hash = file_path, decode(file_path)
+      @file_path, @hash = file_path, decode(file_path)
     end
 
     def [](*args);  @hash.send('[]', *args);  end
     def []=(*args); @hash.send('[]=', *args); end
     def delete(*args); @hash.delete(*args);   end
 
-    def each(*args, &block); @hash.each(*args, &block); end
+    def paths
+      @hash.keys
+    end
 
-    def keys;   @hash.keys;   end
-    def values; @hash.values; end
-    def empty?; @hash.empty?; end
-
+    # TODO: still needed??
     def asset_files
       @hash.map{ |path, md5| Dassets::AssetFile.new(path, md5) }
     end
 
+    # TODO: still needed??
     def asset_file(path)
       Dassets::AssetFile.new(path, @hash[path] || '')
     end
 
-    def to_hash
-      Hash.new.tap do |to_hash|
-        @hash.each{ |k, v| to_hash[k] = v }
-      end
-    end
-
     def save!
-      encode(@hash, @path)
+      encode(@hash, @file_path)
     end
 
     private

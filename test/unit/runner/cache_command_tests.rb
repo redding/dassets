@@ -31,7 +31,7 @@ class Dassets::Runner::CacheCommand
     end
 
     should "get it's asset files from the digests file" do
-      assert_equal 4, subject.digests.keys.size
+      assert_equal 4, subject.digests.paths.size
       assert_equal 4, subject.asset_files.size
     end
 

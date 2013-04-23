@@ -24,10 +24,10 @@ module Dassets
 
     should "read/parse the digests on init" do
       subject.reset
-      assert_empty subject.digests
+      assert_empty subject.digests.paths
 
       subject.init
-      assert_not_empty subject.digests
+      assert_not_empty subject.digests.paths
     end
 
     should "return asset files given a their path using the index operator" do
