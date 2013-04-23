@@ -1,13 +1,13 @@
 require 'pathname'
 require 'fileutils'
 require 'dassets/asset_file'
-require 'dassets/digests_file'
+require 'dassets/digests'
 
 module Dassets; end
 class Dassets::Runner; end
 class Dassets::Runner::CacheCommand
 
-  attr_reader :files_root_path, :cache_root_path, :digests_file, :asset_files
+  attr_reader :files_root_path, :cache_root_path, :digests, :asset_files
 
   def initialize(cache_root_path)
     unless cache_root_path && File.directory?(cache_root_path)
@@ -16,8 +16,8 @@ class Dassets::Runner::CacheCommand
 
     @files_root_path = Pathname.new(Dassets.config.files_path)
     @cache_root_path = Pathname.new(cache_root_path)
-    @digests_file = Dassets::DigestsFile.new(Dassets.config.digests_path)
-    @asset_files = @digests_file.asset_files
+    @digests = Dassets::Digests.new(Dassets.config.digests_path)
+    @asset_files = @digests.asset_files
   end
 
   def run(write_files=true)
