@@ -1,16 +1,16 @@
 require 'set'
 require 'dassets/asset_file'
-require 'dassets/digests_file'
+require 'dassets/digests'
 
 module Dassets; end
 class Dassets::Runner; end
 class Dassets::Runner::DigestCommand
 
-  attr_reader :asset_files, :digests_file
+  attr_reader :asset_files, :digests
 
   def initialize(requested_paths)
     @pwd = ENV['PWD']
-    @digests_file = Dassets::DigestsFile.new(Dassets.config.digests_path)
+    @digests = Dassets::Digests.new(Dassets.config.digests_path)
     @asset_files = @requested_files = get_asset_files(requested_paths || [])
     if @asset_files.empty?
       @asset_files = @current_files = get_asset_files([*Dassets.config.files_path])
@@ -21,9 +21,9 @@ class Dassets::Runner::DigestCommand
     begin
       prune_digests if @requested_files.empty?
       update_digests(@asset_files)
-      @digests_file.save! if save
+      @digests.save! if save
       unless ENV['DASSETS_TEST_MODE']
-        $stdout.puts "digested #{@asset_files.size} assets, saved to #{@digests_file.path}"
+        $stdout.puts "digested #{@asset_files.size} assets, saved to #{@digests.path}"
       end
       return save
     rescue Exception => e
@@ -37,13 +37,13 @@ class Dassets::Runner::DigestCommand
   private
 
   def update_digests(files)
-    files.each{ |f| @digests_file[f.path] = f.md5 }
+    files.each{ |f| @digests[f.path] = f.md5 }
   end
 
   def prune_digests
     # prune paths in digests not in current files
-    (@digests_file.keys - @current_files.map{ |f| f.path }).each do |file|
-      @digests_file.delete(file)
+    (@digests.paths - @current_files.map{ |f| f.path }).each do |file|
+      @digests.delete(file)
     end
   end
 

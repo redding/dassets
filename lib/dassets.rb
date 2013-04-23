@@ -4,7 +4,7 @@ require 'ns-options'
 
 require 'dassets/version'
 require 'dassets/root_path'
-require 'dassets/digests_file'
+require 'dassets/digests'
 
 ENV['DASSETS_ASSETS_FILE'] ||= 'config/assets'
 
@@ -16,16 +16,15 @@ module Dassets
   def self.init
     require self.config.assets_file
     @sources = SourceList.new(self.config)
-    @digests_file = DigestsFile.new(self.config.digests_path)
+    @digests = Digests.new(self.config.digests_path)
   end
 
   def self.reset
-    @sources = nil
-    @digests_file = nil
+    @sources = @digests = nil
   end
 
-  def self.sources; @sources      || Set.new;             end
-  def self.digests; @digests_file || NullDigestsFile.new; end
+  def self.sources; @sources || Set.new;         end
+  def self.digests; @digests || NullDigests.new; end
 
   def self.[](asset_path)
     self.digests.asset_file(asset_path)
