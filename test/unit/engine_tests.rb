@@ -6,15 +6,15 @@ class Dassets::Engine
   class BaseTests < Assert::Context
     desc "the base Dassets::Engine"
     setup do
-      @engine = Dassets::Engine.new('some' => 'opts')
+      @engine = Dassets::Engine.new
     end
     subject{ @engine }
 
     should have_reader :opts
     should have_imeths :ext, :compile
 
-    should "know its opts" do
-      exp_opts = {'some' => 'opts'}
+    should "default the opts if none given" do
+      exp_opts = {}
       assert_equal exp_opts, subject.opts
     end
 
@@ -39,6 +39,11 @@ class Dassets::Engine
 
     should "be a Engine" do
       assert_kind_of Dassets::Engine, subject
+    end
+
+    should "know its opts" do
+      exp_opts = {'some' => 'opts'}
+      assert_equal exp_opts, subject.opts
     end
 
     should "return the given extension on `ext`" do

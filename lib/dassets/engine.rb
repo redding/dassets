@@ -4,8 +4,8 @@ module Dassets
 
     attr_reader :opts
 
-    def initialize(opts)
-      @opts = opts
+    def initialize(opts=nil)
+      @opts = opts || {}
     end
 
     def ext(input_ext)
