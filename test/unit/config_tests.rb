@@ -15,7 +15,8 @@ class Dassets::Config
     should have_option :root_path,   Pathname, :required => true
     should have_option :assets_file, Pathname, :default => ENV['DASSETS_ASSETS_FILE']
     should have_options :source_path, :output_path, :digests_path
-    should have_imeth :sources
+    should have_reader :engines
+    should have_imeth :source, :engine
 
     should "should use `apps/assets` as the default source path" do
       exp_path = Dassets.config.root_path.join("app/assets").to_s
@@ -36,11 +37,31 @@ class Dassets::Config
       path = Dassets::RootPath.new 'app/asset_files'
       filter = proc{ |paths| [] }
 
-      subject.sources(path, &filter)
+      subject.source(path, &filter)
       assert_equal path, subject.source_path
       assert_equal filter, subject.source_filter
     end
 
+    should "know its engines and return a NullEngine by default" do
+      assert_kind_of ::Hash, subject.engines
+      assert_kind_of Dassets::NullEngine, subject.engines['some']
+      assert_kind_of Dassets::NullEngine, subject.engines['thing']
+    end
+
+    should "allow registering new engines" do
+      empty_engine = Class.new(Dassets::Engine) do
+        def ext(input_ext); ''; end
+        def compile(input); ''; end
+      end
+
+      assert_kind_of Dassets::NullEngine, subject.engines['empty']
+      subject.engine 'empty', empty_engine, 'an' => 'opt'
+      assert_kind_of empty_engine, subject.engines['empty']
+
+      assert_equal({'an' => 'opt'}, subject.engines['empty'].opts)
+      assert_equal '', subject.engines['empty'].ext('empty')
+      assert_equal '', subject.engines['empty'].compile('some content')
+    end
 
 
     # deprecated

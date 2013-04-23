@@ -5,6 +5,7 @@ require 'ns-options'
 require 'dassets/version'
 require 'dassets/root_path'
 require 'dassets/digests'
+require 'dassets/engine'
 
 ENV['DASSETS_ASSETS_FILE'] ||= 'config/assets'
 
@@ -41,16 +42,23 @@ module Dassets
     option :source_path,  RootPath, :default => proc{ "app/assets" }
     option :source_filter, Proc, :default => proc{ |paths| paths }
 
+    attr_reader :engines
+
     def initialize
       super({
         :digests_path => proc{ File.join(self.source_path, '.digests') },
         :output_path  => proc{ File.join(self.source_path, 'public')   }
       })
+      @engines = Hash.new{ |k,v| Dassets::NullEngine.new }
     end
 
-    def sources(path=nil, &block)
+    def source(path=nil, &filter)
       self.source_path   = path  if path
-      self.source_filter = block if block
+      self.source_filter = filter if filter
+    end
+
+    def engine(input_ext, engine_class, opts=nil)
+      @engines[input_ext.to_s] = engine_class.new(opts)
     end
 
     # deprecated
