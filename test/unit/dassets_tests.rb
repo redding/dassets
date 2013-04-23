@@ -90,7 +90,7 @@ module Dassets
 
       assert_equal exp_list, Dassets::SourceList.new(config)
 
-      config.sources "source_files" do |paths|
+      config.source "source_files" do |paths|
         paths.reject{ |path| File.basename(path) =~ /^_/ }
       end
       assert_equal exp_list, Dassets::SourceList.new(config)
