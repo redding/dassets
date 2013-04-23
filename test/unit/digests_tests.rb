@@ -1,15 +1,15 @@
 require 'assert'
 require 'fileutils'
-require 'dassets/digests_file'
+require 'dassets/digests'
 require 'dassets/asset_file'
 
-class Dassets::DigestsFile
+class Dassets::Digests
 
   class BaseTests < Assert::Context
-    desc "Dassets::DigestsFile"
+    desc "Dassets::Digests"
     setup do
       @file_path = File.join(Dassets.config.root_path, 'example.digests')
-      @digests = Dassets::DigestsFile.new(@file_path)
+      @digests = Dassets::Digests.new(@file_path)
     end
     subject{ @digests }
 

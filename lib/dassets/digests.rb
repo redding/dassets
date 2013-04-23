@@ -2,7 +2,7 @@ require 'dassets/asset_file'
 
 module Dassets
 
-  class DigestsFile
+  class Digests
 
     attr_reader :path
 
@@ -59,12 +59,10 @@ module Dassets
 
   end
 
-  module NullDigestsFile
-
+  module NullDigests
     def self.new
-      DigestsFile.new('/dev/null')
+      Digests.new('/dev/null')
     end
-
   end
 
 end

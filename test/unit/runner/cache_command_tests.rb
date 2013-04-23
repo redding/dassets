@@ -16,7 +16,7 @@ class Dassets::Runner::CacheCommand
     end
     subject{ @cmd }
 
-    should have_readers :files_root_path, :cache_root_path, :digests_file, :asset_files
+    should have_readers :files_root_path, :cache_root_path, :digests, :asset_files
 
     should "use the config's files path and its files root path" do
       assert_equal Dassets.config.files_path, subject.files_root_path.to_s
@@ -27,11 +27,11 @@ class Dassets::Runner::CacheCommand
     end
 
     should "know it's digests file" do
-      assert_kind_of Dassets::DigestsFile, subject.digests_file
+      assert_kind_of Dassets::Digests, subject.digests
     end
 
     should "get it's asset files from the digests file" do
-      assert_equal 4, subject.digests_file.keys.size
+      assert_equal 4, subject.digests.keys.size
       assert_equal 4, subject.asset_files.size
     end
 
