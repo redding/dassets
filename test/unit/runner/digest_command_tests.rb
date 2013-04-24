@@ -22,7 +22,7 @@ class Dassets::Runner::DigestCommand
     end
 
     should "get it's asset files from the args if passed" do
-      path_string = File.join(Dassets.config.files_path, 'file*')
+      path_string = File.join(Dassets.config.output_path, 'file*')
       digest_cmd  = Dassets::Runner::DigestCommand.new([path_string])
 
       assert_equal 2, digest_cmd.asset_files.size
@@ -41,9 +41,9 @@ class Dassets::Runner::DigestCommand
       @addfile = 'addfile.txt'
       @rmfile  = 'file1.txt'
       @updfile = 'file2.txt'
-      @addfile_path = File.join(File.join(Dassets.config.files_path, @addfile))
-      @rmfile_path  = File.join(File.join(Dassets.config.files_path, @rmfile))
-      @updfile_path = File.join(File.join(Dassets.config.files_path, @updfile))
+      @addfile_path = File.join(File.join(Dassets.config.output_path, @addfile))
+      @rmfile_path  = File.join(File.join(Dassets.config.output_path, @rmfile))
+      @updfile_path = File.join(File.join(Dassets.config.output_path, @updfile))
 
       @rmfilecontents   = File.read(@rmfile_path)
       @updfilecontents  = File.read(@updfile_path)
