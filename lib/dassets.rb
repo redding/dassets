@@ -61,9 +61,6 @@ module Dassets
       @engines[input_ext.to_s] = engine_class.new(opts)
     end
 
-    # deprecated
-    option :files_path,  RootPath, :default => proc{ "app/assets/public" }
-
   end
 
   class SourceList

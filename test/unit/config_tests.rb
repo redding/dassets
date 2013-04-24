@@ -63,13 +63,9 @@ class Dassets::Config
       assert_equal '', subject.engines['empty'].compile('some content')
     end
 
-
-    # deprecated
-    should have_options :files_path
-
     should "should use `apps/assets/public` as the default files path" do
       exp_path = Dassets.config.root_path.join("app/assets/public").to_s
-      assert_equal exp_path, subject.files_path
+      assert_equal exp_path, subject.output_path
     end
 
   end
