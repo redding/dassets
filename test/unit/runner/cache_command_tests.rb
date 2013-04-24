@@ -31,8 +31,8 @@ class Dassets::Runner::CacheCommand
     end
 
     should "get it's asset files from the digests file" do
-      assert_equal 4, subject.digests.paths.size
-      assert_equal 4, subject.asset_files.size
+      assert_equal 5, subject.digests.paths.size
+      assert_equal 5, subject.asset_files.size
     end
 
     should "use AssetFile objs for the asset files" do

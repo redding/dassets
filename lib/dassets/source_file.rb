@@ -1,5 +1,7 @@
 require 'digest/md5'
+require 'fileutils'
 require 'dassets'
+require 'dassets/asset_file'
 
 module Dassets
 
@@ -20,7 +22,8 @@ module Dassets
       return if !self.exists?
 
       Dassets::AssetFile.new(self.digest_path, self.fingerprint).tap do |asset_file|
-        File.open(asset_file.output_path, 'w'){ |f| f.write(self.compiled) }
+        FileUtils.mkdir_p(File.dirname(asset_file.output_path))
+        File.open(asset_file.output_path, "w"){ |f| f.write(self.compiled) }
         Dassets.digests[self.digest_path] = self.fingerprint
         Dassets.digests.save!
       end
