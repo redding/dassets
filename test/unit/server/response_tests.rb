@@ -16,7 +16,7 @@ class Dassets::Server::Response
 
     should "handle not modified files" do
       af = Dassets['file1.txt']
-      mtime = File.mtime(af.files_path).httpdate.to_s
+      mtime = File.mtime(af.output_path).httpdate.to_s
       resp = file_response(af, 'HTTP_IF_MODIFIED_SINCE' => mtime)
 
       assert_equal 304, resp.status
@@ -30,8 +30,8 @@ class Dassets::Server::Response
       resp = file_response(af)
       exp_headers = {
         'Content-Type'   => 'text/plain',
-        'Content-Length' => File.size?(af.files_path).to_s,
-        'Last-Modified'  => File.mtime(af.files_path).httpdate.to_s
+        'Content-Length' => File.size?(af.output_path).to_s,
+        'Last-Modified'  => File.mtime(af.output_path).httpdate.to_s
       }
 
       assert_equal 200, resp.status

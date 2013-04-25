@@ -13,7 +13,7 @@ class Dassets::Runner::DigestCommand
     @digests = Dassets::Digests.new(Dassets.config.digests_path)
     @asset_files = @requested_files = get_asset_files(requested_paths || [])
     if @asset_files.empty?
-      @asset_files = @current_files = get_asset_files([*Dassets.config.files_path])
+      @asset_files = @current_files = get_asset_files([*Dassets.config.output_path])
     end
   end
 
@@ -48,7 +48,7 @@ class Dassets::Runner::DigestCommand
   end
 
   # Get all file paths fuzzy-matching the given paths.  Each path must be a
-  # file that exists and is in the `config.files_path` tree.  Return them
+  # file that exists and is in the `config.output_path` tree.  Return them
   # as sorted AssetFile objects.
   def get_asset_files(paths)
     fuzzy_paths(paths).
@@ -65,7 +65,7 @@ class Dassets::Runner::DigestCommand
   end
 
   def is_asset_file?(path)
-    File.file?(path) && path.include?("#{Dassets.config.files_path}/")
+    File.file?(path) && path.include?("#{Dassets.config.output_path}/")
   end
 
 end

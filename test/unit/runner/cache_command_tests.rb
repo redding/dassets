@@ -16,10 +16,10 @@ class Dassets::Runner::CacheCommand
     end
     subject{ @cmd }
 
-    should have_readers :files_root_path, :cache_root_path, :digests, :asset_files
+    should have_readers :cache_root_path, :output_root_path, :digests, :asset_files
 
     should "use the config's files path and its files root path" do
-      assert_equal Dassets.config.files_path, subject.files_root_path.to_s
+      assert_equal Dassets.config.output_path, subject.output_root_path.to_s
     end
 
     should "know its given cache root path" do
@@ -53,7 +53,7 @@ class Dassets::Runner::CacheCommand
 
       assert_file_exists @cache_root_path.to_s
       subject.asset_files.each do |file|
-        assert_file_exists File.join(@cache_root_path, file.cache_path)
+        assert_file_exists File.join(@cache_root_path, file.url)
       end
     end
 
