@@ -7,8 +7,9 @@ module Dassets
   class DigestCmdRunTests < Assert::Context
     desc "the DigestCmd"
     setup do
+      Dassets.reset
       Dassets.init
-      Dassets::Cmds::DigestCmd.for([]).run
+      Dassets.digest_source_files
 
       @addfile = 'addfile.txt'
       @rmfile  = 'file1.txt'
@@ -30,18 +31,19 @@ module Dassets
       File.open(@rmfile_path,  "w"){ |f| f.write @rmfilecontents }
       FileUtils.rm @addfile_path
 
-      Dassets::Cmds::DigestCmd.for([]).run
       Dassets.reset
+      Dassets.init
+      Dassets.digest_source_files
     end
 
-    should "update the digests when run on all source files" do
+    should "update the digests on all source files when run with no given paths" do
       # check before state
       assert_equal 5, Dassets.digests.paths.size
       assert_not_includes @addfile, Dassets.digests.paths
       assert_includes @rmfile, Dassets.digests.paths
       assert_equal @orig_updfile_md5, Dassets.digests[@updfile]
 
-      Dassets::Cmds::DigestCmd.for([]).run
+      Dassets.digest_source_files
 
       # see the add, update and removal
       assert_equal 5, Dassets.digests.paths.size
@@ -50,11 +52,11 @@ module Dassets
       assert_not_equal @orig_updfile_md5, Dassets.digests[@updfile]
     end
 
-    should "update the digests when run on a single source file" do
+    should "update the digests on a single source file when given its path" do
       assert_equal 5, Dassets.digests.paths.size
       assert_not_includes @addfile, Dassets.digests.paths
 
-      Dassets::Cmds::DigestCmd.new([@addfile_path]).run
+      Dassets.digest_source_files([@addfile_path])
 
       # see the add, don't change anything else
       assert_equal 6, Dassets.digests.paths.size

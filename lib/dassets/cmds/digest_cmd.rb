@@ -6,31 +6,24 @@ module Dassets; end
 class Dassets::Cmds; end
 class Dassets::Cmds::DigestCmd
 
-  def self.for(abs_paths)
-    source_paths, opts = abs_paths, {}
+  attr_reader :paths
 
-    if source_paths.empty?
-      # clear the output path and digests, then digest all of the sources
-      opts[:clear_output_path] = Dassets.config.output_path
-      opts[:clear_digests] = Dassets.digests
-      source_paths = Dassets::SourceList.new(Dassets.config)
+  def initialize(abs_paths)
+    @paths = abs_paths || []
+  end
+
+  def run # TODO: io to output to
+    if @paths.empty?
+      clear_output_path(Dassets.config.output_path)
+
+      # always clear the digests in use
+      clear_digests(Dassets.digests)
+
+      # always get the latest source list
+      digest_the_files(Dassets::SourceList.new(Dassets.config))
+    else
+      digest_the_files(@paths)
     end
-
-    self.new(source_paths, opts)
-  end
-
-  attr_reader :source_paths, :opts
-
-  def initialize(source_paths, opts={})
-    @source_paths = source_paths
-    @opts = opts
-  end
-
-  # TODO: io to output to
-  def run
-    clear_output_path(@opts[:clear_output_path])
-    clear_digests(@opts[:clear_digests])
-    digest_the_files(@source_paths)
   end
 
   private

@@ -8,7 +8,9 @@ module Dassets
     desc "Dassets"
     subject{ Dassets }
 
-    should have_imeths :config, :configure, :init, :sources, :digests, :[]
+    should have_imeths :config, :sources, :digests
+    should have_imeths :configure, :reset, :init, :[]
+    should have_imeths :digest_source_files
 
     should "return a `Config` instance with the `config` method" do
       assert_kind_of Config, subject.config

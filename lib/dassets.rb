@@ -23,10 +23,6 @@ module Dassets
     @sources = @digests = nil
   end
 
-  def self.digest(paths=nil)
-    DigestCmd.for(paths).run
-  end
-
   def self.init
     require self.config.assets_file
     @sources = SourceList.new(self.config)
@@ -35,6 +31,13 @@ module Dassets
 
   def self.[](asset_path)
     self.digests.asset_file(asset_path)
+  end
+
+  # Cmds
+
+  def self.digest_source_files(paths=nil)
+    require 'dassets/cmds/digest_cmd'
+    Cmds::DigestCmd.new(paths).run
   end
 
   class Config
