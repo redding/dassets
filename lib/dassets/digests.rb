@@ -10,20 +10,19 @@ module Dassets
       @file_path, @hash = file_path, decode(file_path)
     end
 
-    def [](*args);  @hash.send('[]', *args);  end
-    def []=(*args); @hash.send('[]=', *args); end
-    def delete(*args); @hash.delete(*args);   end
+    def [](*args);     @hash.send('[]', *args);  end
+    def []=(*args);    @hash.send('[]=', *args); end
+    def delete(*args); @hash.delete(*args);      end
+    def clear(*args);  @hash.clear(*args); self  end
 
     def paths
       @hash.keys
     end
 
-    # TODO: still needed??
     def asset_files
-      @hash.map{ |path, md5| Dassets::AssetFile.new(path, md5) }
+      self.paths.map{ |path| self.asset_file(path) }
     end
 
-    # TODO: still needed??
     def asset_file(path)
       Dassets::AssetFile.new(path, @hash[path] || '')
     end

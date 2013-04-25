@@ -12,6 +12,7 @@ class Dassets::Runner
     @opts = opts
     @cmd_name = args.shift || ""
     @cmd_args = args
+    @pwd = ENV['PWD']
   end
 
   def run
@@ -19,8 +20,9 @@ class Dassets::Runner
 
     case @cmd_name
     when 'digest'
-      require 'dassets/runner/digest_command'
-      DigestCommand.new(@cmd_args).run
+      require 'dassets/cmds/digest_cmd'
+      abs_paths = @cmd_args.map{ |path| File.expand_path(path, @pwd) }
+      Dassets::Cmds::DigestCmd.for(abs_paths).run
     when 'cache'
       require 'dassets/runner/cache_command'
       CacheCommand.new(@cmd_args.first).run

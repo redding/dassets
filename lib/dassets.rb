@@ -23,6 +23,10 @@ module Dassets
     @sources = @digests = nil
   end
 
+  def self.digest(paths=nil)
+    DigestCmd.for(paths).run
+  end
+
   def self.init
     require self.config.assets_file
     @sources = SourceList.new(self.config)
@@ -62,20 +66,18 @@ module Dassets
     def engine(input_ext, engine_class, opts=nil)
       @engines[input_ext.to_s] = engine_class.new(opts)
     end
-
   end
 
-  class SourceList
-
+  module SourceList
     def self.new(config)
       paths = Set.new
       paths += Dir.glob(File.join(config.source_path, "**/*"))
       paths.reject!{ |path| !File.file?(path) }
       paths.reject!{ |path| path =~ /^#{config.output_path}/ }
+      paths.reject!{ |path| path =~ /^#{config.digests_path}/ }
 
       config.source_filter.call(paths).sort
     end
-
   end
 
 end
