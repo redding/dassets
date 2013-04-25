@@ -11,21 +11,23 @@ ENV['DASSETS_ASSETS_FILE'] ||= 'config/assets'
 
 module Dassets
 
-  def self.config; @config ||= Config.new; end
-  def self.configure(&block); self.config.define(&block); end
+  def self.config;  @config  ||= Config.new;      end
+  def self.sources; @sources ||= Set.new;         end
+  def self.digests; @digests ||= NullDigests.new; end
 
-  def self.init
-    require self.config.assets_file
-    @sources = SourceList.new(self.config)
-    @digests = Digests.new(self.config.digests_path)
+  def self.configure(&block)
+    block.call(self.config)
   end
 
   def self.reset
     @sources = @digests = nil
   end
 
-  def self.sources; @sources || Set.new;         end
-  def self.digests; @digests || NullDigests.new; end
+  def self.init
+    require self.config.assets_file
+    @sources = SourceList.new(self.config)
+    @digests = Digests.new(self.config.digests_path)
+  end
 
   def self.[](asset_path)
     self.digests.asset_file(asset_path)
