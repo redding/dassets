@@ -14,7 +14,7 @@ class Dassets::Digests
     subject{ @digests }
 
     should have_reader :file_path
-    should have_imeths :[], :[]=, :delete
+    should have_imeths :[], :[]=, :delete, :clear
     should have_imeths :paths, :asset_files, :asset_file, :save!
 
     should "know its file path" do
@@ -48,6 +48,12 @@ class Dassets::Digests
 
       subject.delete 'path/to/file1'
       assert_not_includes 'path/to/file1', subject.paths
+    end
+
+    should "clear values with the clear method" do
+      assert_not_empty subject.paths
+      subject.clear
+      assert_empty subject.paths
     end
 
   end

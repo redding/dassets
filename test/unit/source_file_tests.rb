@@ -59,9 +59,6 @@ class Dassets::SourceFile
       @digested_asset_file = @source_file.digest
     end
     teardown do
-      Dassets.digests.delete(@source_file.digest_path)
-      Dassets.digests.save!
-      FileUtils.rm @digested_asset_file.output_path
       Dassets.reset
     end
 
