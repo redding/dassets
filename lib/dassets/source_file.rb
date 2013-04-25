@@ -7,10 +7,8 @@ module Dassets
 
     attr_reader :file_path
 
-    def initialize(file_path, config=nil, source_root=nil)
+    def initialize(file_path)
       @file_path = file_path
-      @config = config || Dassets.config
-      @source_root = source_root || config.source_path
       @ext_list = File.basename(@file_path).split('.').reverse
     end
 
@@ -18,14 +16,24 @@ module Dassets
       File.file?(@file_path)
     end
 
+    def digest
+      return if !self.exists?
+
+      Dassets::AssetFile.new(self.digest_path, self.fingerprint).tap do |asset_file|
+        File.open(asset_file.output_path, 'w'){ |f| f.write(self.compiled) }
+        Dassets.digests[self.digest_path] = self.fingerprint
+        Dassets.digests.save!
+      end
+    end
+
     def digest_path
       @digest_path ||= begin
         digest_basename = @ext_list.inject([]) do |digest_ext_list, ext|
-          digest_ext_list << @config.engines[ext].ext(ext)
+          digest_ext_list << Dassets.config.engines[ext].ext(ext)
         end.reject{ |e| e.empty? }.reverse.join('.')
 
         File.join([
-          digest_dirname(@file_path, @source_root),
+          digest_dirname(@file_path, Dassets.config.source_path),
           digest_basename
         ].reject{ |p| p.empty? })
       end
@@ -33,7 +41,7 @@ module Dassets
 
     def compiled
       @compiled ||= @ext_list.inject(read_file(@file_path)) do |content, ext|
-        @config.engines[ext].compile(content)
+        Dassets.config.engines[ext].compile(content)
       end
     end
 
