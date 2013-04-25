@@ -7,12 +7,8 @@ class Dassets::SourceFile
   class BaseTests < Assert::Context
     desc "Dassets::SourceFile"
     setup do
-      @config = Dassets::Config.new.tap do |c|
-        c.root_path = Dassets.config.root_path
-      end
-
-      @file_path = File.join(Dassets.config.root_path, 'app/assets/file1.txt')
-      @source_file = Dassets::SourceFile.new(@file_path, @config)
+      @file_path = File.join(Dassets.config.source_path, 'file1.txt')
+      @source_file = Dassets::SourceFile.new(@file_path)
     end
     subject{ @source_file }
 
@@ -40,19 +36,8 @@ class Dassets::SourceFile
   class EngineTests < BaseTests
     desc "compiled against engines"
     setup do
-      @dumb_engine = Class.new(Dassets::Engine) do
-        def ext(in_ext); ''; end
-        def compile(input); "#{input}\nDUMB"; end
-      end
-      @useless_engine = Class.new(Dassets::Engine) do
-        def ext(in_ext); 'no-use'; end
-        def compile(input); "#{input}\nUSELESS"; end
-      end
-      @config.engine 'dumb', @dumb_engine
-      @config.engine 'useless', @useless_engine
-
-      @file_path = File.join(Dassets.config.root_path, 'app/assets/nested/a-thing.txt.useless.dumb')
-      @source_file = Dassets::SourceFile.new(@file_path, @config)
+      @file_path = File.join(Dassets.config.source_path, 'nested/a-thing.txt.useless.dumb')
+      @source_file = Dassets::SourceFile.new(@file_path)
     end
 
     should "build the digest path appropriately" do
@@ -63,6 +48,36 @@ class Dassets::SourceFile
       file_content = File.read(@file_path)
       exp_compiled_content = [ file_content, 'DUMB', 'USELESS' ].join("\n")
       assert_equal exp_compiled_content, subject.compiled
+    end
+
+  end
+
+  class DigestTests < EngineTests
+    desc "being digested"
+    setup do
+      Dassets.init
+      @digested_asset_file = @source_file.digest
+    end
+    teardown do
+      Dassets.digests.delete(@source_file.digest_path)
+      Dassets.digests.save!
+      FileUtils.rm @digested_asset_file.output_path
+      Dassets.reset
+    end
+
+    should "return the digested asset file" do
+      assert_not_nil @digested_asset_file
+      assert_kind_of Dassets::AssetFile, @digested_asset_file
+    end
+
+    should "compile and write an asset file to the output path" do
+      assert_file_exists @digested_asset_file.output_path
+      assert_equal subject.compiled, File.read(@digested_asset_file.output_path)
+    end
+
+    should "add a digests entry for the asset file with its fingerprint" do
+      digests_on_disk = Dassets::Digests.new(Dassets.config.digests_path)
+      assert_equal subject.fingerprint, digests_on_disk[subject.digest_path]
     end
 
   end
