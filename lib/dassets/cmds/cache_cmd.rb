@@ -14,13 +14,20 @@ class Dassets::Cmds::CacheCmd
     @digests = Dassets::Digests.new(Dassets.config.digests_path)
   end
 
-  def run # TODO: pass in io to write to
+  def run(io=nil)
+    log io, "caching #{@digests.asset_files.count} asset file(s) to `#{@cache_root_path}` ..."
     @digests.asset_files.each do |file|
       cache_path = @cache_root_path.join(file.url).to_s
 
       FileUtils.mkdir_p File.dirname(cache_path)
       FileUtils.cp(file.output_path, cache_path)
     end
+  end
+
+  private
+
+  def log(io, msg)
+    io.puts msg if io
   end
 
 end
