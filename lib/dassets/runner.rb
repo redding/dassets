@@ -22,14 +22,14 @@ class Dassets::Runner
     when 'digest'
       require 'dassets/cmds/digest_cmd'
       abs_paths = @cmd_args.map{ |path| File.expand_path(path, @pwd) }
-      Dassets::Cmds::DigestCmd.for(abs_paths).run
+      Dassets::Cmds::DigestCmd.new(abs_paths).run($stdout)
     when 'cache'
       require 'dassets/cmds/cache_cmd'
       cache_root_path = File.expand_path(@cmd_args.first, @pwd)
       unless cache_root_path && File.directory?(cache_root_path)
         raise CmdError, "specify an existing cache directory"
       end
-      Dassets::Cmds::CacheCmd.new(cache_root_path).run
+      Dassets::Cmds::CacheCmd.new(cache_root_path).run($stdout)
     when 'null'
       NullCommand.new.run
     else

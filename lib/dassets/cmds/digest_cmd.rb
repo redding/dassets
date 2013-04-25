@@ -12,18 +12,23 @@ class Dassets::Cmds::DigestCmd
     @paths = abs_paths || []
   end
 
-  def run # TODO: io to output to
+  def run(io=nil)
+    files = paths
+
     if @paths.empty?
+      log io, "clearing `#{Dassets.config.output_path}`"
       clear_output_path(Dassets.config.output_path)
 
       # always clear the digests in use
+      log io, "clearing `#{Dassets.digests.file_path}`"
       clear_digests(Dassets.digests)
 
       # always get the latest source list
-      digest_the_files(Dassets::SourceList.new(Dassets.config))
-    else
-      digest_the_files(@paths)
+      files = Dassets::SourceList.new(Dassets.config)
     end
+
+    log io, "digesting #{files.count} source file(s) ..."
+    digest_the_files(files)
   end
 
   private
@@ -38,6 +43,10 @@ class Dassets::Cmds::DigestCmd
 
   def digest_the_files(files)
     files.map{ |f| Dassets::SourceFile.new(f).digest }
+  end
+
+  def log(io, msg)
+    io.puts msg if io
   end
 
 end
