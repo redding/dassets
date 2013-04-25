@@ -12,6 +12,7 @@ class Dassets::Runner
     @opts = opts
     @cmd_name = args.shift || ""
     @cmd_args = args
+    @pwd = ENV['PWD']
   end
 
   def run
@@ -19,11 +20,16 @@ class Dassets::Runner
 
     case @cmd_name
     when 'digest'
-      require 'dassets/runner/digest_command'
-      DigestCommand.new(@cmd_args).run
+      require 'dassets/cmds/digest_cmd'
+      abs_paths = @cmd_args.map{ |path| File.expand_path(path, @pwd) }
+      Dassets::Cmds::DigestCmd.new(abs_paths).run($stdout)
     when 'cache'
-      require 'dassets/runner/cache_command'
-      CacheCommand.new(@cmd_args.first).run
+      require 'dassets/cmds/cache_cmd'
+      cache_root_path = File.expand_path(@cmd_args.first, @pwd)
+      unless cache_root_path && File.directory?(cache_root_path)
+        raise CmdError, "specify an existing cache directory"
+      end
+      Dassets::Cmds::CacheCmd.new(cache_root_path).run($stdout)
     when 'null'
       NullCommand.new.run
     else

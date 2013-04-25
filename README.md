@@ -17,11 +17,21 @@ Dassets.configure do |c|
   # tell Dassets what the root path of your app is
   c.root_path '/path/to/app/root'
 
-  # it works best to *not* keep the asset files in your public dir
-  c.files_path '/path/to/not/public' # default: '{root_path}/app/assets/public'
+  # tell Dassets where to write the digests
+  c.digests_path '/path/to/.digests' # default: '{source_path}/.digests'
 
-  # you can choose the file to write the digests to, if you want
-  c.digests_file_path '/path/to/.digests' # default: '{root_path}/app/assets/.digests'
+  # tell Dassets where to look for source files and (optionally) how to filter those files
+  c.source_path 'lib/asset_files' # default: '{root_path}/app/assets'
+  c.source_filter proc{ |paths| paths.select{ |p| ... } }
+  # --OR--
+  c.sources 'lib/asset_files' do |paths|
+    # return the filtered source path list
+    paths.select{ |p| ... }
+  end
+
+  # tell Dassets where to write output files to
+  # it works best to *not* output to your public dir if using fingerprinting
+  c.output_path '/lib/assets_output' # default: '{source_path}/public'
 
 end
 ```
