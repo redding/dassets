@@ -1,6 +1,6 @@
-require 'digest/md5'
 require 'rack/utils'
 require 'rack/mime'
+require 'dassets/source_file'
 
 module Dassets; end
 class Dassets::AssetFile
@@ -11,26 +11,41 @@ class Dassets::AssetFile
     self.new(rel_path, md5)
   end
 
-  attr_reader :path, :md5, :dirname, :extname, :basename
-  attr_reader :output_path, :url, :href
+  attr_reader :path, :dirname, :extname, :basename, :output_path
 
-  def initialize(rel_path, md5)
-    @path, @md5 = rel_path, md5
+  def initialize(digest_path, md5=nil)
+    @path, @md5 = digest_path, md5
     @dirname  = File.dirname(@path)
     @extname  = File.extname(@path)
     @basename = File.basename(@path, @extname)
-
     @output_path = File.join(Dassets.config.output_path, @path)
+  end
 
-    url_basename = "#{@basename}-#{@md5}#{@extname}"
-    @url = File.join(@dirname, url_basename).sub(/^\.\//, '').sub(/^\//, '')
-    @href = "/#{@url}"
+  def source_file
+    @source_file ||= Dassets::SourceFile.find_by_digest_path(path)
+  end
+
+  def md5
+    @md5 ||= self.source_file.fingerprint
   end
 
   def content
     @content ||= if File.exists?(@output_path) && File.file?(@output_path)
       File.read(@output_path)
+    else
+      self.source_file.compiled
     end
+  end
+
+  def url
+    @url ||= begin
+      url_basename = "#{@basename}-#{self.md5}#{@extname}"
+      File.join(@dirname, url_basename).sub(/^\.\//, '').sub(/^\//, '')
+    end
+  end
+
+  def href
+    @href ||= "/#{self.url}"
   end
 
   def mtime
