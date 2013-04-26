@@ -1,4 +1,5 @@
 require 'assert'
+require 'fileutils'
 require 'dassets/source_file'
 require 'dassets/asset_file'
 
@@ -13,7 +14,7 @@ class Dassets::AssetFile
 
     should have_cmeths  :from_abs_path
     should have_readers :path, :dirname, :extname, :basename, :output_path
-    should have_imeths  :md5, :content, :url, :href
+    should have_imeths  :md5, :content, :url, :href, :source_file
     should have_imeths  :mtime, :size, :mime_type, :exists?, :==
 
     should "know its digest path, dirname, extname, and basename" do
@@ -66,7 +67,16 @@ class Dassets::AssetFile
     end
 
     should "get its content from its source file if needed" do
-      skip 'todo'
+      digest_path = 'nested/a-thing.txt.no-use'
+      exp_content = "thing\n\nDUMB\nUSELESS"
+
+      with_output = Dassets::AssetFile.new(digest_path)
+      assert_equal exp_content, with_output.content
+
+      FileUtils.mv with_output.output_path, "#{with_output.output_path}.bak"
+      without_output = Dassets::AssetFile.new(digest_path)
+      assert_equal exp_content, without_output.content
+      FileUtils.mv "#{with_output.output_path}.bak", with_output.output_path
     end
 
     should "build it's url from the path and the md5" do

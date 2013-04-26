@@ -1,5 +1,6 @@
 require 'rack/utils'
 require 'rack/mime'
+require 'dassets/source_file'
 
 module Dassets; end
 class Dassets::AssetFile
@@ -20,13 +21,19 @@ class Dassets::AssetFile
     @output_path = File.join(Dassets.config.output_path, @path)
   end
 
+  def source_file
+    @source_file ||= Dassets::SourceFile.find_by_digest_path(path)
+  end
+
   def md5
-    @md5 ||= self.source_file.md5
+    @md5 ||= self.source_file.fingerprint
   end
 
   def content
     @content ||= if File.exists?(@output_path) && File.file?(@output_path)
       File.read(@output_path)
+    else
+      self.source_file.compiled
     end
   end
 
