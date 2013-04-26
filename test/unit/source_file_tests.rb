@@ -14,6 +14,7 @@ class Dassets::SourceFile
 
     should have_readers :file_path
     should have_imeths :exists?, :digest_path, :compiled, :fingerprint
+    should have_cmeth :find_by_digest_path
 
     should "know its file path" do
       assert_equal @file_path, subject.file_path
@@ -29,6 +30,21 @@ class Dassets::SourceFile
 
     should "know its compiled content fingerprint" do
       assert_equal 'daa05c683a4913b268653f7a7e36a5b4', subject.fingerprint
+    end
+
+    should "be findable by its digest path" do
+      found = Dassets::SourceFile.find_by_digest_path(subject.digest_path)
+
+      assert_equal subject, found
+      assert_not_same subject, found
+    end
+
+    should "find a null src file if finding by an unknown digest path" do
+      null_src = Dassets::NullSourceFile.new('not/found/digest/path')
+      found = Dassets::SourceFile.find_by_digest_path('not/found/digest/path')
+
+      assert_equal null_src, found
+      assert_not_same null_src, found
     end
 
   end

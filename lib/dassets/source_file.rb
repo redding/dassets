@@ -7,6 +7,16 @@ module Dassets
 
   class SourceFile
 
+    def self.find_by_digest_path(path)
+      # always look at the freshest source list to make sure you get all sources
+      # not just the ones Dassets has cached
+      sources = Dassets::SourceList.new(Dassets.config).map{ |p| self.new(p) }
+
+      # get the last matching one in case two sources have the same digest path
+      # the last one *should* be correct since it was last to be digested
+      sources.select{ |s| s.digest_path == path }.last || NullSourceFile.new(path)
+    end
+
     attr_reader :file_path
 
     def initialize(file_path)
@@ -16,17 +26,6 @@ module Dassets
 
     def exists?
       File.file?(@file_path)
-    end
-
-    def digest
-      return if !self.exists?
-
-      Dassets::AssetFile.new(self.digest_path, self.fingerprint).tap do |asset_file|
-        FileUtils.mkdir_p(File.dirname(asset_file.output_path))
-        File.open(asset_file.output_path, "w"){ |f| f.write(self.compiled) }
-        Dassets.digests[self.digest_path] = self.fingerprint
-        Dassets.digests.save!
-      end
     end
 
     def digest_path
@@ -52,6 +51,21 @@ module Dassets
       @fingerprint ||= Digest::MD5.new.hexdigest(self.compiled)
     end
 
+    def digest
+      return if !self.exists?
+
+      Dassets::AssetFile.new(self.digest_path, self.fingerprint).tap do |asset_file|
+        FileUtils.mkdir_p(File.dirname(asset_file.output_path))
+        File.open(asset_file.output_path, "w"){ |f| f.write(self.compiled) }
+        Dassets.digests[self.digest_path] = self.fingerprint
+        Dassets.digests.save!
+      end
+    end
+
+    def ==(other_source_file)
+      self.file_path == other_source_file.file_path
+    end
+
     private
 
     def digest_dirname(file_path, source_path)
@@ -66,6 +80,19 @@ module Dassets
       File.send(File.respond_to?(:binread) ? :binread : :read, path.to_s)
     end
 
+  end
+
+  class NullSourceFile < SourceFile
+    attr_reader :file_path, :digest_path, :compiled, :fingerprint
+    def initialize(digest_path)
+      @file_path = ''
+      @ext_list = []
+      @digest_path = digest_path
+    end
+    def digest; end
+    def ==(other_source_file)
+      self.file_path == other_source_file.file_path
+    end
   end
 
 end
