@@ -29,8 +29,8 @@ module Dassets
     @digests = Digests.new(self.config.digests_path)
   end
 
-  def self.[](asset_path)
-    self.digests.asset_file(asset_path)
+  def self.[](digest_path)
+    self.digests.asset_file(digest_path)
   end
 
   # Cmds

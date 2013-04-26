@@ -23,8 +23,8 @@ module Dassets
       self.paths.map{ |path| self.asset_file(path) }
     end
 
-    def asset_file(path)
-      Dassets::AssetFile.new(path, @hash[path] || '')
+    def asset_file(digest_path)
+      Dassets::AssetFile.new(digest_path, @hash[digest_path] || '')
     end
 
     def save!
