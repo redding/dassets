@@ -38,12 +38,21 @@ end
 
 ### Digest
 
+You can use the CLI to digest your source files on demand:
+
 ```
-$ dassets digest                      # rebuild the .digests for all asset files, OR
-$ dassets digest /path/to/asset/file  # update the digest for just one file
+$ dassets digest                       # digest all source files, OR
+$ dassets digest /path/to/source/file  # digest some specific files
 ```
 
-Use the CLI to build your digests file.  Protip: use guard to auto rebuild digests every time you edit an asset file.  TODO: link to some guard tools or docs.
+Or you can programmatically digest files as needed:
+
+```ruby
+Dassets.digest_source_files                           # digest all source files, OR
+Dassets.digest_source_files ['/path/to/source/file']  # digest just some specific files
+```
+
+Digesting involves combining, compiling, fingerprinting, and outputting each source file.  Once a source has been digested, it is available for linking, serving, and/or caching.
 
 ### Link To
 
@@ -69,6 +78,31 @@ In production, use the CLI to cache your digested asset files to the public dir:
 # call the CLI in your deploy scripts or whatever
 $ dassets cache /path/to/public/dir
 ```
+
+TODO: programmatically cache asset files
+
+## Compiling
+
+Dassets can handle compiling your asset source as part of its digest pipeline.  It does this via "engines".  Engines transform source extensions and content.
+
+Engines are "registered" with dassets based on source extensions.  Name your source file with registered extensions and those engines will be used to compile your source content.
+
+### Some Dassets Engines
+
+Examples are key here, so check out some of the Dasset's engines available:
+
+TODO
+
+### Creating your own Engine
+
+* create a class that subclasses `Dassets::Engine`
+* override the `ext` method to specify how the input source extension should be handled
+* override the `compile` method to specify how the input content should be transformed
+* register your engine class with Dassets
+
+## Combinations
+
+TODO
 
 ## Installation
 
