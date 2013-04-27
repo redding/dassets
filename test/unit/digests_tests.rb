@@ -31,7 +31,7 @@ class Dassets::Digests
 
       assert_kind_of Dassets::AssetFile, file
       assert_equal 'path/to/file1', file.path
-      assert_equal subject['path/to/file1'], file.md5
+      assert_equal subject['path/to/file1'], file.fingerprint
     end
 
     should "read values with the index operator" do

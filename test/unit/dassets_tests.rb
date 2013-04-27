@@ -38,18 +38,18 @@ module Dassets
 
       assert_kind_of Dassets::AssetFile, file
       assert_equal 'nested/file3.txt', file.path
-      assert_equal 'd41d8cd98f00b204e9800998ecf8427e', file.md5
+      assert_equal 'd41d8cd98f00b204e9800998ecf8427e', file.fingerprint
 
       subject.reset
     end
 
     should "return an asset file with no fingerprint if path not in digests" do
       file = subject['path/not/found.txt']
-      assert_equal '', file.md5
+      assert_equal '', file.fingerprint
 
       subject.init
       file = subject['path/not/found.txt']
-      assert_equal '', file.md5
+      assert_equal '', file.fingerprint
 
       subject.reset
     end
