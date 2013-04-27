@@ -19,7 +19,6 @@ module Dassets
   end
 
   class NullEngine < Engine
-
     def ext(input_ext)
       input_ext
     end
@@ -27,7 +26,6 @@ module Dassets
     def compile(input)
       input
     end
-
   end
 
 end
