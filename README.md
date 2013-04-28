@@ -24,7 +24,7 @@ Dassets.configure do |c|
   c.source_path 'lib/asset_files' # default: '{root_path}/app/assets'
   c.source_filter proc{ |paths| paths.select{ |p| ... } }
   # --OR--
-  c.sources 'lib/asset_files' do |paths|
+  c.source 'lib/asset_files' do |paths|
     # return the filtered source path list
     paths.select{ |p| ... }
   end
