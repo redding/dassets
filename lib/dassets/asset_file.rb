@@ -5,16 +5,10 @@ require 'dassets/source_file'
 module Dassets; end
 class Dassets::AssetFile
 
-  def self.from_abs_path(abs_path)
-    rel_path = abs_path.sub("#{Dassets.config.output_path}/", '')
-    md5  = Digest::MD5.file(abs_path).hexdigest
-    self.new(rel_path, md5)
-  end
-
   attr_reader :path, :dirname, :extname, :basename, :output_path
 
-  def initialize(digest_path, md5=nil)
-    @path, @md5 = digest_path, md5
+  def initialize(digest_path, fingerprint=nil)
+    @path, @fingerprint = digest_path, fingerprint
     @dirname  = File.dirname(@path)
     @extname  = File.extname(@path)
     @basename = File.basename(@path, @extname)
@@ -25,8 +19,8 @@ class Dassets::AssetFile
     @source_file ||= Dassets::SourceFile.find_by_digest_path(path)
   end
 
-  def md5
-    @md5 ||= self.source_file.fingerprint
+  def fingerprint
+    @fingerprint ||= self.source_file.fingerprint
   end
 
   def content
@@ -39,7 +33,7 @@ class Dassets::AssetFile
 
   def url
     @url ||= begin
-      url_basename = "#{@basename}-#{self.md5}#{@extname}"
+      url_basename = "#{@basename}-#{self.fingerprint}#{@extname}"
       File.join(@dirname, url_basename).sub(/^\.\//, '').sub(/^\//, '')
     end
   end
@@ -75,7 +69,7 @@ class Dassets::AssetFile
   def ==(other_asset_file)
     other_asset_file.kind_of?(Dassets::AssetFile) &&
     self.path == other_asset_file.path &&
-    self.md5 == other_asset_file.md5
+    self.fingerprint == other_asset_file.fingerprint
   end
 
 end

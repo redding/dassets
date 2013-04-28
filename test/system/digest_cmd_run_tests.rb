@@ -20,7 +20,7 @@ module Dassets
 
       @rmfilecontents   = File.read(@rmfile_path)
       @updfilecontents  = File.read(@updfile_path)
-      @orig_updfile_md5 = Dassets.digests[@updfile]
+      @orig_updfile_fprint = Dassets.digests[@updfile]
 
       FileUtils.touch @addfile_path
       FileUtils.rm @rmfile_path
@@ -41,7 +41,7 @@ module Dassets
       assert_equal 5, Dassets.digests.paths.size
       assert_not_includes @addfile, Dassets.digests.paths
       assert_includes @rmfile, Dassets.digests.paths
-      assert_equal @orig_updfile_md5, Dassets.digests[@updfile]
+      assert_equal @orig_updfile_fprint, Dassets.digests[@updfile]
 
       Dassets.digest_source_files
 
@@ -49,7 +49,7 @@ module Dassets
       assert_equal 5, Dassets.digests.paths.size
       assert_includes @addfile, Dassets.digests.paths
       assert_not_includes @rmfile, Dassets.digests.paths
-      assert_not_equal @orig_updfile_md5, Dassets.digests[@updfile]
+      assert_not_equal @orig_updfile_fprint, Dassets.digests[@updfile]
     end
 
     should "update the digests on a single source file when given its path" do
@@ -62,7 +62,7 @@ module Dassets
       assert_equal 6, Dassets.digests.paths.size
       assert_includes @addfile, Dassets.digests.paths
       assert_includes @rmfile, Dassets.digests.paths
-      assert_equal    @orig_updfile_md5, Dassets.digests[@updfile]
+      assert_equal    @orig_updfile_fprint, Dassets.digests[@updfile]
     end
 
   end

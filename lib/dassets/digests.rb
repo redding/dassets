@@ -37,8 +37,11 @@ module Dassets
       Hash.new.tap do |h|
         if File.exists?(file_path)
           File.open(file_path, 'r').each_line do |l|
-            path, md5 = l.split(','); path ||= ''; path.strip!; md5 ||= ''; md5.strip!
-            h[path] = md5 if !path.empty?
+            path, fprint = l.split(',')
+            path   ||= ''; path.strip!
+            fprint ||= ''; fprint.strip!
+
+            h[path] = fprint if !path.empty?
           end
         end
       end
