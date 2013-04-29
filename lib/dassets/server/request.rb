@@ -14,10 +14,10 @@ class Dassets::Server
     # Determine if the request is for an asset file
     # This will be called on every request so speed is an issue
     # - first check if the request is a GET or HEAD (fast)
-    # - then check if for a digest resource (kinda fast)
-    # - then check if on a path in the digests (slower)
+    # - then check if for a digested asset resource (kinda fast)
+    # - then check if source exists for the digested asset (slower)
     def for_asset_file?
-      !!((get? || head?) && for_digest_file? && Dassets.digests[asset_path])
+      !!((get? || head?) && for_digested_asset? && asset_file.source_file.exists?)
     end
 
     def asset_path
@@ -30,8 +30,8 @@ class Dassets::Server
 
     private
 
-    def for_digest_file?
-      !path_digest_match.nil?
+    def for_digested_asset?
+      !path_digest_match.captures.empty?
     end
 
     def path_digest_match
