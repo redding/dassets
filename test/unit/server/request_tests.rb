@@ -25,23 +25,23 @@ class Dassets::Server::Request
     end
 
     should "know if it is for an asset file" do
-      # find nested path with matching md5
+      # find nested path with matching fingerprint
       req = file_request('GET', '/nested/file3-d41d8cd98f00b204e9800998ecf8427e.txt')
       assert req.for_asset_file?
 
-      # find not nested path with matching md5
+      # find not nested path with matching fingerprint
       req = file_request('HEAD', '/file1-daa05c683a4913b268653f7a7e36a5b4.txt')
       assert req.for_asset_file?
 
-      # find even if md5 is *not* matching - just need to have any md5
+      # find even if fingerprint is *not* matching - just need to have any fingerprint
       req = file_request('GET', '/file1-d41d8cd98f00b204e9800998ecf8427e.txt')
       assert req.for_asset_file?
 
-      # no find on invalid md5
+      # no find on invalid fingerprint
       req = file_request('GET', '/file1-daa05c683a4913b268653f7a7e36a.txt')
       assert_not req.for_asset_file?
 
-      # no find on missing md5
+      # no find on missing fingerprint
       req = file_request('HEAD', '/file1.txt')
       assert_not req.for_asset_file?
 
@@ -49,7 +49,7 @@ class Dassets::Server::Request
       req = file_request('GET', '/some-file.txt')
       assert_not req.for_asset_file?
 
-      # no find on unknown file with an md5
+      # no find on unknown file with an fingerprint
       req = file_request('GET', '/some-file-daa05c683a4913b268653f7a7e36a5b4.txt')
       assert_not req.for_asset_file?
     end

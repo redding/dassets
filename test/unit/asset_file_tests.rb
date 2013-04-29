@@ -12,9 +12,8 @@ class Dassets::AssetFile
     end
     subject{ @asset_file }
 
-    should have_cmeths  :from_abs_path
     should have_readers :path, :dirname, :extname, :basename, :output_path
-    should have_imeths  :md5, :content, :url, :href, :source_file
+    should have_imeths  :fingerprint, :content, :url, :href, :source_file
     should have_imeths  :mtime, :size, :mime_type, :exists?, :==
 
     should "know its digest path, dirname, extname, and basename" do
@@ -50,13 +49,13 @@ class Dassets::AssetFile
       assert_equal subject.path, subject.source_file.digest_path
     end
 
-    should "know its md5" do
-      assert_equal 'abc123', subject.md5
+    should "know its fingerprint" do
+      assert_equal 'abc123', subject.fingerprint
     end
 
-    should "get its md5 from its source file if none is given" do
+    should "get its fingerprint from its source file if none is given" do
       af = Dassets::AssetFile.new('file1.txt')
-      assert_equal af.source_file.fingerprint, af.md5
+      assert_equal af.source_file.fingerprint, af.fingerprint
     end
 
     should "know it's content" do
@@ -79,7 +78,7 @@ class Dassets::AssetFile
       FileUtils.mv "#{with_output.output_path}.bak", with_output.output_path
     end
 
-    should "build it's url from the path and the md5" do
+    should "build it's url from the path and the fingerprint" do
       assert_equal "file1-abc123.txt", subject.url
 
       nested = Dassets::AssetFile.new('nested/file1.txt', 'abc123')
@@ -91,15 +90,6 @@ class Dassets::AssetFile
 
       nested = Dassets::AssetFile.new('nested/file1.txt', 'abc123')
       assert_equal "/nested/file1-abc123.txt", nested.href
-    end
-
-    should "be created from absolute file paths and have its md5 computed" do
-      abs_file_path = File.join(Dassets.config.output_path, 'file1.txt')
-      exp_md5 = 'daa05c683a4913b268653f7a7e36a5b4'
-      file = Dassets::AssetFile.from_abs_path(abs_file_path)
-
-      assert_equal 'file1.txt', file.path
-      assert_equal exp_md5, file.md5
     end
 
   end
