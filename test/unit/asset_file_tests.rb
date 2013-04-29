@@ -8,7 +8,7 @@ class Dassets::AssetFile
   class BaseTests < Assert::Context
     desc "Dassets::AssetFile"
     setup do
-      @asset_file = Dassets::AssetFile.new('file1.txt', 'abc123')
+      @asset_file = Dassets::AssetFile.new('file1.txt')
     end
     subject{ @asset_file }
 
@@ -29,7 +29,7 @@ class Dassets::AssetFile
       assert_equal "text/plain", subject.mime_type
       assert subject.exists?
 
-      null_file = Dassets::AssetFile.new('', '')
+      null_file = Dassets::AssetFile.new('')
       assert_nil null_file.mtime
       assert_nil null_file.size
       assert_nil null_file.mime_type
@@ -39,7 +39,7 @@ class Dassets::AssetFile
     should "build it's output_path from the path" do
       assert_equal "#{Dassets.config.output_path}/file1.txt", subject.output_path
 
-      nested = Dassets::AssetFile.new('nested/file1.txt', 'abc123')
+      nested = Dassets::AssetFile.new('nested/file1.txt')
       assert_equal "#{Dassets.config.output_path}/nested/file1.txt", nested.output_path
     end
 
@@ -49,8 +49,8 @@ class Dassets::AssetFile
       assert_equal subject.path, subject.source_file.digest_path
     end
 
-    should "know its fingerprint" do
-      assert_equal 'abc123', subject.fingerprint
+    should "have a fingerprint" do
+      assert_not_nil subject.fingerprint
     end
 
     should "get its fingerprint from its source file if none is given" do
@@ -61,7 +61,7 @@ class Dassets::AssetFile
     should "know it's content" do
       assert_equal "file1.txt\n", subject.content
 
-      null_file = Dassets::AssetFile.new('', '')
+      null_file = Dassets::AssetFile.new('')
       assert_nil null_file.content
     end
 
@@ -79,17 +79,17 @@ class Dassets::AssetFile
     end
 
     should "build it's url from the path and the fingerprint" do
-      assert_equal "file1-abc123.txt", subject.url
+      assert_match /^file1-[a-f0-9]{32}\.txt$/, subject.url
 
-      nested = Dassets::AssetFile.new('nested/file1.txt', 'abc123')
-      assert_equal "nested/file1-abc123.txt", nested.url
+      nested = Dassets::AssetFile.new('nested/file1.txt')
+      assert_equal "nested/file1-.txt", nested.url
     end
 
     should "build it's href from the url" do
-      assert_equal "/file1-abc123.txt", subject.href
+      assert_match /^\/file1-[a-f0-9]{32}\.txt$/, subject.href
 
-      nested = Dassets::AssetFile.new('nested/file1.txt', 'abc123')
-      assert_equal "/nested/file1-abc123.txt", nested.href
+      nested = Dassets::AssetFile.new('nested/file1.txt')
+      assert_equal "/nested/file1-.txt", nested.href
     end
 
   end

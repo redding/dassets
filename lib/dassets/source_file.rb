@@ -54,7 +54,7 @@ module Dassets
     def digest
       return if !self.exists?
 
-      Dassets::AssetFile.new(self.digest_path, self.fingerprint).tap do |asset_file|
+      Dassets::AssetFile.new(self.digest_path).tap do |asset_file|
         FileUtils.mkdir_p(File.dirname(asset_file.output_path))
         File.open(asset_file.output_path, "w"){ |f| f.write(self.compiled) }
         Dassets.digests[self.digest_path] = self.fingerprint
