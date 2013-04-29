@@ -7,7 +7,7 @@ class Dassets::Server::Response
   class BaseTests < Assert::Context
     desc "Dassets::Server::Response"
     setup do
-      @resp = file_response(Dassets::AssetFile.new('', ''))
+      @resp = file_response(Dassets::AssetFile.new(''))
     end
     subject{ @resp }
 

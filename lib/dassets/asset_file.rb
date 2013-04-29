@@ -7,8 +7,8 @@ class Dassets::AssetFile
 
   attr_reader :path, :dirname, :extname, :basename, :source_file
 
-  def initialize(digest_path, fingerprint=nil)
-    @path, @fingerprint = digest_path, fingerprint
+  def initialize(digest_path)
+    @path = digest_path
     @dirname  = File.dirname(@path)
     @extname  = File.extname(@path)
     @basename = File.basename(@path, @extname)
