@@ -96,10 +96,10 @@ class Dassets::SourceFile
     end
 
     should "compile and write an asset file to the output path" do
-      file_output_path = File.join(Dassets.config.output_path, subject.asset_file.path)
+      outfile = File.join(Dassets.config.output_path, subject.asset_file.url)
 
-      assert_file_exists file_output_path
-      assert_equal subject.compiled, File.read(file_output_path)
+      assert_file_exists outfile
+      assert_equal subject.compiled, File.read(outfile)
     end
 
   end

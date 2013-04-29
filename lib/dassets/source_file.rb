@@ -46,7 +46,7 @@ module Dassets
 
       self.asset_file.tap do |af|
         if File.exists?(op = Dassets.config.output_path.to_s)
-          file_output_path = File.join(op, af.path)
+          file_output_path = File.join(op, af.url)
           FileUtils.mkdir_p(File.dirname(file_output_path))
           File.open(file_output_path, "w"){ |f| f.write(self.compiled) }
         end

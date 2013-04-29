@@ -13,17 +13,21 @@ module Dassets
       Dassets.digest_source_files
 
       @addfile = 'addfile.txt'
-      @addfile_path = File.join(File.join(Dassets.config.source_path, @addfile))
-      @rmfile = 'file1.txt'
-      @rmfile_path = File.join(File.join(Dassets.config.source_path, @rmfile))
-      @rmfilecontents = File.read(@rmfile_path)
+      @addfile_src = source_path(@addfile)
 
-      FileUtils.touch @addfile_path
-      FileUtils.rm @rmfile_path
+      @rmfile = 'file1.txt'
+      @rmfile_src = source_path(@rmfile)
+      @rmfile_contents = File.read(@rmfile_src)
+
+      FileUtils.touch @addfile_src
+      @addfile_out = output_path(@addfile)
+
+      @rmfile_out = output_path(@rmfile)
+      FileUtils.rm @rmfile_src
     end
     teardown do
-      File.open(@rmfile_path,  "w"){ |f| f.write @rmfilecontents }
-      FileUtils.rm @addfile_path
+      File.open(@rmfile_src,  "w"){ |f| f.write @rmfile_contents }
+      FileUtils.rm @addfile_src
 
       Dassets.reset
       Dassets.init
@@ -32,25 +36,29 @@ module Dassets
     end
 
     should "update the digests on all source files when run with no given paths" do
-      assert_not_file_exists output_path(@addfile)
-      assert_file_exists output_path(@rmfile)
+      assert_not_file_exists @addfile_out
+      assert_file_exists @rmfile_out
 
       Dassets.digest_source_files
-      assert_file_exists output_path(@addfile)
-      assert_not_file_exists output_path(@rmfile)
+      assert_file_exists @addfile_out
+      assert_not_file_exists @rmfile_out
     end
 
     should "update the digests on a single source file when given its path" do
-      assert_not_file_exists output_path(@addfile)
+      assert_not_file_exists @addfile_out
 
-      Dassets.digest_source_files([@addfile_path])
-      assert_file_exists output_path(@addfile)
+      Dassets.digest_source_files([@addfile_src])
+      assert_file_exists @addfile_out
     end
 
     private
 
+    def source_path(file)
+      File.join(File.join(Dassets.config.source_path, file))
+    end
+
     def output_path(file)
-      File.join(Dassets.config.output_path, file)
+      File.join(Dassets.config.output_path, Dassets::AssetFile.new(file).url)
     end
 
   end
