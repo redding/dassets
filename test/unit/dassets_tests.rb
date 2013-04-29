@@ -8,7 +8,7 @@ module Dassets
     desc "Dassets"
     subject{ Dassets }
 
-    should have_imeths :config, :sources, :digests
+    should have_imeths :config, :sources
     should have_imeths :configure, :reset, :init, :[]
     should have_imeths :digest_source_files
 
@@ -22,14 +22,6 @@ module Dassets
 
       subject.init
       assert_not_empty subject.sources
-    end
-
-    should "read/parse the digests on init" do
-      subject.reset
-      assert_empty subject.digests.paths
-
-      subject.init
-      assert_not_empty subject.digests.paths
     end
 
     should "return asset files given a their digest path using the index operator" do

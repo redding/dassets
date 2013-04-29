@@ -88,11 +88,6 @@ class Dassets::SourceFile
       assert_equal subject.compiled, File.read(@digested_asset_file.output_path)
     end
 
-    should "add a digests entry for the asset file with its fingerprint" do
-      digests_on_disk = Dassets::Digests.new(Dassets.config.digests_path)
-      assert_equal subject.fingerprint, digests_on_disk[subject.digest_path]
-    end
-
   end
 
 end

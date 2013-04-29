@@ -57,8 +57,6 @@ module Dassets
       Dassets::AssetFile.new(self.digest_path).tap do |asset_file|
         FileUtils.mkdir_p(File.dirname(asset_file.output_path))
         File.open(asset_file.output_path, "w"){ |f| f.write(self.compiled) }
-        Dassets.digests[self.digest_path] = self.fingerprint
-        Dassets.digests.save!
       end
     end
 
