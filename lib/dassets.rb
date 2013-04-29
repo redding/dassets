@@ -5,6 +5,7 @@ require 'ns-options'
 require 'dassets/version'
 require 'dassets/root_path'
 require 'dassets/digests'
+require 'dassets/asset_file'
 require 'dassets/engine'
 
 ENV['DASSETS_ASSETS_FILE'] ||= 'config/assets'
@@ -30,7 +31,7 @@ module Dassets
   end
 
   def self.[](digest_path)
-    self.digests.asset_file(digest_path)
+    Dassets::AssetFile.new(digest_path)
   end
 
   # Cmds
