@@ -51,7 +51,7 @@ module Dassets
     attr_reader :engines
 
     def initialize
-      super(:output_path => proc{ File.join(self.source_path, 'public') })
+      super
       @engines = Hash.new{ |k,v| Dassets::NullEngine.new }
     end
 
@@ -70,7 +70,7 @@ module Dassets
       paths = Set.new
       paths += Dir.glob(File.join(config.source_path, "**/*"))
       paths.reject!{ |path| !File.file?(path) }
-      paths.reject!{ |path| path =~ /^#{config.output_path}/ }
+      paths.reject!{ |path| path =~ /^#{config.output_path}/ } if config.output_path
 
       config.source_filter.call(paths).sort
     end

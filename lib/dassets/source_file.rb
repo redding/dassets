@@ -24,8 +24,8 @@ module Dassets
       @ext_list = File.basename(@file_path).split('.').reverse
     end
 
-    def exists?
-      File.file?(@file_path)
+    def asset_file
+      @asset_file ||= Dassets::AssetFile.new(self.digest_path)
     end
 
     def digest_path
@@ -41,6 +41,18 @@ module Dassets
       end
     end
 
+    def digest
+      return if !self.exists?
+
+      self.asset_file.tap do |af|
+        if File.exists?(op = Dassets.config.output_path.to_s)
+          file_output_path = File.join(op, af.path)
+          FileUtils.mkdir_p(File.dirname(file_output_path))
+          File.open(file_output_path, "w"){ |f| f.write(self.compiled) }
+        end
+      end
+    end
+
     def compiled
       @compiled ||= @ext_list.inject(read_file(@file_path)) do |content, ext|
         Dassets.config.engines[ext].compile(content)
@@ -51,13 +63,12 @@ module Dassets
       @fingerprint ||= Digest::MD5.new.hexdigest(self.compiled)
     end
 
-    def digest
-      return if !self.exists?
+    def exists?
+      File.file?(@file_path)
+    end
 
-      Dassets::AssetFile.new(self.digest_path).tap do |asset_file|
-        FileUtils.mkdir_p(File.dirname(asset_file.output_path))
-        File.open(asset_file.output_path, "w"){ |f| f.write(self.compiled) }
-      end
+    def mtime
+      File.mtime(@file_path).httpdate
     end
 
     def ==(other_source_file)

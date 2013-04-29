@@ -7,6 +7,7 @@ module Dassets
   class DigestCmdRunTests < Assert::Context
     desc "the DigestCmd"
     setup do
+      Dassets.config.output_path = 'public'
       Dassets.reset
       Dassets.init
       Dassets.digest_source_files
@@ -27,6 +28,7 @@ module Dassets
       Dassets.reset
       Dassets.init
       Dassets.digest_source_files
+      Dassets.config.output_path = nil
     end
 
     should "update the digests on all source files when run with no given paths" do

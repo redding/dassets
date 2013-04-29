@@ -23,11 +23,6 @@ class Dassets::Config
       assert_equal exp_path, subject.source_path
     end
 
-    should "should use `apps/assets/public` as the default output path" do
-      exp_path = Dassets.config.root_path.join("app/assets/public").to_s
-      assert_equal exp_path, subject.output_path
-    end
-
     should "set the source path and filter proc with the `sources` method" do
       path = Dassets::RootPath.new 'app/asset_files'
       filter = proc{ |paths| [] }
@@ -56,11 +51,6 @@ class Dassets::Config
       assert_equal({'an' => 'opt'}, subject.engines['empty'].opts)
       assert_equal '', subject.engines['empty'].ext('empty')
       assert_equal '', subject.engines['empty'].compile('some content')
-    end
-
-    should "should use `apps/assets/public` as the default files path" do
-      exp_path = Dassets.config.root_path.join("app/assets/public").to_s
-      assert_equal exp_path, subject.output_path
     end
 
   end

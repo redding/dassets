@@ -12,8 +12,8 @@ class Dassets::AssetFile
     end
     subject{ @asset_file }
 
-    should have_readers :path, :dirname, :extname, :basename, :output_path
-    should have_imeths  :fingerprint, :content, :url, :href, :source_file
+    should have_readers :path, :dirname, :extname, :basename, :source_file
+    should have_imeths  :fingerprint, :content, :url, :href
     should have_imeths  :mtime, :size, :mime_type, :exists?, :==
 
     should "know its digest path, dirname, extname, and basename" do
@@ -23,9 +23,9 @@ class Dassets::AssetFile
       assert_equal 'file1', subject.basename
     end
 
-    should "know it's mtime, size, mime_type, and if it exists" do
-      assert_equal File.mtime(subject.output_path).httpdate, subject.mtime
-      assert_equal File.size?(subject.output_path), subject.size
+    should "use its source mtime as its mtime" do
+      assert_equal subject.source_file.mtime, subject.mtime
+      assert_equal Rack::Utils.bytesize(subject.content), subject.size
       assert_equal "text/plain", subject.mime_type
       assert subject.exists?
 
@@ -34,13 +34,6 @@ class Dassets::AssetFile
       assert_nil null_file.size
       assert_nil null_file.mime_type
       assert_not null_file.exists?
-    end
-
-    should "build it's output_path from the path" do
-      assert_equal "#{Dassets.config.output_path}/file1.txt", subject.output_path
-
-      nested = Dassets::AssetFile.new('nested/file1.txt')
-      assert_equal "#{Dassets.config.output_path}/nested/file1.txt", nested.output_path
     end
 
     should "know its source file" do
@@ -65,17 +58,12 @@ class Dassets::AssetFile
       assert_nil null_file.content
     end
 
-    should "get its content from its source file if needed" do
+    should "get its content from its source file if no output file" do
       digest_path = 'nested/a-thing.txt.no-use'
       exp_content = "thing\n\nDUMB\nUSELESS"
 
-      with_output = Dassets::AssetFile.new(digest_path)
-      assert_equal exp_content, with_output.content
-
-      FileUtils.mv with_output.output_path, "#{with_output.output_path}.bak"
       without_output = Dassets::AssetFile.new(digest_path)
       assert_equal exp_content, without_output.content
-      FileUtils.mv "#{with_output.output_path}.bak", with_output.output_path
     end
 
     should "build it's url from the path and the fingerprint" do
