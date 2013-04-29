@@ -5,30 +5,23 @@ require 'dassets/source_file'
 module Dassets; end
 class Dassets::AssetFile
 
-  attr_reader :path, :dirname, :extname, :basename, :output_path
+  attr_reader :path, :dirname, :extname, :basename, :source_file
 
-  def initialize(digest_path, fingerprint=nil)
-    @path, @fingerprint = digest_path, fingerprint
+  def initialize(digest_path)
+    @path = digest_path
     @dirname  = File.dirname(@path)
     @extname  = File.extname(@path)
     @basename = File.basename(@path, @extname)
-    @output_path = File.join(Dassets.config.output_path, @path)
-  end
 
-  def source_file
-    @source_file ||= Dassets::SourceFile.find_by_digest_path(path)
+    @source_file = Dassets::SourceFile.find_by_digest_path(path)
   end
 
   def fingerprint
-    @fingerprint ||= self.source_file.fingerprint
+    @fingerprint ||= @source_file.fingerprint
   end
 
   def content
-    @content ||= if File.exists?(@output_path) && File.file?(@output_path)
-      File.read(@output_path)
-    else
-      self.source_file.compiled
-    end
+    @content ||= @source_file.compiled
   end
 
   def url
@@ -43,27 +36,22 @@ class Dassets::AssetFile
   end
 
   def mtime
-    @mtime ||= if File.exists?(@output_path) && File.file?(@output_path)
-      File.mtime(@output_path).httpdate
-    end
+    return nil if !@source_file.exists?
+    @mtime ||= @source_file.mtime
   end
 
-  # We check via File::size? whether this file provides size info via stat,
-  # otherwise we have to figure it out by reading the whole file into memory.
   def size
-    @size ||= if File.exists?(@output_path) && File.file?(@output_path)
-      File.size?(@output_path) || Rack::Utils.bytesize(self.content)
-    end
+    return nil if !@source_file.exists?
+    @size ||= Rack::Utils.bytesize(self.content)
   end
 
   def mime_type
-    @mime_type ||= if File.exists?(@output_path) && File.file?(@output_path)
-      Rack::Mime.mime_type(@extname)
-    end
+    return nil if !@source_file.exists?
+    @mime_type ||= Rack::Mime.mime_type(@extname)
   end
 
   def exists?
-    File.exists?(@output_path) && File.file?(@output_path)
+    @source_file.exists?
   end
 
   def ==(other_asset_file)

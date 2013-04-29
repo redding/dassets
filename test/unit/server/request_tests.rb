@@ -58,7 +58,7 @@ class Dassets::Server::Request
       req = file_request('GET', '/some-file.txt')
 
       assert_equal '', req.asset_path
-      assert_equal Dassets::AssetFile.new('', ''), req.asset_file
+      assert_equal Dassets::AssetFile.new(''), req.asset_file
     end
 
     protected

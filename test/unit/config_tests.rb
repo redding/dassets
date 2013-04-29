@@ -14,23 +14,13 @@ class Dassets::Config
 
     should have_option :root_path,   Pathname, :required => true
     should have_option :assets_file, Pathname, :default => ENV['DASSETS_ASSETS_FILE']
-    should have_options :source_path, :output_path, :digests_path
+    should have_options :source_path, :output_path
     should have_reader :engines
     should have_imeth :source, :engine
 
     should "should use `apps/assets` as the default source path" do
       exp_path = Dassets.config.root_path.join("app/assets").to_s
       assert_equal exp_path, subject.source_path
-    end
-
-    should "should use `apps/assets/public` as the default output path" do
-      exp_path = Dassets.config.root_path.join("app/assets/public").to_s
-      assert_equal exp_path, subject.output_path
-    end
-
-    should "should use `app/assets/.digests` as the default digests file path" do
-      exp_path = Dassets.config.root_path.join("app/assets/.digests").to_s
-      assert_equal exp_path, subject.digests_path.to_s
     end
 
     should "set the source path and filter proc with the `sources` method" do
@@ -61,11 +51,6 @@ class Dassets::Config
       assert_equal({'an' => 'opt'}, subject.engines['empty'].opts)
       assert_equal '', subject.engines['empty'].ext('empty')
       assert_equal '', subject.engines['empty'].compile('some content')
-    end
-
-    should "should use `apps/assets/public` as the default files path" do
-      exp_path = Dassets.config.root_path.join("app/assets/public").to_s
-      assert_equal exp_path, subject.output_path
     end
 
   end
