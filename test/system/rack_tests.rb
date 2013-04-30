@@ -10,11 +10,7 @@ module Dassets
 
     desc "the middleware in a rack app"
     setup do
-      Dassets.init
       app.use Dassets::Server
-    end
-    teardown do
-      Dassets.reset
     end
 
     def app

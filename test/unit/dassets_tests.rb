@@ -8,31 +8,19 @@ module Dassets
     desc "Dassets"
     subject{ Dassets }
 
-    should have_imeths :config, :sources
-    should have_imeths :configure, :reset, :init, :[]
+    should have_imeths :config, :configure, :init, :[]
     should have_imeths :digest_source_files
 
     should "return a `Config` instance with the `config` method" do
       assert_kind_of Config, subject.config
     end
 
-    should "read the source list on init" do
-      subject.reset
-      assert_empty subject.sources
-
-      subject.init
-      assert_not_empty subject.sources
-    end
-
     should "return asset files given a their digest path using the index operator" do
-      subject.init
       file = subject['nested/file3.txt']
 
       assert_kind_of Dassets::AssetFile, file
       assert_equal 'nested/file3.txt', file.path
       assert_equal 'd41d8cd98f00b204e9800998ecf8427e', file.fingerprint
-
-      subject.reset
     end
 
     should "return an asset file with unknown source if digest path not found" do
