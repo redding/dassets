@@ -13,7 +13,7 @@ class Dassets::SourceFile
     subject{ @source_file }
 
     should have_readers :file_path
-    should have_imeths :asset_file, :digest_path, :digest
+    should have_imeths :asset_file, :digest_path
     should have_imeths :compiled, :fingerprint, :exists?, :mtime
     should have_cmeth :find_by_digest_path
 
@@ -74,30 +74,6 @@ class Dassets::SourceFile
       file_content = File.read(@file_path)
       exp_compiled_content = [ file_content, 'DUMB', 'USELESS' ].join("\n")
       assert_equal exp_compiled_content, subject.compiled
-    end
-
-  end
-
-  class DigestTests < EngineTests
-    desc "being digested with an output path configured"
-    setup do
-      Dassets.config.output_path = 'public'
-      @digested_asset_file = @source_file.digest
-    end
-    teardown do
-      Dassets.config.output_path = nil
-    end
-
-    should "return the digested asset file" do
-      assert_not_nil @digested_asset_file
-      assert_kind_of Dassets::AssetFile, @digested_asset_file
-    end
-
-    should "compile and write an asset file to the output path" do
-      outfile = File.join(Dassets.config.output_path, subject.asset_file.url)
-
-      assert_file_exists outfile
-      assert_equal subject.compiled, File.read(outfile)
     end
 
   end
