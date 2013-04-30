@@ -4,6 +4,7 @@ require 'ns-options'
 
 require 'dassets/version'
 require 'dassets/root_path'
+require 'dassets/file_store'
 require 'dassets/asset_file'
 require 'dassets/engine'
 
@@ -34,12 +35,11 @@ module Dassets
   class Config
     include NsOptions::Proxy
 
-    option :root_path,    Pathname, :required => true
-    option :output_path,  RootPath, :required => true
-
-    option :assets_file,  Pathname, :default => ENV['DASSETS_ASSETS_FILE']
-    option :source_path,  RootPath, :default => proc{ "app/assets" }
-    option :source_filter, Proc, :default => proc{ |paths| paths }
+    option :root_path,     Pathname,  :required => true
+    option :assets_file,   Pathname,  :default => ENV['DASSETS_ASSETS_FILE']
+    option :source_path,   RootPath,  :default => proc{ "app/assets" }
+    option :source_filter, Proc,      :default => proc{ |paths| paths }
+    option :file_store,    FileStore, :default => proc{ NullFileStore.new }
 
     attr_reader :engines
 
@@ -63,7 +63,6 @@ module Dassets
       paths = Set.new
       paths += Dir.glob(File.join(config.source_path, "**/*"))
       paths.reject!{ |path| !File.file?(path) }
-      paths.reject!{ |path| path =~ /^#{config.output_path}/ } if config.output_path
 
       config.source_filter.call(paths).sort
     end

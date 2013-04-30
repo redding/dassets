@@ -12,9 +12,10 @@ class Dassets::Config
     end
     subject{ @config }
 
-    should have_option :root_path,   Pathname, :required => true
+    should have_option :root_path, Pathname, :required => true
     should have_option :assets_file, Pathname, :default => ENV['DASSETS_ASSETS_FILE']
-    should have_options :source_path, :output_path
+    should have_options :source_path, :source_filter, :file_store
+
     should have_reader :engines
     should have_imeth :source, :engine
 

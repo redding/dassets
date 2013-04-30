@@ -7,8 +7,8 @@ module Dassets
   class DigestCmdRunTests < Assert::Context
     desc "the DigestCmd"
     setup do
-      Dassets.config.output_path = 'public'
-      clear_output_path(Dassets.config.output_path)
+      Dassets.config.file_store = 'public'
+      clear_store_path(Dassets.config.file_store.root)
       Dassets.digest_source_files
 
       @addfile = 'addfile.txt'
@@ -19,9 +19,9 @@ module Dassets
       @rmfile_contents = File.read(@rmfile_src)
 
       FileUtils.touch @addfile_src
-      @addfile_out = output_path(@addfile)
+      @addfile_out = store_path(@addfile)
 
-      @rmfile_out = output_path(@rmfile)
+      @rmfile_out = store_path(@rmfile)
       FileUtils.rm @rmfile_src
     end
     teardown do
@@ -29,13 +29,13 @@ module Dassets
       FileUtils.rm @addfile_src
 
       Dassets.digest_source_files
-      clear_output_path(Dassets.config.output_path)
+      clear_store_path(Dassets.config.file_store.root)
       Dassets.digest_source_files
-      Dassets.config.output_path = nil
+      Dassets.config.file_store = NullFileStore.new
     end
 
     should "update the digests on all source files when run with no given paths" do
-      clear_output_path(Dassets.config.output_path)
+      clear_store_path(Dassets.config.file_store.root)
       Dassets.digest_source_files
 
       assert_file_exists @addfile_out
@@ -43,7 +43,7 @@ module Dassets
     end
 
     should "update the digests on a single source file when given its path" do
-      clear_output_path(Dassets.config.output_path)
+      clear_store_path(Dassets.config.file_store.root)
       Dassets.digest_source_files([@addfile_src])
 
       assert_file_exists @addfile_out
@@ -55,11 +55,11 @@ module Dassets
       File.join(File.join(Dassets.config.source_path, file))
     end
 
-    def output_path(file)
-      File.join(Dassets.config.output_path, Dassets::AssetFile.new(file).url)
+    def store_path(file)
+      Dassets.config.file_store.store_path(Dassets::AssetFile.new(file).url)
     end
 
-    def clear_output_path(path)
+    def clear_store_path(path)
       Dir.glob(File.join(path, '*')).each{ |p| FileUtils.rm_r(p) } if path
     end
 

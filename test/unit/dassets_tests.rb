@@ -45,17 +45,6 @@ module Dassets
       assert_equal exp_list, Dassets::SourceList.new(config)
     end
 
-    should "filter out any paths in the output path" do
-      config = Dassets::Config.new
-      config.source_path = "source_files" # test/support/source_files
-      config.output_path = "source_files/nested"
-      exp_list = [
-        'test1.txt', '_ignored.txt'
-      ].map{ |p| File.expand_path(p, config.source_path) }.sort
-
-      assert_equal exp_list, Dassets::SourceList.new(config)
-    end
-
     should "run the supplied source filter on the paths" do
       config = Dassets::Config.new
       config.source_path = "source_files" # test/support/source_files

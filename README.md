@@ -26,10 +26,10 @@ Dassets.configure do |c|
     paths.select{ |p| ... }
   end
 
-  # (optional) tell Dassets where to write digested asset files
+  # (optional) tell Dassets where to store digested asset files
   # if none given, Dassets will not write any digested output
   # use this to "cache" digested assets to the public dir (for example)
-  c.output_path 'public' # default: `nil`
+  c.file_store 'public' # default: `NullFileStore.new`
 
 end
 ```
