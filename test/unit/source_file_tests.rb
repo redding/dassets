@@ -81,13 +81,11 @@ class Dassets::SourceFile
   class DigestTests < EngineTests
     desc "being digested with an output path configured"
     setup do
-      Dassets.init
       Dassets.config.output_path = 'public'
       @digested_asset_file = @source_file.digest
     end
     teardown do
       Dassets.config.output_path = nil
-      Dassets.reset
     end
 
     should "return the digested asset file" do
