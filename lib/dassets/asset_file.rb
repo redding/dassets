@@ -16,12 +16,15 @@ class Dassets::AssetFile
     @source_file = Dassets::SourceFile.find_by_digest_path(path)
   end
 
-  def fingerprint
-    @fingerprint ||= @source_file.fingerprint
-  end
-
-  def content
-    @content ||= @source_file.compiled
+  def digest!
+    return if !self.exists?
+    # TODO: Dassets.config.file_store.save(self.url) { self.content }
+    if File.exists?(op = Dassets.config.output_path.to_s)
+      file_output_path = File.join(op, self.url)
+      FileUtils.mkdir_p(File.dirname(file_output_path))
+      File.open(file_output_path, "w"){ |f| f.write(self.content) }
+    end
+    self.url
   end
 
   def url
@@ -31,22 +34,30 @@ class Dassets::AssetFile
     end
   end
 
+  def fingerprint
+    @fingerprint ||= @source_file.fingerprint
+  end
+
+  def content
+    @content ||= @source_file.compiled
+  end
+
   def href
     @href ||= "/#{self.url}"
   end
 
   def mtime
-    return nil if !@source_file.exists?
+    return nil if !self.exists?
     @mtime ||= @source_file.mtime
   end
 
   def size
-    return nil if !@source_file.exists?
+    return nil if !self.exists?
     @size ||= Rack::Utils.bytesize(self.content)
   end
 
   def mime_type
-    return nil if !@source_file.exists?
+    return nil if !self.exists?
     @mime_type ||= Rack::Mime.mime_type(@extname)
   end
 

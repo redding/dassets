@@ -25,7 +25,7 @@ class Dassets::DigestCmd
   private
 
   def digest_the_files(files)
-    files.map{ |f| Dassets::SourceFile.new(f).digest }
+    files.each{ |f| Dassets::SourceFile.new(f).asset_file.digest! }
   end
 
   def log(io, msg)
