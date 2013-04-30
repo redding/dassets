@@ -19,15 +19,16 @@ module Dassets
       file = subject['nested/file3.txt']
 
       assert_kind_of Dassets::AssetFile, file
-      assert_equal 'nested/file3.txt', file.path
+      assert_equal 'nested/file3.txt', file.digest_path
       assert_equal 'd41d8cd98f00b204e9800998ecf8427e', file.fingerprint
     end
 
     should "return an asset file with unknown source if digest path not found" do
       file = subject['path/not/found.txt']
 
-      assert_kind_of Dassets::NullSourceFile, file.source_file
-      assert_not file.source_file.exists?
+      assert_kind_of Dassets::SourceCache, file.source_cache
+      assert_kind_of Dassets::NullSourceFile, file.source_cache.source_file
+      assert_not file.source_cache.exists?
     end
 
   end
