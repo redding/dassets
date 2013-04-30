@@ -1,6 +1,7 @@
 require 'assert'
 require 'fileutils'
 require 'dassets/source_file'
+require 'dassets/file_store'
 require 'dassets/asset_file'
 
 class Dassets::AssetFile
@@ -85,22 +86,21 @@ class Dassets::AssetFile
   class DigestTests < BaseTests
     desc "being digested with an output path configured"
     setup do
-      Dassets.config.output_path = 'public'
-      @url = @asset_file.digest!
+      Dassets.config.file_store = 'public'
+      @save_path = @asset_file.digest!
+      @outfile = Dassets.config.file_store.store_path(@asset_file.url)
     end
     teardown do
-      Dassets.config.output_path = nil
+      Dassets.config.file_store = Dassets::NullFileStore.new
     end
 
     should "return the asset file url" do
-      assert_equal @asset_file.url, @url
+      assert_equal @outfile, @save_path
     end
 
     should "compile and write an asset file to the output path" do
-      outfile = File.join(Dassets.config.output_path, @url)
-
-      assert_file_exists outfile
-      assert_equal subject.content, File.read(outfile)
+      assert_file_exists @outfile
+      assert_equal subject.content, File.read(@outfile)
     end
 
   end
