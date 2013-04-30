@@ -18,13 +18,7 @@ class Dassets::AssetFile
 
   def digest!
     return if !self.exists?
-    # TODO: Dassets.config.file_store.save(self.url) { self.content }
-    if File.exists?(op = Dassets.config.output_path.to_s)
-      file_output_path = File.join(op, self.url)
-      FileUtils.mkdir_p(File.dirname(file_output_path))
-      File.open(file_output_path, "w"){ |f| f.write(self.content) }
-    end
-    self.url
+    Dassets.config.file_store.save(self.url){ self.content }
   end
 
   def url
