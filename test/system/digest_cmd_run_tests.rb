@@ -9,8 +9,6 @@ module Dassets
     setup do
       Dassets.config.output_path = 'public'
       clear_output_path(Dassets.config.output_path)
-      Dassets.reset
-      Dassets.init
       Dassets.digest_source_files
 
       @addfile = 'addfile.txt'
@@ -30,8 +28,6 @@ module Dassets
       File.open(@rmfile_src,  "w"){ |f| f.write @rmfile_contents }
       FileUtils.rm @addfile_src
 
-      Dassets.reset
-      Dassets.init
       Dassets.digest_source_files
       clear_output_path(Dassets.config.output_path)
       Dassets.digest_source_files

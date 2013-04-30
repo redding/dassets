@@ -6,11 +6,7 @@ class Dassets::Server::Request
   class BaseTests < Assert::Context
     desc "Dassets::Server::Request"
     setup do
-      Dassets.init
       @req = file_request('GET', '/file1-daa05c683a4913b268653f7a7e36a5b4.txt')
-    end
-    teardown do
-      Dassets.reset
     end
     subject{ @req }
 
