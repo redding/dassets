@@ -4,47 +4,44 @@ require 'ns-options'
 
 require 'dassets/version'
 require 'dassets/root_path'
-require 'dassets/digests'
+require 'dassets/asset_file'
 require 'dassets/engine'
 
 ENV['DASSETS_ASSETS_FILE'] ||= 'config/assets'
 
 module Dassets
 
-  def self.config;  @config  ||= Config.new;      end
-  def self.sources; @sources ||= Set.new;         end
-  def self.digests; @digests ||= NullDigests.new; end
+  def self.config;  @config  ||= Config.new; end
+  def self.sources; @sources ||= Set.new;    end
 
   def self.configure(&block)
     block.call(self.config)
   end
 
   def self.reset
-    @sources = @digests = nil
+    @sources = nil
   end
 
   def self.init
     require self.config.assets_file
     @sources = SourceList.new(self.config)
-    @digests = Digests.new(self.config.digests_path)
   end
 
   def self.[](digest_path)
-    self.digests.asset_file(digest_path)
+    Dassets::AssetFile.new(digest_path)
   end
 
   # Cmds
 
   def self.digest_source_files(paths=nil)
-    require 'dassets/cmds/digest_cmd'
-    Cmds::DigestCmd.new(paths).run
+    require 'dassets/digest_cmd'
+    DigestCmd.new(paths).run
   end
 
   class Config
     include NsOptions::Proxy
 
     option :root_path,    Pathname, :required => true
-    option :digests_path, Pathname, :required => true
     option :output_path,  RootPath, :required => true
 
     option :assets_file,  Pathname, :default => ENV['DASSETS_ASSETS_FILE']
@@ -54,10 +51,7 @@ module Dassets
     attr_reader :engines
 
     def initialize
-      super({
-        :digests_path => proc{ File.join(self.source_path, '.digests') },
-        :output_path  => proc{ File.join(self.source_path, 'public')   }
-      })
+      super
       @engines = Hash.new{ |k,v| Dassets::NullEngine.new }
     end
 
@@ -76,8 +70,7 @@ module Dassets
       paths = Set.new
       paths += Dir.glob(File.join(config.source_path, "**/*"))
       paths.reject!{ |path| !File.file?(path) }
-      paths.reject!{ |path| path =~ /^#{config.output_path}/ }
-      paths.reject!{ |path| path =~ /^#{config.digests_path}/ }
+      paths.reject!{ |path| path =~ /^#{config.output_path}/ } if config.output_path
 
       config.source_filter.call(paths).sort
     end

@@ -29,13 +29,13 @@ module Dassets
     should "return a successful response" do
       resp = get '/file1-daa05c683a4913b268653f7a7e36a5b4.txt'
       assert_equal 200, resp.status
-      assert_equal Dassets['/file1.txt'].content, resp.body
+      assert_equal Dassets['file1.txt'].content, resp.body
     end
 
     should "return a successful response with no body on HEAD requests" do
       resp = head '/file2-9bbe1047cffbb590f59e0e5aeff46ae4.txt'
       assert_equal 200, resp.status
-      assert_equal Dassets['/file2.txt'].size.to_s, resp.headers['Content-Length']
+      assert_equal Dassets['file2.txt'].size.to_s, resp.headers['Content-Length']
       assert_empty resp.body
     end
 
@@ -45,7 +45,7 @@ module Dassets
     desc "requesting an existing asset file that has not been modified"
     setup do
       @resp = get('/file1-daa05c683a4913b268653f7a7e36a5b4.txt', {}, {
-        'HTTP_IF_MODIFIED_SINCE' => Dassets['/file1.txt'].mtime.to_s
+        'HTTP_IF_MODIFIED_SINCE' => Dassets['file1.txt'].mtime.to_s
       })
     end
 

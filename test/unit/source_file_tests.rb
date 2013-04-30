@@ -1,5 +1,5 @@
 require 'assert'
-require 'dassets/engine'
+require 'dassets/asset_file'
 require 'dassets/source_file'
 
 class Dassets::SourceFile
@@ -13,7 +13,8 @@ class Dassets::SourceFile
     subject{ @source_file }
 
     should have_readers :file_path
-    should have_imeths :exists?, :digest_path, :compiled, :fingerprint
+    should have_imeths :asset_file, :digest_path, :digest
+    should have_imeths :compiled, :fingerprint, :exists?, :mtime
     should have_cmeth :find_by_digest_path
 
     should "know its file path" do
@@ -24,8 +25,17 @@ class Dassets::SourceFile
       assert subject.exists?
     end
 
+    should "use the mtime of its file as its mtime" do
+      assert_equal File.mtime(subject.file_path).httpdate, subject.mtime
+    end
+
     should "know its digest path" do
       assert_equal 'file1.txt', subject.digest_path
+    end
+
+    should "know its asset file" do
+      assert_kind_of Dassets::AssetFile, subject.asset_file
+      assert_equal Dassets::AssetFile.new(subject.digest_path), subject.asset_file
     end
 
     should "know its compiled content fingerprint" do
@@ -69,12 +79,14 @@ class Dassets::SourceFile
   end
 
   class DigestTests < EngineTests
-    desc "being digested"
+    desc "being digested with an output path configured"
     setup do
       Dassets.init
+      Dassets.config.output_path = 'public'
       @digested_asset_file = @source_file.digest
     end
     teardown do
+      Dassets.config.output_path = nil
       Dassets.reset
     end
 
@@ -84,13 +96,10 @@ class Dassets::SourceFile
     end
 
     should "compile and write an asset file to the output path" do
-      assert_file_exists @digested_asset_file.output_path
-      assert_equal subject.compiled, File.read(@digested_asset_file.output_path)
-    end
+      outfile = File.join(Dassets.config.output_path, subject.asset_file.url)
 
-    should "add a digests entry for the asset file with its fingerprint" do
-      digests_on_disk = Dassets::Digests.new(Dassets.config.digests_path)
-      assert_equal subject.fingerprint, digests_on_disk[subject.digest_path]
+      assert_file_exists outfile
+      assert_equal subject.compiled, File.read(outfile)
     end
 
   end

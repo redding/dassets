@@ -8,7 +8,7 @@ module Dassets
     desc "Dassets"
     subject{ Dassets }
 
-    should have_imeths :config, :sources, :digests
+    should have_imeths :config, :sources
     should have_imeths :configure, :reset, :init, :[]
     should have_imeths :digest_source_files
 
@@ -24,15 +24,7 @@ module Dassets
       assert_not_empty subject.sources
     end
 
-    should "read/parse the digests on init" do
-      subject.reset
-      assert_empty subject.digests.paths
-
-      subject.init
-      assert_not_empty subject.digests.paths
-    end
-
-    should "return asset files given a their path using the index operator" do
+    should "return asset files given a their digest path using the index operator" do
       subject.init
       file = subject['nested/file3.txt']
 
@@ -43,15 +35,11 @@ module Dassets
       subject.reset
     end
 
-    should "return an asset file with no fingerprint if path not in digests" do
+    should "return an asset file with unknown source if digest path not found" do
       file = subject['path/not/found.txt']
-      assert_equal '', file.fingerprint
 
-      subject.init
-      file = subject['path/not/found.txt']
-      assert_equal '', file.fingerprint
-
-      subject.reset
+      assert_kind_of Dassets::NullSourceFile, file.source_file
+      assert_not file.source_file.exists?
     end
 
   end

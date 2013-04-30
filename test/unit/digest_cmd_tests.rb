@@ -1,13 +1,13 @@
 require 'assert'
 require 'dassets'
-require 'dassets/cmds/digest_cmd'
+require 'dassets/digest_cmd'
 
-class Dassets::Cmds::DigestCmd
+class Dassets::DigestCmd
 
   class BaseTests < Assert::Context
-    desc "Dassets::Cmds::DigestCmd"
+    desc "Dassets::DigestCmd"
     setup do
-      @cmd = Dassets::Cmds::DigestCmd.new(['a/path'])
+      @cmd = Dassets::DigestCmd.new(['a/path'])
     end
     subject{ @cmd }
 
