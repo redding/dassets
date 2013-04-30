@@ -41,18 +41,6 @@ module Dassets
       end
     end
 
-    def digest
-      return if !self.exists?
-
-      self.asset_file.tap do |af|
-        if File.exists?(op = Dassets.config.output_path.to_s)
-          file_output_path = File.join(op, af.url)
-          FileUtils.mkdir_p(File.dirname(file_output_path))
-          File.open(file_output_path, "w"){ |f| f.write(self.compiled) }
-        end
-      end
-    end
-
     def compiled
       @compiled ||= @ext_list.inject(read_file(@file_path)) do |content, ext|
         Dassets.config.engines[ext].compile(content)

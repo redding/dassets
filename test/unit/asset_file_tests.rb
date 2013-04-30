@@ -13,8 +13,8 @@ class Dassets::AssetFile
     subject{ @asset_file }
 
     should have_readers :path, :dirname, :extname, :basename, :source_file
-    should have_imeths  :fingerprint, :content, :url, :href
-    should have_imeths  :mtime, :size, :mime_type, :exists?, :==
+    should have_imeths  :digest!, :url, :fingerprint, :content
+    should have_imeths  :href, :mtime, :size, :mime_type, :exists?, :==
 
     should "know its digest path, dirname, extname, and basename" do
       assert_equal 'file1.txt', subject.path
@@ -78,6 +78,29 @@ class Dassets::AssetFile
 
       nested = Dassets::AssetFile.new('nested/file1.txt')
       assert_equal "/nested/file1-.txt", nested.href
+    end
+
+  end
+
+  class DigestTests < BaseTests
+    desc "being digested with an output path configured"
+    setup do
+      Dassets.config.output_path = 'public'
+      @url = @asset_file.digest!
+    end
+    teardown do
+      Dassets.config.output_path = nil
+    end
+
+    should "return the asset file url" do
+      assert_equal @asset_file.url, @url
+    end
+
+    should "compile and write an asset file to the output path" do
+      outfile = File.join(Dassets.config.output_path, @url)
+
+      assert_file_exists outfile
+      assert_equal subject.content, File.read(outfile)
     end
 
   end
