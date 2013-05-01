@@ -11,7 +11,7 @@ class Dassets::SourceCache
     end
     subject{ @source_cache }
 
-    test have_readers :digest_path, :source_file
+    should have_readers :digest_path, :source_file
     should have_imeths :content, :fingerprint, :key, :mtime, :exists?
 
     should "know its digest path" do

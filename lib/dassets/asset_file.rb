@@ -1,6 +1,6 @@
 require 'rack/utils'
 require 'rack/mime'
-require 'dassets/source_file'
+require 'dassets/source_cache'
 
 module Dassets; end
 class Dassets::AssetFile
@@ -12,7 +12,7 @@ class Dassets::AssetFile
     @dirname  = File.dirname(@digest_path)
     @extname  = File.extname(@digest_path)
     @basename = File.basename(@digest_path, @extname)
-    @source_cache = Dassets::SourceCache.new(@digest_path)
+    @source_cache = Dassets::SourceCache.new(@digest_path, Dassets.config.cache)
   end
 
   def digest!

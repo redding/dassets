@@ -5,8 +5,9 @@ require 'ns-options'
 require 'dassets/version'
 require 'dassets/root_path'
 require 'dassets/file_store'
-require 'dassets/asset_file'
+require 'dassets/default_cache'
 require 'dassets/engine'
+require 'dassets/asset_file'
 
 ENV['DASSETS_ASSETS_FILE'] ||= 'config/assets'
 
@@ -22,7 +23,7 @@ module Dassets
   end
 
   def self.[](digest_path)
-    Dassets::AssetFile.new(digest_path)
+    AssetFile.new(digest_path)
   end
 
   # Cmds
@@ -42,10 +43,12 @@ module Dassets
     option :file_store,    FileStore, :default => proc{ NullFileStore.new }
 
     attr_reader :engines
+    attr_accessor :cache
 
     def initialize
       super
       @engines = Hash.new{ |k,v| Dassets::NullEngine.new }
+      @cache = DefaultCache.new
     end
 
     def source(path=nil, &filter)

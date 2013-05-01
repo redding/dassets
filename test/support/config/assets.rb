@@ -14,5 +14,6 @@ Dassets.configure do |c|
 
   c.engine 'dumb', @dumb_engine
   c.engine 'useless', @useless_engine
+  c.cache = nil # use no cache
 
 end

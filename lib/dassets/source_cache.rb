@@ -3,19 +3,20 @@ require 'dassets/source_file'
 module Dassets; end
 class Dassets::SourceCache
 
-  attr_reader :digest_path, :source_file
+  attr_reader :digest_path, :source_file, :cache
 
-  def initialize(digest_path)
+  def initialize(digest_path, cache=nil)
     @digest_path = digest_path
     @source_file = Dassets::SourceFile.find_by_digest_path(digest_path)
+    @cache = cache || NoCache.new
   end
 
   def content
-    @source_file.compiled
+    @cache["#{self.key} -- content"] ||= @source_file.compiled
   end
 
   def fingerprint
-    @source_file.fingerprint
+    @cache["#{self.key} -- fingerprint"] ||= @source_file.fingerprint
   end
 
   def key
@@ -28,6 +29,11 @@ class Dassets::SourceCache
 
   def exists?
     @source_file.exists?
+  end
+
+  class NoCache
+    def [](key); end
+    def []=(key, value); end
   end
 
 end
