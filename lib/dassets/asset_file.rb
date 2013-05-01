@@ -5,15 +5,14 @@ require 'dassets/source_file'
 module Dassets; end
 class Dassets::AssetFile
 
-  attr_reader :path, :dirname, :extname, :basename, :source_file
+  attr_reader :digest_path, :dirname, :extname, :basename, :source_cache
 
   def initialize(digest_path)
-    @path = digest_path
-    @dirname  = File.dirname(@path)
-    @extname  = File.extname(@path)
-    @basename = File.basename(@path, @extname)
-
-    @source_file = Dassets::SourceFile.find_by_digest_path(path)
+    @digest_path = digest_path
+    @dirname  = File.dirname(@digest_path)
+    @extname  = File.extname(@digest_path)
+    @basename = File.basename(@digest_path, @extname)
+    @source_cache = Dassets::SourceCache.new(@digest_path)
   end
 
   def digest!
@@ -28,21 +27,23 @@ class Dassets::AssetFile
     end
   end
 
-  def fingerprint
-    @fingerprint ||= @source_file.fingerprint
-  end
-
-  def content
-    @content ||= @source_file.compiled
-  end
-
   def href
     @href ||= "/#{self.url}"
   end
 
+  def fingerprint
+    return nil if !self.exists?
+    @fingerprint ||= @source_cache.fingerprint
+  end
+
+  def content
+    return nil if !self.exists?
+    @content ||= @source_cache.content
+  end
+
   def mtime
     return nil if !self.exists?
-    @mtime ||= @source_file.mtime
+    @mtime ||= @source_cache.mtime
   end
 
   def size
@@ -56,12 +57,12 @@ class Dassets::AssetFile
   end
 
   def exists?
-    @source_file.exists?
+    @source_cache.exists?
   end
 
   def ==(other_asset_file)
     other_asset_file.kind_of?(Dassets::AssetFile) &&
-    self.path == other_asset_file.path &&
+    self.digest_path == other_asset_file.digest_path &&
     self.fingerprint == other_asset_file.fingerprint
   end
 
