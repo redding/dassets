@@ -16,6 +16,7 @@ class Dassets::Server
       elsif !@asset_file.exists?
         [ 404, Rack::Utils::HeaderHash.new, ["Not Found"] ]
       else
+        @asset_file.digest!
         [ 200,
           Rack::Utils::HeaderHash.new.tap do |h|
             h["Content-Type"]   = @asset_file.mime_type.to_s
