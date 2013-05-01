@@ -1,3 +1,5 @@
+require 'thread'
+
 module Dassets
 
   class FileStore
@@ -6,7 +8,7 @@ module Dassets
 
     def initialize(root)
       @root = RootPath.new(root)
-      @save_mutex = Mutex.new
+      @save_mutex = ::Mutex.new
     end
 
     def save(url, &block)
