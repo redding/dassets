@@ -1,5 +1,6 @@
 require 'assert'
 require 'assert-rack-test'
+require 'fileutils'
 require 'test/support/app'
 require 'dassets/server'
 
@@ -33,6 +34,27 @@ module Dassets
       assert_equal 200, resp.status
       assert_equal Dassets['file2.txt'].size.to_s, resp.headers['Content-Length']
       assert_empty resp.body
+    end
+
+  end
+
+  class DigestTests < SuccessTests
+    setup do
+      Dassets.config.file_store = 'public'
+      @url = 'file1-daa05c683a4913b268653f7a7e36a5b4.txt'
+      @url_file = Dassets.config.file_store.store_path(@url)
+      FileUtils.rm(@url_file)
+    end
+    teardown do
+      Dassets.config.file_store = NullFileStore.new
+    end
+
+    should "digest the asset" do
+      assert_not_file_exists @url_file
+
+      resp = get "/#{@url}"
+      assert_equal 200, resp.status
+      assert_file_exists @url_file
     end
 
   end
