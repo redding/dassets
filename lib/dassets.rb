@@ -19,7 +19,11 @@ module Dassets
   end
 
   def self.init
-    require self.config.assets_file
+    begin
+      require self.config.assets_file
+    rescue LoadError
+    end
+    raise 'no Dassets `root_path` specified' if !self.config.required_set?
   end
 
   def self.[](digest_path)
