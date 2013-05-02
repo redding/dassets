@@ -31,6 +31,15 @@ module Dassets
       assert_not file.source_cache.exists?
     end
 
+    should "complain if trying to init without setting the root path" do
+      orig_root = Dassets.config.root_path
+
+      Dassets.config.root_path = nil
+      assert_raises(RuntimeError){ Dassets.init }
+
+      Dassets.config.root_path = orig_root
+    end
+
   end
 
   class SourceListTests < BaseTests
