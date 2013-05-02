@@ -43,7 +43,7 @@ class Dassets::AssetFile
 
   def mtime
     return nil if !self.exists?
-    @mtime ||= @source_cache.mtime
+    @mtime ||= @source_cache.mtime.httpdate
   end
 
   def size

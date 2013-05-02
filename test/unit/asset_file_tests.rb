@@ -25,7 +25,7 @@ class Dassets::AssetFile
     end
 
     should "use its source file attrs as its own" do
-      assert_equal subject.source_cache.mtime, subject.mtime
+      assert_equal subject.source_cache.mtime.httpdate, subject.mtime
       assert_equal Rack::Utils.bytesize(subject.content), subject.size
       assert_equal "text/plain", subject.mime_type
       assert subject.exists?

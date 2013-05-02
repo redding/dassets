@@ -14,7 +14,7 @@ class Dassets::SourceFile
 
     should have_readers :file_path
     should have_imeths :asset_file, :digest_path
-    should have_imeths :compiled, :fingerprint, :exists?, :mtime
+    should have_imeths :compiled, :exists?, :mtime
     should have_cmeth :find_by_digest_path
 
     should "know its file path" do
@@ -26,7 +26,7 @@ class Dassets::SourceFile
     end
 
     should "use the mtime of its file as its mtime" do
-      assert_equal File.mtime(subject.file_path).httpdate, subject.mtime
+      assert_equal File.mtime(subject.file_path), subject.mtime
     end
 
     should "know its digest path" do
@@ -36,10 +36,6 @@ class Dassets::SourceFile
     should "know its asset file" do
       assert_kind_of Dassets::AssetFile, subject.asset_file
       assert_equal Dassets::AssetFile.new(subject.digest_path), subject.asset_file
-    end
-
-    should "know its compiled content fingerprint" do
-      assert_equal 'daa05c683a4913b268653f7a7e36a5b4', subject.fingerprint
     end
 
     should "be findable by its digest path" do

@@ -27,7 +27,8 @@ module Dassets
       file = subject['path/not/found.txt']
 
       assert_kind_of Dassets::SourceCache, file.source_cache
-      assert_kind_of Dassets::NullSourceFile, file.source_cache.source_file
+      assert_equal 1, file.source_cache.source_files.size
+      assert_kind_of Dassets::NullSourceFile, file.source_cache.source_files.first
       assert_not file.source_cache.exists?
     end
 
