@@ -20,7 +20,7 @@ class Dassets::DigestCmd
     files = @paths
     if @paths.empty?
       # always get the latest source list
-      files = Dassets::SourceList.new(Dassets.config)
+      files = Dassets.source_list
     end
 
     log io, "digesting #{files.count} source file(s) ..."

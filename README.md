@@ -14,14 +14,8 @@ require 'dassets'
 
 Dassets.configure do |c|
 
-  # tell Dassets what the root path of your app is
-  c.root_path '/path/to/app/root'
-
   # tell Dassets where to look for source files and (optionally) how to filter those files
-  c.source_path 'lib/asset_files' # default: '{root_path}/app/assets'
-  c.source_filter proc{ |paths| paths.select{ |p| ... } }
-  # --OR--
-  c.source 'lib/asset_files' do |paths|
+  c.source '/path/to/app/assets' do |paths|
     # return the filtered source path list
     paths.select{ |p| ... }
   end
@@ -29,7 +23,7 @@ Dassets.configure do |c|
   # (optional) tell Dassets where to store digested asset files
   # if none given, Dassets will not write any digested output
   # use this to "cache" digested assets to the public dir (for example)
-  c.file_store 'public' # default: `NullFileStore.new`
+  c.file_store '/path/to/public' # default: `NullFileStore.new`
 
 end
 ```
