@@ -46,13 +46,14 @@ module Dassets
     option :source_filter, Proc,      :default => proc{ |paths| paths }
     option :file_store,    FileStore, :default => proc{ NullFileStore.new }
 
-    attr_reader :engines
+    attr_reader :engines, :combinations
     attr_accessor :cache
 
     def initialize
       super
-      @engines = Hash.new{ |k,v| Dassets::NullEngine.new }
-      @cache = DefaultCache.new
+      @engines = Hash.new{ |h,k| Dassets::NullEngine.new }
+      @combinations = Hash.new{ |h,k| [k] } # digest pass-thru if none defined
+      @cache = DefaultCache.new#
     end
 
     def source(path=nil, &filter)
@@ -62,6 +63,10 @@ module Dassets
 
     def engine(input_ext, engine_class, opts=nil)
       @engines[input_ext.to_s] = engine_class.new(opts)
+    end
+
+    def combination(key_digest_path, value_digest_paths)
+      @combinations[key_digest_path.to_s] = [*value_digest_paths]
     end
   end
 

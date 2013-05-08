@@ -16,8 +16,8 @@ class Dassets::Config
     should have_option :assets_file, Pathname, :default => ENV['DASSETS_ASSETS_FILE']
     should have_options :source_path, :source_filter, :file_store
 
-    should have_reader :engines
-    should have_imeth :source, :engine
+    should have_reader :engines, :combinations
+    should have_imeth :source, :engine, :combination
 
     should "should use `apps/assets` as the default source path" do
       exp_path = Dassets.config.root_path.join("app/assets").to_s
@@ -52,6 +52,22 @@ class Dassets::Config
       assert_equal({'an' => 'opt'}, subject.engines['empty'].opts)
       assert_equal '', subject.engines['empty'].ext('empty')
       assert_equal '', subject.engines['empty'].compile('some content')
+    end
+
+    should "know its combinations and return the keyed digest path by default" do
+      assert_kind_of ::Hash, subject.combinations
+      assert_equal ['some/digest.path'], subject.combinations['some/digest.path']
+    end
+
+    should "allow registering new combinations" do
+      assert_equal ['some/digest.path'], subject.combinations['some/digest.path']
+      exp_combination = ['some/other.path', 'and/another.path']
+      subject.combination 'some/digest.path', exp_combination
+      assert_equal exp_combination, subject.combinations['some/digest.path']
+
+      assert_equal ['test/digest.path'], subject.combinations['test/digest.path']
+      subject.combination 'test/digest.path', ['some/other.path']
+      assert_equal ['some/other.path'], subject.combinations['test/digest.path']
     end
 
   end

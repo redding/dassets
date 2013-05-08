@@ -43,7 +43,7 @@ class Dassets::SourceProxy
   end
 
   def get_source_files(digest_path)
-    # TODO: Dassets.config.combinations[digest_path]
+    # TODO: Dassets.config.combinations[digest_path.to_s]
     [digest_path].map do |source_digest_path|
       Dassets::SourceFile.find_by_digest_path(source_digest_path)
     end
