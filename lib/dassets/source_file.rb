@@ -1,4 +1,3 @@
-require 'digest/md5'
 require 'fileutils'
 require 'dassets'
 require 'dassets/asset_file'
@@ -47,16 +46,12 @@ module Dassets
       end
     end
 
-    def fingerprint
-      @fingerprint ||= Digest::MD5.new.hexdigest(self.compiled)
-    end
-
     def exists?
       File.file?(@file_path)
     end
 
     def mtime
-      File.mtime(@file_path).httpdate
+      File.mtime(@file_path)
     end
 
     def ==(other_source_file)
