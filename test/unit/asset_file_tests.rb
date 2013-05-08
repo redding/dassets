@@ -86,7 +86,7 @@ class Dassets::AssetFile
   class DigestTests < BaseTests
     desc "being digested with an output path configured"
     setup do
-      Dassets.config.file_store = 'public'
+      Dassets.config.file_store = TEST_SUPPORT_PATH.join('public').to_s
       @save_path = @asset_file.digest!
       @outfile = Dassets.config.file_store.store_path(@asset_file.url)
     end

@@ -1,12 +1,11 @@
 require 'thread'
-require 'dassets/root_path'
 
 module Dassets; end
 class Dassets::FileStore
   attr_reader :root
 
   def initialize(root)
-    @root = Dassets::RootPath.new(root)
+    @root = root
     @save_mutex = ::Mutex.new
   end
 

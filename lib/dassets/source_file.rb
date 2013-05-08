@@ -7,19 +7,18 @@ module Dassets
   class SourceFile
 
     def self.find_by_digest_path(path)
-      # always look at the freshest source list to make sure you get all sources
-      # not just the ones Dassets has cached
-      sources = Dassets::SourceList.new(Dassets.config).map{ |p| self.new(p) }
+      # look in the configured source list
+      sources = Dassets.source_list.map{ |p| self.new(p) }
 
-      # get the last matching one in case two sources have the same digest path
-      # the last one *should* be correct since it was last to be digested
+      # get the last matching one (in case two sources have the same digest path
+      # the last one *should* be correct since it was last to be configured)
       sources.select{ |s| s.digest_path == path }.last || NullSourceFile.new(path)
     end
 
     attr_reader :file_path
 
     def initialize(file_path)
-      @file_path = file_path
+      @file_path = file_path.to_s
       @ext_list = File.basename(@file_path).split('.').reverse
     end
 
@@ -34,7 +33,7 @@ module Dassets
         end.reject{ |e| e.empty? }.reverse.join('.')
 
         File.join([
-          digest_dirname(@file_path, Dassets.config.source_path),
+          digest_dirname(@file_path, Dassets.config.sources),
           digest_basename
         ].reject{ |p| p.empty? })
       end
@@ -60,8 +59,11 @@ module Dassets
 
     private
 
-    def digest_dirname(file_path, source_path)
-      slash_path(File.dirname(file_path)).sub(slash_path(source_path), '')
+    # for each source, remove the source path from the dirname (if it exists)
+    def digest_dirname(file_path, sources)
+      sources.inject(File.dirname(file_path)) do |dirname, source|
+        slash_path(dirname).sub(slash_path(source.path), '')
+      end
     end
 
     def slash_path(path)
