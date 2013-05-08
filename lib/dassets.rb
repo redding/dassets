@@ -3,7 +3,6 @@ require 'set'
 require 'ns-options'
 
 require 'dassets/version'
-require 'dassets/root_path'
 require 'dassets/file_store'
 require 'dassets/default_cache'
 require 'dassets/engine'
@@ -23,7 +22,7 @@ module Dassets
       require self.config.assets_file
     rescue LoadError
     end
-    raise 'no Dassets `root_path` specified' if !self.config.required_set?
+    raise 'no Dassets `source_path` specified' if !self.config.required_set?
   end
 
   def self.[](digest_path)
@@ -40,9 +39,8 @@ module Dassets
   class Config
     include NsOptions::Proxy
 
-    option :root_path,     Pathname,  :required => true
     option :assets_file,   Pathname,  :default => ENV['DASSETS_ASSETS_FILE']
-    option :source_path,   RootPath,  :default => proc{ "app/assets" }
+    option :source_path,   Pathname,  :required => true
     option :source_filter, Proc,      :default => proc{ |paths| paths }
     option :file_store,    FileStore, :default => proc{ NullFileStore.new }
 

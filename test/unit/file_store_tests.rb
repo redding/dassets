@@ -1,10 +1,9 @@
 require 'assert'
-require 'dassets/root_path'
 require 'dassets/file_store'
 
 class Dassets::FileStore
 
-  class BaseTests < Assert::Context
+  class NullTests < Assert::Context
     desc "Dassets::NullFileStore"
     subject{ Dassets::NullFileStore.new }
 
@@ -15,14 +14,16 @@ class Dassets::FileStore
       assert_kind_of Dassets::FileStore, subject
     end
 
-    should "build its root based on the config's root_path" do
-      assert_equal Dassets::RootPath.new(''), subject.root
+    should "know its root path" do
+      assert_equal '', subject.root
     end
 
     should "build the store path based on a given url" do
+      assert_equal '/some/url', subject.store_path('some/url')
     end
 
     should "return the store path on save" do
+      assert_equal '/some/url', subject.save('some/url')
     end
 
   end

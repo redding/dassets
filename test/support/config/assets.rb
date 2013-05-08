@@ -10,7 +10,7 @@ end
 end
 
 Dassets.configure do |c|
-  c.root_path File.expand_path("../..", __FILE__)
+  c.source_path TEST_SUPPORT_PATH.join("app/assets")
 
   c.engine 'dumb', @dumb_engine
   c.engine 'useless', @useless_engine

@@ -28,13 +28,13 @@ module Dassets
       assert_not file.exists?
     end
 
-    should "complain if trying to init without setting the root path" do
-      orig_root = Dassets.config.root_path
+    should "complain if trying to init without setting the source path" do
+      orig_source_path = Dassets.config.source_path
 
-      Dassets.config.root_path = nil
+      Dassets.config.source_path = nil
       assert_raises(RuntimeError){ Dassets.init }
 
-      Dassets.config.root_path = orig_root
+      Dassets.config.source_path = orig_source_path
     end
 
   end
@@ -44,7 +44,7 @@ module Dassets
 
     should "build from the configured source path and filter proc" do
       config = Dassets::Config.new
-      config.source_path = "source_files" # test/support/source_files
+      config.source_path = TEST_SUPPORT_PATH.join("source_files")
       exp_list = [
         'test1.txt', '_ignored.txt', 'nested/test2.txt', 'nested/_nested_ignored.txt'
       ].map{ |p| File.expand_path(p, config.source_path) }.sort
@@ -54,7 +54,7 @@ module Dassets
 
     should "run the supplied source filter on the paths" do
       config = Dassets::Config.new
-      config.source_path = "source_files" # test/support/source_files
+      config.source_path = TEST_SUPPORT_PATH.join("source_files")
       config.source_filter = proc do |paths|
         paths.reject{ |path| File.basename(path) =~ /^_/ }
       end
@@ -64,7 +64,7 @@ module Dassets
 
       assert_equal exp_list, Dassets::SourceList.new(config)
 
-      config.source "source_files" do |paths|
+      config.source TEST_SUPPORT_PATH.join("source_files") do |paths|
         paths.reject{ |path| File.basename(path) =~ /^_/ }
       end
       assert_equal exp_list, Dassets::SourceList.new(config)
