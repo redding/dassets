@@ -7,7 +7,7 @@ class Dassets::SourceFile
   class BaseTests < Assert::Context
     desc "Dassets::SourceFile"
     setup do
-      @file_path = File.join(Dassets.config.source_path, 'file1.txt')
+      @file_path = TEST_SUPPORT_PATH.join('app/assets/file1.txt')
       @source_file = Dassets::SourceFile.new(@file_path)
     end
     subject{ @source_file }
@@ -18,7 +18,7 @@ class Dassets::SourceFile
     should have_cmeth :find_by_digest_path
 
     should "know its file path" do
-      assert_equal @file_path, subject.file_path
+      assert_equal @file_path.to_s, subject.file_path
     end
 
     should "know if it exists" do
@@ -58,7 +58,7 @@ class Dassets::SourceFile
   class EngineTests < BaseTests
     desc "compiled against engines"
     setup do
-      @file_path = File.join(Dassets.config.source_path, 'nested/a-thing.txt.useless.dumb')
+      @file_path = TEST_SUPPORT_PATH.join('app/assets/nested/a-thing.txt.useless.dumb')
       @source_file = Dassets::SourceFile.new(@file_path)
     end
 

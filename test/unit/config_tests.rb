@@ -12,19 +12,21 @@ class Dassets::Config
     end
     subject{ @config }
 
-    should have_option :assets_file, Pathname, :default => ENV['DASSETS_ASSETS_FILE']
-    should have_options :source_path, :source_filter, :file_store
+    should have_option :assets_file, Pathname,  :default => ENV['DASSETS_ASSETS_FILE']
+    should have_options :file_store
 
     should have_reader :engines, :combinations
     should have_imeth :source, :engine, :combination
 
-    should "set the source path and filter proc with the `sources` method" do
+    should "register new sources with the `source` method" do
       path = '/path/to/app/assets'
       filter = proc{ |paths| [] }
-
       subject.source(path, &filter)
-      assert_equal path, subject.source_path.to_s
-      assert_equal filter, subject.source_filter
+
+      assert_equal 1, subject.sources.size
+      assert_kind_of Dassets::Source, subject.sources.first
+      assert_equal path, subject.sources.first.path
+      assert_equal filter, subject.sources.first.filter
     end
 
     should "know its engines and return a NullEngine by default" do

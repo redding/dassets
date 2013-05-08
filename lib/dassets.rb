@@ -6,6 +6,7 @@ require 'dassets/version'
 require 'dassets/file_store'
 require 'dassets/default_cache'
 require 'dassets/engine'
+require 'dassets/source'
 require 'dassets/asset_file'
 
 ENV['DASSETS_ASSETS_FILE'] ||= 'config/assets'
@@ -22,11 +23,14 @@ module Dassets
       require self.config.assets_file
     rescue LoadError
     end
-    raise 'no Dassets `source_path` specified' if !self.config.required_set?
   end
 
   def self.[](digest_path)
     AssetFile.new(digest_path)
+  end
+
+  def self.source_list
+    SourceList.new(self.config.sources)
   end
 
   # Cmds
@@ -40,23 +44,21 @@ module Dassets
     include NsOptions::Proxy
 
     option :assets_file,   Pathname,  :default => ENV['DASSETS_ASSETS_FILE']
-    option :source_path,   Pathname,  :required => true
-    option :source_filter, Proc,      :default => proc{ |paths| paths }
     option :file_store,    FileStore, :default => proc{ NullFileStore.new }
 
-    attr_reader :engines, :combinations
+    attr_reader :sources, :engines, :combinations
     attr_accessor :cache
 
     def initialize
       super
+      @sources = []
       @engines = Hash.new{ |h,k| Dassets::NullEngine.new }
       @combinations = Hash.new{ |h,k| [k] } # digest pass-thru if none defined
       @cache = DefaultCache.new
     end
 
-    def source(path=nil, &filter)
-      self.source_path   = path  if path
-      self.source_filter = filter if filter
+    def source(path, &filter)
+      @sources << Source.new(path, &filter)
     end
 
     def engine(input_ext, engine_class, opts=nil)
@@ -69,12 +71,8 @@ module Dassets
   end
 
   module SourceList
-    def self.new(config)
-      paths = Set.new
-      paths += Dir.glob(File.join(config.source_path, "**/*"))
-      paths.reject!{ |path| !File.file?(path) }
-
-      config.source_filter.call(paths).sort
+    def self.new(sources)
+      sources.inject([]){ |list, source| list += source.files }
     end
   end
 

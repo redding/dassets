@@ -10,7 +10,7 @@ end
 end
 
 Dassets.configure do |c|
-  c.source_path TEST_SUPPORT_PATH.join("app/assets")
+  c.source TEST_SUPPORT_PATH.join("app/assets")
 
   c.engine 'dumb', @dumb_engine
   c.engine 'useless', @useless_engine

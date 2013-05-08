@@ -52,7 +52,7 @@ module Dassets
     private
 
     def source_path(file)
-      File.join(File.join(Dassets.config.source_path, file))
+      File.join(Dassets.config.sources.first.path, file)
     end
 
     def store_path(file)
