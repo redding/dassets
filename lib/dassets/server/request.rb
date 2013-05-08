@@ -17,7 +17,7 @@ class Dassets::Server
     # - then check if for a digested asset resource (kinda fast)
     # - then check if source exists for the digested asset (slower)
     def for_asset_file?
-      !!((get? || head?) && for_digested_asset? && asset_file.source_cache.exists?)
+      !!((get? || head?) && for_digested_asset? && asset_file.exists?)
     end
 
     def asset_path

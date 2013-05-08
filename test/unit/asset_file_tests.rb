@@ -1,7 +1,7 @@
 require 'assert'
 require 'fileutils'
 require 'dassets/file_store'
-require 'dassets/source_cache'
+require 'dassets/source_proxy'
 require 'dassets/asset_file'
 
 class Dassets::AssetFile
@@ -13,7 +13,7 @@ class Dassets::AssetFile
     end
     subject{ @asset_file }
 
-    should have_readers :digest_path, :dirname, :extname, :basename, :source_cache
+    should have_readers :digest_path, :dirname, :extname, :basename, :source_proxy
     should have_imeths  :digest!, :url, :fingerprint, :content
     should have_imeths  :href, :mtime, :size, :mime_type, :exists?, :==
 
@@ -25,7 +25,7 @@ class Dassets::AssetFile
     end
 
     should "use its source file attrs as its own" do
-      assert_equal subject.source_cache.mtime.httpdate, subject.mtime
+      assert_equal subject.source_proxy.mtime.httpdate, subject.mtime
       assert_equal Rack::Utils.bytesize(subject.content), subject.size
       assert_equal "text/plain", subject.mime_type
       assert subject.exists?
@@ -37,19 +37,19 @@ class Dassets::AssetFile
       assert_not null_file.exists?
     end
 
-    should "know its source cache" do
-      assert_not_nil subject.source_cache
-      assert_kind_of Dassets::SourceCache, subject.source_cache
-      assert_equal subject.digest_path, subject.source_cache.digest_path
+    should "know its source proxy" do
+      assert_not_nil subject.source_proxy
+      assert_kind_of Dassets::SourceProxy, subject.source_proxy
+      assert_equal subject.digest_path, subject.source_proxy.digest_path
     end
 
     should "have a fingerprint" do
       assert_not_nil subject.fingerprint
     end
 
-    should "get its fingerprint from its source cache if none is given" do
+    should "get its fingerprint from its source proxy if none is given" do
       af = Dassets::AssetFile.new('file1.txt')
-      assert_equal af.source_cache.fingerprint, af.fingerprint
+      assert_equal af.source_proxy.fingerprint, af.fingerprint
     end
 
     should "know it's content" do
@@ -59,7 +59,7 @@ class Dassets::AssetFile
       assert_nil null_file.content
     end
 
-    should "get its content from its source cache if no output file" do
+    should "get its content from its source proxy if no output file" do
       digest_path = 'nested/a-thing.txt.no-use'
       exp_content = "thing\n\nDUMB\nUSELESS"
 

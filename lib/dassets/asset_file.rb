@@ -1,18 +1,18 @@
 require 'rack/utils'
 require 'rack/mime'
-require 'dassets/source_cache'
+require 'dassets/source_proxy'
 
 module Dassets; end
 class Dassets::AssetFile
 
-  attr_reader :digest_path, :dirname, :extname, :basename, :source_cache
+  attr_reader :digest_path, :dirname, :extname, :basename, :source_proxy
 
   def initialize(digest_path)
     @digest_path = digest_path
     @dirname  = File.dirname(@digest_path)
     @extname  = File.extname(@digest_path)
     @basename = File.basename(@digest_path, @extname)
-    @source_cache = Dassets::SourceCache.new(@digest_path, Dassets.config.cache)
+    @source_proxy = Dassets::SourceProxy.new(@digest_path, Dassets.config.cache)
   end
 
   def digest!
@@ -33,17 +33,17 @@ class Dassets::AssetFile
 
   def fingerprint
     return nil if !self.exists?
-    @fingerprint ||= @source_cache.fingerprint
+    @fingerprint ||= @source_proxy.fingerprint
   end
 
   def content
     return nil if !self.exists?
-    @content ||= @source_cache.content
+    @content ||= @source_proxy.content
   end
 
   def mtime
     return nil if !self.exists?
-    @mtime ||= @source_cache.mtime.httpdate
+    @mtime ||= @source_proxy.mtime.httpdate
   end
 
   def size
@@ -57,7 +57,7 @@ class Dassets::AssetFile
   end
 
   def exists?
-    @source_cache.exists?
+    @source_proxy.exists?
   end
 
   def ==(other_asset_file)

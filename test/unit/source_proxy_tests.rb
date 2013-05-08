@@ -1,16 +1,16 @@
 require 'assert'
 require 'digest/md5'
 require 'dassets/source_file'
-require 'dassets/source_cache'
+require 'dassets/source_proxy'
 
-class Dassets::SourceCache
+class Dassets::SourceProxy
 
   class BaseTests < Assert::Context
-    desc "Dassets::SourceCache"
+    desc "Dassets::SourceProxy"
     setup do
-      @source_cache = Dassets::SourceCache.new('file1.txt')
+      @source_proxy = Dassets::SourceProxy.new('file1.txt')
     end
-    subject{ @source_cache }
+    subject{ @source_proxy }
 
     should have_readers :digest_path, :source_files
     should have_imeths :content, :fingerprint, :key, :mtime, :exists?

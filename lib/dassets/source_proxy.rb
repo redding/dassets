@@ -2,7 +2,7 @@ require 'digest/md5'
 require 'dassets/source_file'
 
 module Dassets; end
-class Dassets::SourceCache
+class Dassets::SourceProxy
 
   attr_reader :digest_path, :source_files, :cache
 
