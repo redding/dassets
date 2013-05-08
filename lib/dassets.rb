@@ -53,7 +53,7 @@ module Dassets
       super
       @engines = Hash.new{ |h,k| Dassets::NullEngine.new }
       @combinations = Hash.new{ |h,k| [k] } # digest pass-thru if none defined
-      @cache = DefaultCache.new#
+      @cache = DefaultCache.new
     end
 
     def source(path=nil, &filter)
