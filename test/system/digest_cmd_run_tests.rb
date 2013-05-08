@@ -7,7 +7,7 @@ module Dassets
   class DigestCmdRunTests < Assert::Context
     desc "the DigestCmd"
     setup do
-      Dassets.config.file_store = 'public'
+      Dassets.config.file_store = TEST_SUPPORT_PATH.join('public').to_s
       clear_store_path(Dassets.config.file_store.root)
       Dassets.digest_source_files
 

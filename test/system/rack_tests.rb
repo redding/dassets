@@ -40,7 +40,7 @@ module Dassets
 
   class DigestTests < SuccessTests
     setup do
-      Dassets.config.file_store = 'public'
+      Dassets.config.file_store = TEST_SUPPORT_PATH.join('public').to_s
       @url = 'file1-daa05c683a4913b268653f7a7e36a5b4.txt'
       @url_file = Dassets.config.file_store.store_path(@url)
       FileUtils.rm(@url_file)
