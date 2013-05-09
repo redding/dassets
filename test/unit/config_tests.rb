@@ -15,8 +15,8 @@ class Dassets::Config
     should have_option :assets_file, Pathname,  :default => ENV['DASSETS_ASSETS_FILE']
     should have_options :file_store
 
-    should have_reader :engines, :combinations
-    should have_imeth :source, :engine, :combination
+    should have_reader :combinations
+    should have_imeth :source, :combination
 
     should "register new sources with the `source` method" do
       path = '/path/to/app/assets'
@@ -27,27 +27,6 @@ class Dassets::Config
       assert_kind_of Dassets::Source, subject.sources.first
       assert_equal path, subject.sources.first.path
       assert_equal filter, subject.sources.first.filter
-    end
-
-    should "know its engines and return a NullEngine by default" do
-      assert_kind_of ::Hash, subject.engines
-      assert_kind_of Dassets::NullEngine, subject.engines['some']
-      assert_kind_of Dassets::NullEngine, subject.engines['thing']
-    end
-
-    should "allow registering new engines" do
-      empty_engine = Class.new(Dassets::Engine) do
-        def ext(input_ext); ''; end
-        def compile(input); ''; end
-      end
-
-      assert_kind_of Dassets::NullEngine, subject.engines['empty']
-      subject.engine 'empty', empty_engine, 'an' => 'opt'
-      assert_kind_of empty_engine, subject.engines['empty']
-
-      assert_equal({'an' => 'opt'}, subject.engines['empty'].opts)
-      assert_equal '', subject.engines['empty'].ext('empty')
-      assert_equal '', subject.engines['empty'].compile('some content')
     end
 
     should "know its combinations and return the keyed digest path by default" do

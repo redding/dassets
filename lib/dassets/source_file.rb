@@ -38,7 +38,7 @@ module Dassets
     def digest_path
       @digest_path ||= begin
         digest_basename = @ext_list.inject([]) do |digest_ext_list, ext|
-          digest_ext_list << Dassets.config.engines[ext].ext(ext)
+          digest_ext_list << self.source.engines[ext].ext(ext)
         end.reject(&:empty?).reverse.join('.')
 
         File.join([digest_dirname(@file_path), digest_basename].reject(&:empty?))
@@ -47,7 +47,7 @@ module Dassets
 
     def compiled
       @compiled ||= @ext_list.inject(read_file(@file_path)) do |content, ext|
-        Dassets.config.engines[ext].compile(content)
+        self.source.engines[ext].compile(content)
       end
     end
 
