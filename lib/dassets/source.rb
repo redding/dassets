@@ -1,11 +1,24 @@
+require 'dassets/engine'
+
 module Dassets; end
 class Dassets::Source
 
-  attr_reader :path, :filter
+  attr_reader :path, :engines
 
-  def initialize(path, &filter)
-    @path = path
-    @filter = filter || proc{ |paths| paths }
+  def initialize(path)
+    @path = path.to_s
+    @filter = proc{ |paths| paths }
+    @engines = Hash.new{ |h,k| Dassets::NullEngine.new }
+  end
+
+  def filter(&block)
+    block.nil? ? @filter : @filter = block
+  end
+
+  def engine(input_ext, engine_class, registered_opts=nil)
+    default_opts = { 'source_path' => @path }
+    engine_opts = default_opts.merge(registered_opts || {})
+    @engines[input_ext.to_s] = engine_class.new(engine_opts)
   end
 
   def files

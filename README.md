@@ -14,11 +14,8 @@ require 'dassets'
 
 Dassets.configure do |c|
 
-  # tell Dassets where to look for source files and (optionally) how to filter those files
-  c.source '/path/to/app/assets' do |paths|
-    # return the filtered source path list
-    paths.select{ |p| ... }
-  end
+  # tell Dassets where to look for source files
+  c.source '/path/to/app/assets'
 
   # (optional) tell Dassets where to store digested asset files
   # if none given, Dassets will not write any digested output
@@ -75,7 +72,7 @@ TODO: programmatically cache asset files
 
 ## Compiling
 
-Dassets can handle compiling your asset source as part of its digest pipeline.  It does this via "engines".  Engines transform source extensions and content.
+Dassets compiles your asset source as part of its digest pipeline using "engines".  Engines transform source extensions and content.
 
 Engines are "registered" with dassets based on source extensions.  Name your source file with registered extensions and those engines will be used to compile your source content.
 
@@ -91,6 +88,10 @@ TODO
 * override the `ext` method to specify how the input source extension should be handled
 * override the `compile` method to specify how the input content should be transformed
 * register your engine class with Dassets
+
+## Sources
+
+TODO: filtering files, registering engines
 
 ## Combinations
 

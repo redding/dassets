@@ -5,7 +5,6 @@ require 'ns-options'
 require 'dassets/version'
 require 'dassets/file_store'
 require 'dassets/default_cache'
-require 'dassets/engine'
 require 'dassets/source'
 require 'dassets/asset_file'
 
@@ -46,23 +45,18 @@ module Dassets
     option :assets_file,   Pathname,  :default => ENV['DASSETS_ASSETS_FILE']
     option :file_store,    FileStore, :default => proc{ NullFileStore.new }
 
-    attr_reader :sources, :engines, :combinations
+    attr_reader :sources, :combinations
     attr_accessor :cache
 
     def initialize
       super
       @sources = []
-      @engines = Hash.new{ |h,k| Dassets::NullEngine.new }
       @combinations = Hash.new{ |h,k| [k] } # digest pass-thru if none defined
       @cache = DefaultCache.new
     end
 
-    def source(path, &filter)
-      @sources << Source.new(path, &filter)
-    end
-
-    def engine(input_ext, engine_class, opts=nil)
-      @engines[input_ext.to_s] = engine_class.new(opts)
+    def source(path, &block)
+      @sources << Source.new(path).tap{ |s| block.call(s) if block }
     end
 
     def combination(key_digest_path, value_digest_paths)
