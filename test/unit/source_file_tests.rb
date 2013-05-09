@@ -7,13 +7,13 @@ class Dassets::SourceFile
   class BaseTests < Assert::Context
     desc "Dassets::SourceFile"
     setup do
-      @file_path = TEST_SUPPORT_PATH.join('app/assets/file1.txt')
+      @file_path = TEST_SUPPORT_PATH.join('app/assets/file1.txt').to_s
       @source_file = Dassets::SourceFile.new(@file_path)
     end
     subject{ @source_file }
 
     should have_readers :file_path
-    should have_imeths :asset_file, :digest_path
+    should have_imeths :source, :asset_file, :digest_path
     should have_imeths :compiled, :exists?, :mtime
     should have_cmeth :find_by_digest_path
 
@@ -36,6 +36,11 @@ class Dassets::SourceFile
     should "know its asset file" do
       assert_kind_of Dassets::AssetFile, subject.asset_file
       assert_equal Dassets::AssetFile.new(subject.digest_path), subject.asset_file
+    end
+
+    should "know its configured source" do
+      exp_source = Dassets.config.sources.select{ |s| @file_path.include?(s.path) }.last
+      assert_equal exp_source, subject.source
     end
 
     should "be findable by its digest path" do
