@@ -8,11 +8,11 @@ module Dassets
 
     def self.find_by_digest_path(path)
       # look in the configured source list
-      sources = Dassets.source_list.map{ |p| self.new(p) }
+      source_files = Dassets.source_list.map{ |p| self.new(p) }
 
-      # get the last matching one (in case two sources have the same digest path
-      # the last one *should* be correct since it was last to be configured)
-      sources.select{ |s| s.digest_path == path }.last || NullSourceFile.new(path)
+      # get the last matching one (in case two source files have the same digest
+      # path the last one *should* be correct since it was last to be configured)
+      source_files.select{ |s| s.digest_path == path }.last || NullSourceFile.new(path)
     end
 
     attr_reader :file_path
@@ -22,6 +22,15 @@ module Dassets
       @ext_list = File.basename(@file_path).split('.').reverse
     end
 
+    # get the last matching one (in the case two sources with the same path are
+    # configured) since we select the last matching source file (from the last
+    # configured source) in `find_by_digest_path` above.
+    def source
+      @source ||= Dassets.config.sources.select do |source|
+        @file_path =~ /^#{slash_path(source.path)}/
+      end.last
+    end
+
     def asset_file
       @asset_file ||= Dassets::AssetFile.new(self.digest_path)
     end
@@ -29,19 +38,16 @@ module Dassets
     def digest_path
       @digest_path ||= begin
         digest_basename = @ext_list.inject([]) do |digest_ext_list, ext|
-          digest_ext_list << Dassets.config.engines[ext].ext(ext)
-        end.reject{ |e| e.empty? }.reverse.join('.')
+          digest_ext_list << self.source.engines[ext].ext(ext)
+        end.reject(&:empty?).reverse.join('.')
 
-        File.join([
-          digest_dirname(@file_path, Dassets.config.sources),
-          digest_basename
-        ].reject{ |p| p.empty? })
+        File.join([digest_dirname(@file_path), digest_basename].reject(&:empty?))
       end
     end
 
     def compiled
       @compiled ||= @ext_list.inject(read_file(@file_path)) do |content, ext|
-        Dassets.config.engines[ext].compile(content)
+        self.source.engines[ext].compile(content)
       end
     end
 
@@ -59,11 +65,9 @@ module Dassets
 
     private
 
-    # for each source, remove the source path from the dirname (if it exists)
-    def digest_dirname(file_path, sources)
-      sources.inject(File.dirname(file_path)) do |dirname, source|
-        slash_path(dirname).sub(slash_path(source.path), '')
-      end
+    # remove the source path from the dirname (if it exists)
+    def digest_dirname(file_path)
+      slash_path(File.dirname(file_path)).sub(slash_path(self.source.path), '')
     end
 
     def slash_path(path)
@@ -83,7 +87,6 @@ module Dassets
       @ext_list = []
       @digest_path = digest_path
     end
-    def digest; end
     def ==(other_source_file)
       self.file_path == other_source_file.file_path
     end

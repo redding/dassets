@@ -10,10 +10,11 @@ end
 end
 
 Dassets.configure do |c|
-  c.source TEST_SUPPORT_PATH.join("app/assets")
+  c.source TEST_SUPPORT_PATH.join("app/assets") do |s|
+    s.engine 'dumb', @dumb_engine
+    s.engine 'useless', @useless_engine
+  end
 
-  c.engine 'dumb', @dumb_engine
-  c.engine 'useless', @useless_engine
   c.cache = nil # use no cache
 
 end
