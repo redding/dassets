@@ -21,7 +21,7 @@ class Dassets::Config
     should "register new sources with the `source` method" do
       path = '/path/to/app/assets'
       filter = proc{ |paths| [] }
-      subject.source(path, &filter)
+      subject.source(path){ |s| s.filter = filter }
 
       assert_equal 1, subject.sources.size
       assert_kind_of Dassets::Source, subject.sources.first

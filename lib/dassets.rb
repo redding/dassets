@@ -57,8 +57,8 @@ module Dassets
       @cache = DefaultCache.new
     end
 
-    def source(path, &filter)
-      @sources << Source.new(path, &filter)
+    def source(path, &block)
+      @sources << Source.new(path).tap{ |s| block.call(s) if block }
     end
 
     def engine(input_ext, engine_class, opts=nil)

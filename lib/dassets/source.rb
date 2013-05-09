@@ -1,11 +1,12 @@
 module Dassets; end
 class Dassets::Source
 
-  attr_reader :path, :filter
+  attr_reader :path
+  attr_accessor :filter
 
-  def initialize(path, &filter)
+  def initialize(path)
     @path = path
-    @filter = filter || proc{ |paths| paths }
+    @filter = proc{ |paths| paths }
   end
 
   def files

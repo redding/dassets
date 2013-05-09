@@ -10,7 +10,8 @@ class Dassets::Source
     end
     subject{ @source }
 
-    should have_readers :path, :filter
+    should have_reader :path
+    should have_accessor :filter
     should have_imeth :files
 
     should "know its path and filter" do
@@ -30,16 +31,15 @@ class Dassets::Source
     end
 
     should "run the supplied source filter on the paths" do
-      filter = proc do |paths|
+      subject.filter = proc do |paths|
         paths.reject{ |path| File.basename(path) =~ /^_/ }
       end
-      source = Dassets::Source.new(subject.path, &filter)
       exp_files = [
         TEST_SUPPORT_PATH.join('source_files/test1.txt').to_s,
         TEST_SUPPORT_PATH.join('source_files/nested/test2.txt').to_s,
       ].sort
 
-      assert_equal exp_files, source.files
+      assert_equal exp_files, subject.files
     end
 
   end
