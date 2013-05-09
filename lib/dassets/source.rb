@@ -7,13 +7,15 @@ class Dassets::Source
   attr_accessor :filter
 
   def initialize(path)
-    @path = path
+    @path = path.to_s
     @filter = proc{ |paths| paths }
     @engines = Hash.new{ |h,k| Dassets::NullEngine.new }
   end
 
-  def engine(input_ext, engine_class, opts=nil)
-    @engines[input_ext.to_s] = engine_class.new(opts)
+  def engine(input_ext, engine_class, registered_opts=nil)
+    default_opts = { 'source_path' => @path }
+    engine_opts = default_opts.merge(registered_opts || {})
+    @engines[input_ext.to_s] = engine_class.new(engine_opts)
   end
 
   def files
