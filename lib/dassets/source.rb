@@ -4,12 +4,15 @@ module Dassets; end
 class Dassets::Source
 
   attr_reader :path, :engines
-  attr_accessor :filter
 
   def initialize(path)
     @path = path.to_s
     @filter = proc{ |paths| paths }
     @engines = Hash.new{ |h,k| Dassets::NullEngine.new }
+  end
+
+  def filter(&block)
+    block.nil? ? @filter : @filter = block
   end
 
   def engine(input_ext, engine_class, registered_opts=nil)

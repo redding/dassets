@@ -12,10 +12,9 @@ class Dassets::Source
     subject{ @source }
 
     should have_reader :path, :engines
-    should have_accessor :filter
-    should have_imeth :files, :engine
+    should have_imeth :files, :filter, :engine
 
-    should "know its path and filter" do
+    should "know its path and default filter" do
       assert_equal @source_path.to_s, subject.path
       assert_kind_of Proc, subject.filter
       assert_equal ['file1', 'file2'], subject.filter.call(['file1', 'file2'])
@@ -32,7 +31,7 @@ class Dassets::Source
     end
 
     should "run the supplied source filter on the paths" do
-      subject.filter = proc do |paths|
+      subject.filter do |paths|
         paths.reject{ |path| File.basename(path) =~ /^_/ }
       end
       exp_files = [
