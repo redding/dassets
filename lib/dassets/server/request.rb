@@ -1,5 +1,6 @@
 require 'rack/request'
 
+module Dassets; end
 class Dassets::Server
 
   class Request < Rack::Request

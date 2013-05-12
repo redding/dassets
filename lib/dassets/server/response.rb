@@ -2,6 +2,7 @@ require 'rack/response'
 require 'rack/utils'
 require 'rack/mime'
 
+module Dassets; end
 class Dassets::Server
 
   class Response
