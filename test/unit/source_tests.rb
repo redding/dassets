@@ -49,6 +49,35 @@ class Dassets::Source
 
   end
 
+  class EmptySourceTests < Assert::Context
+    desc "with no source files"
+    setup do
+      @empty_source_path = TEST_SUPPORT_PATH.join("empty")
+      @empty_source = Dassets::Source.new(@empty_source_path)
+
+      @no_exist_source_path = TEST_SUPPORT_PATH.join("does-not-exist")
+      @no_exist_source = Dassets::Source.new(@no_exist_source_path)
+    end
+
+    should "have no files" do
+      assert_empty @empty_source.files
+      assert_empty @no_exist_source.files
+    end
+
+    should "hand filters an empty path list" do
+      @empty_source.filter do |paths|
+        paths.reject{ |path| File.basename(path) =~ /^_/ }
+      end
+      @no_exist_source.filter do |paths|
+        paths.reject{ |path| File.basename(path) =~ /^_/ }
+      end
+
+      assert_empty @empty_source.files
+      assert_empty @no_exist_source.files
+    end
+
+  end
+
   class EngineRegistrationTests < BaseTests
     desc "when registering an engine"
     setup do

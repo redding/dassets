@@ -22,13 +22,13 @@ class Dassets::Source
   end
 
   def files
-    apply_filter(glob_files).sort
+    apply_filter(glob_files || []).sort
   end
 
   private
 
   def glob_files
-    Dir.glob(File.join(@path, "**/*"  )).reject!{ |p| !File.file?(p) }
+    Dir.glob(File.join(@path, "**/*")).reject!{ |p| !File.file?(p) }
   end
 
   def apply_filter(files)
