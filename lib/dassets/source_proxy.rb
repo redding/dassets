@@ -6,10 +6,10 @@ class Dassets::SourceProxy
 
   attr_reader :digest_path, :source_files, :cache
 
-  def initialize(digest_path, cache=nil)
+  def initialize(digest_path, cache = nil)
     @digest_path  = digest_path
-    @source_files = get_source_files(@digest_path)
     @cache = cache || NoCache.new
+    @source_files = get_source_files(@digest_path, @cache)
   end
 
   def key
@@ -42,9 +42,9 @@ class Dassets::SourceProxy
     @source_fingerprint ||= Digest::MD5.new.hexdigest(source_content)
   end
 
-  def get_source_files(digest_path)
+  def get_source_files(digest_path, cache)
     Dassets.config.combinations[digest_path.to_s].map do |source_digest_path|
-      Dassets::SourceFile.find_by_digest_path(source_digest_path)
+      Dassets::SourceFile.find_by_digest_path(source_digest_path, cache)
     end
   end
 

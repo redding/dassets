@@ -1,10 +1,11 @@
 require 'assert'
-require 'dassets/asset_file'
 require 'dassets/source_file'
+
+require 'dassets/asset_file'
 
 class Dassets::SourceFile
 
-  class BaseTests < Assert::Context
+  class UnitTests < Assert::Context
     desc "Dassets::SourceFile"
     setup do
       @file_path = TEST_SUPPORT_PATH.join('app/assets/file1.txt').to_s
@@ -50,17 +51,38 @@ class Dassets::SourceFile
       assert_not_same subject, found
     end
 
+  end
+
+  class NullSourceTests < UnitTests
+
     should "find a null src file if finding by an unknown digest path" do
       null_src = Dassets::NullSourceFile.new('not/found/digest/path')
       found = Dassets::SourceFile.find_by_digest_path('not/found/digest/path')
 
-      assert_equal null_src, found
+      assert_equal    null_src, found
       assert_not_same null_src, found
+
+      assert_equal '',    null_src.file_path
+      assert_equal false, null_src.exists?
+      assert_nil null_src.compiled
+      assert_nil null_src.mtime
+    end
+
+    should "'proxy' the digest path if the path is a combination" do
+      Dassets.config.combination 'file3.txt', ['file1.txt', 'file2.txt']
+      src_proxy      = Dassets::SourceProxy.new('file3.txt')
+      null_combo_src = Dassets::NullSourceFile.new('file3.txt')
+
+      assert_equal src_proxy.exists?, null_combo_src.exists?
+      assert_equal src_proxy.content, null_combo_src.compiled
+      assert_equal src_proxy.mtime,   null_combo_src.mtime
+
+      Dassets.config.combinations.delete('file3.txt')
     end
 
   end
 
-  class EngineTests < BaseTests
+  class EngineTests < UnitTests
     desc "compiled against engines"
     setup do
       @file_path = TEST_SUPPORT_PATH.join('app/assets/nested/a-thing.txt.useless.dumb')
