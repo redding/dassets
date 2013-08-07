@@ -44,7 +44,7 @@ module Dassets
     def initialize
       super
       @sources = []
-      @combinations = Hash.new{ |h,k| [k] } # digest pass-thru if none defined
+      @combinations = Hash.new{ |h, k| [k] } # digest pass-thru if none defined
       @cache = DefaultCache.new
     end
 
@@ -54,6 +54,12 @@ module Dassets
 
     def combination(key_digest_path, value_digest_paths)
       @combinations[key_digest_path.to_s] = [*value_digest_paths]
+    end
+
+    def combination?(key_digest_path)
+      # a digest path is only considered a combination is it is not the default
+      # pass-thru above
+      @combinations[key_digest_path.to_s] != [key_digest_path]
     end
   end
 
