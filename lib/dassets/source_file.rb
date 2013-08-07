@@ -1,18 +1,19 @@
 require 'fileutils'
 require 'dassets'
 require 'dassets/asset_file'
+require 'dassets/source_proxy'
 
 module Dassets
 
   class SourceFile
 
-    def self.find_by_digest_path(path)
+    def self.find_by_digest_path(path, cache = nil)
       # look in the configured source list
       source_files = Dassets.source_list.map{ |p| self.new(p) }
 
       # get the last matching one (in case two source files have the same digest
       # path the last one *should* be correct since it was last to be configured)
-      source_files.select{ |s| s.digest_path == path }.last || NullSourceFile.new(path)
+      source_files.select{ |s| s.digest_path == path }.last || NullSourceFile.new(path, cache)
     end
 
     attr_reader :file_path
@@ -80,16 +81,34 @@ module Dassets
 
   end
 
+  # A null source file is used to represent source that either doesn't exist
+  # or source that is a proxy (ie a combination)
+
   class NullSourceFile < SourceFile
-    attr_reader :file_path, :digest_path, :compiled, :fingerprint
-    def initialize(digest_path)
-      @file_path = ''
-      @ext_list = []
+
+    def initialize(digest_path, cache = nil)
+      @file_path, @ext_list = '', []
       @digest_path = digest_path
+      @source_compiled, @source_exists, @source_mtime = nil, false, nil
+
+      # if the digest path is a combination, build its proxy and use relevent
+      # properties as the source file properties
+      if Dassets.config.combination?(@digest_path)
+        source_proxy = SourceProxy.new(@digest_path, cache)
+        @source_compiled = source_proxy.content
+        @source_exists   = source_proxy.exists?
+        @source_mtime    = source_proxy.mtime
+      end
     end
+
+    def compiled; @source_compiled; end
+    def exists?;  @source_exists;   end
+    def mtime;    @source_mtime;    end
+
     def ==(other_source_file)
       self.file_path == other_source_file.file_path
     end
+
   end
 
 end
