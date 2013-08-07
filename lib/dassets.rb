@@ -32,13 +32,6 @@ module Dassets
     SourceList.new(self.config.sources)
   end
 
-  # Cmds
-
-  def self.digest_source_files(paths=nil)
-    require 'dassets/digest_cmd'
-    DigestCmd.new(paths).run
-  end
-
   class Config
     include NsOptions::Proxy
 

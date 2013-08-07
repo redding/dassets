@@ -25,24 +25,6 @@ Dassets.configure do |c|
 end
 ```
 
-### Digest
-
-You can use the CLI to digest your source files on demand:
-
-```
-$ dassets digest                       # digest all source files, OR
-$ dassets digest /path/to/source/file  # digest some specific files
-```
-
-Or you can programmatically digest files as needed:
-
-```ruby
-Dassets.digest_source_files                           # digest all source files, OR
-Dassets.digest_source_files ['/path/to/source/file']  # digest just some specific files
-```
-
-Digesting involves combining, compiling, fingerprinting, and outputting each source file.  Once a source has been digested, it is available for linking, serving, and/or caching.
-
 ### Link To
 
 ```rb
@@ -53,22 +35,13 @@ Dassets['img/logos/main.jpg'].href # => "/img/logos/main-a1b2c3.jpg"
 
 ### Serve
 
-In development, use the Dassets middleware to serve your digested asset files:
+Use the Dassets middleware to serve your digested asset files:
 
 ```ruby
 # `app` is a rack application
 require 'dassets/server'
 app.use Dassets::Server
 ```
-
-In production, use the CLI to cache your digested asset files to the public dir:
-
-```
-# call the CLI in your deploy scripts or whatever
-$ dassets cache /path/to/public/dir
-```
-
-TODO: programmatically cache asset files
 
 ## Compiling
 
