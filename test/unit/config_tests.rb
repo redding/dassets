@@ -16,7 +16,7 @@ class Dassets::Config
     should have_options :file_store
 
     should have_reader :combinations
-    should have_imeth :source, :combination
+    should have_imeth :source, :combination, :combination?
 
     should "register new sources with the `source` method" do
       path = '/path/to/app/assets'
@@ -43,6 +43,13 @@ class Dassets::Config
       assert_equal ['test/digest.path'], subject.combinations['test/digest.path']
       subject.combination 'test/digest.path', ['some/other.path']
       assert_equal ['some/other.path'], subject.combinations['test/digest.path']
+    end
+
+    should "know which digest paths are actual combinations and which are just pass-thrus" do
+      subject.combination 'some/combination.path', ['some.path', 'another.path']
+
+      assert     subject.combination? 'some/combination.path'
+      assert_not subject.combination? 'some/non-combo.path'
     end
 
   end
