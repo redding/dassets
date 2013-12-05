@@ -1,10 +1,12 @@
 require 'assert'
-require 'rack/utils'
 require 'dassets/server/response'
+
+require 'rack/utils'
+require 'dassets/asset_file'
 
 class Dassets::Server::Response
 
-  class BaseTests < Assert::Context
+  class UnitTests < Assert::Context
     desc "Dassets::Server::Response"
     setup do
       @resp = file_response(Dassets::AssetFile.new(''))

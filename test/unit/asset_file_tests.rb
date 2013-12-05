@@ -1,12 +1,13 @@
 require 'assert'
+require 'dassets/asset_file'
+
 require 'fileutils'
 require 'dassets/file_store'
 require 'dassets/source_proxy'
-require 'dassets/asset_file'
 
 class Dassets::AssetFile
 
-  class BaseTests < Assert::Context
+  class UnitTests < Assert::Context
     desc "Dassets::AssetFile"
     setup do
       @asset_file = Dassets::AssetFile.new('file1.txt')
@@ -83,7 +84,7 @@ class Dassets::AssetFile
 
   end
 
-  class DigestTests < BaseTests
+  class DigestTests < UnitTests
     desc "being digested with an output path configured"
     setup do
       Dassets.config.file_store = TEST_SUPPORT_PATH.join('public').to_s
@@ -91,7 +92,7 @@ class Dassets::AssetFile
       @outfile = Dassets.config.file_store.store_path(@asset_file.url)
     end
     teardown do
-      Dassets.config.file_store = Dassets::NullFileStore.new
+      Dassets.config.file_store = Dassets::FileStore::NullStore.new
     end
 
     should "return the asset file url" do

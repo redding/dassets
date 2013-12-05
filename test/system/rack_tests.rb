@@ -1,8 +1,9 @@
 require 'assert'
+require 'dassets'
+
 require 'assert-rack-test'
 require 'fileutils'
 require 'test/support/app'
-require 'dassets/server'
 
 module Dassets
 
@@ -46,7 +47,7 @@ module Dassets
       FileUtils.rm(@url_file)
     end
     teardown do
-      Dassets.config.file_store = NullFileStore.new
+      Dassets.config.file_store = FileStore::NullStore.new
     end
 
     should "digest the asset" do
