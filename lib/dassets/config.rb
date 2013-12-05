@@ -9,7 +9,6 @@ module Dassets
   class Config
     include NsOptions::Proxy
 
-    option :assets_file,   Pathname,  :default => ENV['DASSETS_ASSETS_FILE']
     option :file_store, FileStore, :default => proc{ FileStore::NullStore.new }
     option :cache, :default => proc{ Cache::NoCache.new }
 
