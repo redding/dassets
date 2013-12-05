@@ -4,7 +4,7 @@ require 'dassets'
 
 module Dassets
 
-  class BaseTests < Assert::Context
+  class UnitTests < Assert::Context
     desc "Dassets"
     subject{ Dassets }
 

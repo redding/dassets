@@ -1,4 +1,5 @@
 require 'digest/md5'
+require 'dassets/cache'
 require 'dassets/source_file'
 
 module Dassets; end
@@ -8,7 +9,7 @@ class Dassets::SourceProxy
 
   def initialize(digest_path, cache = nil)
     @digest_path  = digest_path
-    @cache = cache || NoCache.new
+    @cache = cache || Dassets::Cache::NoCache.new
     @source_files = get_source_files(@digest_path, @cache)
   end
 
@@ -35,22 +36,17 @@ class Dassets::SourceProxy
   private
 
   def source_content
-    @source_content ||= @source_files.map{ |f| f.compiled }.join("\n")
+    @source_files.map{ |f| f.compiled }.join("\n")
   end
 
   def source_fingerprint
-    @source_fingerprint ||= Digest::MD5.new.hexdigest(source_content)
+    Digest::MD5.new.hexdigest(source_content)
   end
 
   def get_source_files(digest_path, cache)
     Dassets.config.combinations[digest_path.to_s].map do |source_digest_path|
       Dassets::SourceFile.find_by_digest_path(source_digest_path, cache)
     end
-  end
-
-  class NoCache
-    def [](key); end
-    def []=(key, value); end
   end
 
 end
