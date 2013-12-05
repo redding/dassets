@@ -21,39 +21,37 @@ class Dassets::AssetFile
   end
 
   def url
-    @url ||= begin
-      url_basename = "#{@basename}-#{self.fingerprint}#{@extname}"
-      File.join(@dirname, url_basename).sub(/^\.\//, '').sub(/^\//, '')
-    end
+    url_basename = "#{@basename}-#{self.fingerprint}#{@extname}"
+    File.join(@dirname, url_basename).sub(/^\.\//, '').sub(/^\//, '')
   end
 
   def href
-    @href ||= "/#{self.url}"
+    "/#{self.url}"
   end
 
   def fingerprint
     return nil if !self.exists?
-    @fingerprint ||= @source_proxy.fingerprint
+    @source_proxy.fingerprint
   end
 
   def content
     return nil if !self.exists?
-    @content ||= @source_proxy.content
+    @source_proxy.content
   end
 
   def mtime
     return nil if !self.exists?
-    @mtime ||= @source_proxy.mtime.httpdate
+    @source_proxy.mtime.httpdate
   end
 
   def size
     return nil if !self.exists?
-    @size ||= Rack::Utils.bytesize(self.content)
+    Rack::Utils.bytesize(self.content)
   end
 
   def mime_type
     return nil if !self.exists?
-    @mime_type ||= Rack::Mime.mime_type(@extname)
+    Rack::Mime.mime_type(@extname)
   end
 
   def exists?
