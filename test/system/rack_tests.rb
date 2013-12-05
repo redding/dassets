@@ -3,6 +3,7 @@ require 'dassets'
 
 require 'assert-rack-test'
 require 'fileutils'
+require 'dassets/server'
 require 'test/support/app'
 
 module Dassets

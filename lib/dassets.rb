@@ -2,8 +2,6 @@ require 'dassets/version'
 require 'dassets/asset_file'
 require 'dassets/config'
 
-ENV['DASSETS_ASSETS_FILE'] ||= 'config/assets'
-
 module Dassets
 
   def self.config; @config ||= Config.new; end
@@ -12,10 +10,6 @@ module Dassets
   end
 
   def self.init
-    begin
-      require self.config.assets_file
-    rescue LoadError
-    end
     @asset_files ||= {}
   end
 

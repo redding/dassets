@@ -16,9 +16,7 @@ class Dassets::Config
     end
     subject{ @config }
 
-    should have_option :assets_file, Pathname,  :default => ENV['DASSETS_ASSETS_FILE']
     should have_options :file_store, :cache
-
     should have_reader :combinations
     should have_imeth :source, :combination, :combination?
 
