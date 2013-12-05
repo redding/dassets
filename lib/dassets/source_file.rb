@@ -47,7 +47,7 @@ module Dassets
     end
 
     def compiled
-      @compiled ||= @ext_list.inject(read_file(@file_path)) do |content, ext|
+      @ext_list.inject(read_file(@file_path)) do |content, ext|
         self.source.engines[ext].compile(content)
       end
     end
@@ -89,24 +89,25 @@ module Dassets
     def initialize(digest_path, cache = nil)
       @file_path, @ext_list = '', []
       @digest_path = digest_path
-      @source_compiled, @source_exists, @source_mtime = nil, false, nil
-
-      # if the digest path is a combination, build its proxy and use relevent
-      # properties as the source file properties
-      if Dassets.config.combination?(@digest_path)
-        source_proxy = SourceProxy.new(@digest_path, cache)
-        @source_compiled = source_proxy.content
-        @source_exists   = source_proxy.exists?
-        @source_mtime    = source_proxy.mtime
+      @source_proxy = if Dassets.config.combination?(@digest_path)
+        SourceProxy.new(@digest_path, cache)
+      else
+        NullSourceProxy.new
       end
     end
 
-    def compiled; @source_compiled; end
-    def exists?;  @source_exists;   end
-    def mtime;    @source_mtime;    end
+    def compiled; @source_proxy.content; end
+    def exists?;  @source_proxy.exists?; end
+    def mtime;    @source_proxy.mtime;   end
 
     def ==(other_source_file)
       self.file_path == other_source_file.file_path
+    end
+
+    class NullSourceProxy
+      def content; nil;   end
+      def exists?; false; end
+      def mtime;   nil;   end
     end
 
   end

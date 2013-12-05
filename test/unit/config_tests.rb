@@ -1,11 +1,15 @@
 require 'assert'
+require 'dassets/config'
+
 require 'ns-options/assert_macros'
-require 'dassets'
+require 'dassets/cache'
+require 'dassets/file_store'
 
 class Dassets::Config
 
-  class BaseTests < Assert::Context
+  class UnitTests < Assert::Context
     include NsOptions::AssertMacros
+
     desc "Dassets::Config"
     setup do
       @config = Dassets::Config.new
@@ -13,10 +17,18 @@ class Dassets::Config
     subject{ @config }
 
     should have_option :assets_file, Pathname,  :default => ENV['DASSETS_ASSETS_FILE']
-    should have_options :file_store
+    should have_options :file_store, :cache
 
     should have_reader :combinations
     should have_imeth :source, :combination, :combination?
+
+    should "default the file store option to a null file store" do
+      assert_kind_of Dassets::NullFileStore, subject.file_store
+    end
+
+    should "default the cache option to no caching" do
+      assert_kind_of Dassets::Cache::NoCache, subject.cache
+    end
 
     should "register new sources with the `source` method" do
       path = '/path/to/app/assets'

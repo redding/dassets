@@ -1,28 +1,35 @@
 require 'assert'
+require 'dassets/source_proxy'
+
 require 'digest/md5'
+require 'dassets/cache'
 require 'dassets/source_file'
 require 'dassets/source_proxy'
 
 class Dassets::SourceProxy
 
-  class BaseTests < Assert::Context
+  class UnitTests < Assert::Context
     desc "Dassets::SourceProxy"
     setup do
       @source_proxy = Dassets::SourceProxy.new('file1.txt')
     end
     subject{ @source_proxy }
 
-    should have_readers :digest_path, :source_files
+    should have_readers :digest_path, :source_files, :cache
     should have_imeths :content, :fingerprint, :key, :mtime, :exists?
 
     should "know its digest path" do
       assert_equal 'file1.txt', subject.digest_path
     end
 
-    should "know its source file" do
+    should "know its source files" do
       exp_source_file = Dassets::SourceFile.find_by_digest_path('file1.txt')
       assert_equal 1, subject.source_files.size
       assert_equal exp_source_file, subject.source_files.first
+    end
+
+    should "use a `NoCache` cache handler by default" do
+      assert_kind_of Dassets::Cache::NoCache, subject.cache
     end
 
     should "exist if its source file exists" do
@@ -49,7 +56,7 @@ class Dassets::SourceProxy
 
   end
 
-  class CombinationTests < BaseTests
+  class CombinationTests < UnitTests
     desc "when the digest path is a combination to multiple source files"
     setup do
       Dassets.config.combination 'file3.txt', ['file1.txt', 'file2.txt']
@@ -85,6 +92,44 @@ class Dassets::SourceProxy
     should "get its content from the compiled source" do
       exp_content = @exp_source_files.map{ |f| f.compiled }.join("\n")
       assert_equal exp_content, subject.content
+    end
+
+  end
+
+  class NoCacheTests < UnitTests
+    desc "with a `NoCache` cache handler"
+    setup do
+      @cache = Dassets::Cache::NoCache.new
+      @source_proxy = Dassets::SourceProxy.new('file1.txt', @cache)
+    end
+
+    should "not cache its source content/fingerprint" do
+      content1 = subject.content
+      content2 = subject.content
+      assert_not_same content2, content1
+
+      finger1 = subject.fingerprint
+      finger2 = subject.fingerprint
+      assert_not_same finger2, finger1
+    end
+
+  end
+
+  class MemCacheTests < UnitTests
+    desc "with a `MemCache` cache handler"
+    setup do
+      @cache = Dassets::Cache::MemCache.new
+      @source_proxy = Dassets::SourceProxy.new('file1.txt', @cache)
+    end
+
+    should "cache its source content/fingerprint in memory" do
+      content1 = subject.content
+      content2 = subject.content
+      assert_same content2, content1
+
+      finger1 = subject.fingerprint
+      finger2 = subject.fingerprint
+      assert_same finger2, finger1
     end
 
   end

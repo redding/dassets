@@ -2,6 +2,7 @@ require 'assert'
 require 'dassets/source_file'
 
 require 'dassets/asset_file'
+require 'dassets/source_proxy'
 
 class Dassets::SourceFile
 
@@ -49,6 +50,12 @@ class Dassets::SourceFile
 
       assert_equal subject, found
       assert_not_same subject, found
+    end
+
+    should "not memoize its compiled source" do
+      compiled1 = subject.compiled
+      compiled2 = subject.compiled
+      assert_not_same compiled2, compiled1
     end
 
   end
