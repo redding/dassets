@@ -16,10 +16,11 @@ module Dassets
       require self.config.assets_file
     rescue LoadError
     end
+    @asset_files ||= {}
   end
 
   def self.[](digest_path)
-    AssetFile.new(digest_path)
+    @asset_files[digest_path] ||= AssetFile.new(digest_path)
   end
 
   def self.source_list

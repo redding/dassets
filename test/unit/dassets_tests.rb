@@ -25,6 +25,13 @@ module Dassets
       assert_equal 'd41d8cd98f00b204e9800998ecf8427e', file.fingerprint
     end
 
+    should "cache asset files" do
+      file1 = subject['nested/file3.txt']
+      file2 = subject['nested/file3.txt']
+
+      assert_same file2, file1
+    end
+
     should "return an asset file that doesn't exist if digest path not found" do
       file = subject['path/not/found.txt']
       assert_not file.exists?

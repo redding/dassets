@@ -82,6 +82,28 @@ class Dassets::AssetFile
       assert_equal "/nested/file1-.txt", nested.href
     end
 
+    should "not memoize its attributes" do
+      url1 = subject.url
+      url2 = subject.url
+      assert_not_same url2, url1
+
+      href1 = subject.href
+      href2 = subject.href
+      assert_not_same href2, href1
+
+      fingerprint1 = subject.fingerprint
+      fingerprint2 = subject.fingerprint
+      assert_not_same fingerprint2, fingerprint1
+
+      content1 = subject.content
+      content2 = subject.content
+      assert_not_same content2, content1
+
+      mtime1 = subject.mtime
+      mtime2 = subject.mtime
+      assert_not_same mtime2, mtime1
+    end
+
   end
 
   class DigestTests < UnitTests
