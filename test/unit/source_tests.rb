@@ -1,6 +1,8 @@
 require 'assert'
 require 'dassets/source'
 
+require 'dassets/engine'
+
 class Dassets::Source
 
   class BaseTests < Assert::Context

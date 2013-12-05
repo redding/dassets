@@ -3,7 +3,7 @@ require 'dassets/engine'
 
 class Dassets::Engine
 
-  class BaseTests < Assert::Context
+  class UnitTests < Assert::Context
     desc "the base Dassets::Engine"
     setup do
       @engine = Dassets::Engine.new

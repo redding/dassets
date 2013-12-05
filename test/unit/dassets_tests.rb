@@ -1,6 +1,8 @@
 require 'assert'
-require 'fileutils'
 require 'dassets'
+
+require 'fileutils'
+require 'dassets/asset_file'
 
 module Dassets
 

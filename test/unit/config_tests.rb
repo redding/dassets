@@ -23,7 +23,7 @@ class Dassets::Config
     should have_imeth :source, :combination, :combination?
 
     should "default the file store option to a null file store" do
-      assert_kind_of Dassets::NullFileStore, subject.file_store
+      assert_kind_of Dassets::FileStore::NullStore, subject.file_store
     end
 
     should "default the cache option to no caching" do
