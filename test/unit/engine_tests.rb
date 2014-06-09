@@ -4,7 +4,7 @@ require 'dassets/engine'
 class Dassets::Engine
 
   class UnitTests < Assert::Context
-    desc "the base Dassets::Engine"
+    desc "Dassets::Engine"
     setup do
       @engine = Dassets::Engine.new
     end
@@ -31,7 +31,7 @@ class Dassets::Engine
   end
 
   class NullEngineTests < Assert::Context
-    desc "the NullEngine"
+    desc "Dassets::NullEngine"
     setup do
       @engine = Dassets::NullEngine.new('some' => 'opts')
     end

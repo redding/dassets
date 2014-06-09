@@ -5,7 +5,7 @@ require 'dassets/engine'
 
 class Dassets::Source
 
-  class BaseTests < Assert::Context
+  class UnitTests < Assert::Context
     desc "Dassets::Source"
     setup do
       @source_path = TEST_SUPPORT_PATH.join("source_files")
@@ -51,7 +51,7 @@ class Dassets::Source
 
   end
 
-  class EmptySourceTests < Assert::Context
+  class EmptySourceTests < UnitTests
     desc "with no source files"
     setup do
       @empty_source_path = TEST_SUPPORT_PATH.join("empty")
@@ -80,7 +80,7 @@ class Dassets::Source
 
   end
 
-  class EngineRegistrationTests < BaseTests
+  class EngineRegistrationTests < UnitTests
     desc "when registering an engine"
     setup do
       @empty_engine = Class.new(Dassets::Engine) do
