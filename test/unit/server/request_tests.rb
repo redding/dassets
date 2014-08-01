@@ -8,11 +8,21 @@ class Dassets::Server::Request
   class UnitTests < Assert::Context
     desc "Dassets::Server::Request"
     setup do
-      @req = file_request('GET', '/file1-daa05c683a4913b268653f7a7e36a5b4.txt')
+      @path = '/file1-daa05c683a4913b268653f7a7e36a5b4.txt'
+      @req = file_request('GET', @path)
     end
     subject{ @req }
 
+    should have_imeths :dassets_base_url
     should have_imeths :for_asset_file?, :asset_path, :asset_file
+
+    should "know its base url" do
+      assert_equal Dassets.config.base_url.to_s, subject.dassets_base_url
+    end
+
+    should "know its path info" do
+      assert_equal @path, subject.path_info
+    end
 
     should "know its asset_path" do
       assert_equal 'file1.txt', subject.asset_path
@@ -67,6 +77,28 @@ class Dassets::Server::Request
         'REQUEST_METHOD' => method,
         'PATH_INFO'      => path_info
       })
+    end
+
+  end
+
+  class BaseUrlTests < UnitTests
+    desc "when a base url is configured"
+    setup do
+      @orig_base_url = Dassets.config.base_url
+      @new_base_url = Factory.url
+      Dassets.config.base_url(@new_base_url)
+    end
+    teardown do
+      Dassets.config.base_url(@orig_base_url)
+    end
+
+    should "have the same base url as is configured" do
+      assert_equal @new_base_url.to_s, subject.dassets_base_url
+    end
+
+    should "remove the configured base url from the path info" do
+      assert_equal @path, file_request('GET', @path).path_info
+      assert_equal @path, file_request('GET', "#{@new_base_url}#{@path}").path_info
     end
 
   end
