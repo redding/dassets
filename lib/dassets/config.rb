@@ -20,6 +20,11 @@ module Dassets
       @combinations = Hash.new{ |h, k| [k] } # digest pass-thru if none defined
     end
 
+    def base_url(value = nil)
+      @base_url = value if !value.nil?
+      @base_url
+    end
+
     def source(path, &block)
       @sources << Source.new(path).tap{ |s| block.call(s) if block }
     end

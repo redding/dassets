@@ -10,7 +10,14 @@ class Dassets::Server
     # the behavior to respect POST tunnel method specifiers. We always want
     # the real request method.
     def request_method; @env['REQUEST_METHOD']; end
-    def path_info;      @env['PATH_INFO'];      end
+
+    def path_info
+      @env['PATH_INFO'].sub(dassets_base_url, '')
+    end
+
+    def dassets_base_url
+      Dassets.config.base_url.to_s
+    end
 
     # Determine if the request is for an asset file
     # This will be called on every request so speed is an issue
