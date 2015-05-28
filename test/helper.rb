@@ -31,5 +31,3 @@ Dassets.configure do |c|
     s.engine 'useless', @useless_engine
   end
 end
-
-Dassets.init
