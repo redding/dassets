@@ -28,7 +28,6 @@ end
 ### Link To
 
 ```rb
-Dassets.init
 Dassets['css/site.css'].href       # => "/css/site-123abc.css"
 Dassets['img/logos/main.jpg'].href # => "/img/logos/main-a1b2c3.jpg"
 ```

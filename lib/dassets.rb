@@ -28,3 +28,5 @@ module Dassets
   end
 
 end
+
+Dassets.init
