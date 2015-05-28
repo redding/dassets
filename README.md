@@ -50,9 +50,11 @@ Engines are "registered" with dassets based on source extensions.  Name your sou
 
 ### Some Dassets Engines
 
-Examples are key here, so check out some of the Dasset's engines available:
+Examples are key here, so check out some of the Dasset engines available:
 
-TODO
+* **Erb**:       https://github.com/redding/dassets-erb
+* **Sass**:      https://github.com/redding/dassets-sass
+* **Less (v1)**: https://github.com/redding/dassets-lessv1
 
 ### Creating your own Engine
 
@@ -63,11 +65,45 @@ TODO
 
 ## Sources
 
-TODO: filtering files, registering engines
+Sources model a root location for asset files.  They also provide configuration for how assets in that location should be processed and handled.
+
+You can specify filters that control which paths in the location are considered.  You can also register engines which determine how the contents of assets files are handled.  For example:
+
+```ruby
+Dassets.configure do |c|
+  c.source /path/to/assets do |s|
+    s.filter{ |paths| paths.reject{ |p| File.basename(p) =~ /^_/ } }
+
+    s.engine 'erb',  Dassets::Erb::Engine
+    s.engine 'scss', Dassets::Sass::Engine, {
+      :syntax => 'scss'
+      # any other engine-specific options here
+    }
+  end
+end
+```
+
+This configuration says that Dassets, for assets in `/path/to/assets`, should 1) ignore any files beginning in `_` 2) process any files ending in `.erb` with the Erb engine and 3) process any files ending in `.scss` with the Sass engine (using 'scss' syntax).
+
+The goal here is to allow you to control how certain asset files are handled based on their location root.  This is handy for 3rd-paty gems that provide asset source files (such as [Romo](https://github.com/redding/romo)).  See https://github.com/redding/romo/blob/master/lib/romo/dassets.rb for an example of how Romo integrates with Dassets.
 
 ## Combinations
 
-TODO
+Combinations are a way to alias many asset files as a single asset.  Dassets responds to requests for the combined asset by concatenating the combination's asset files into a single response.  For example:
+
+```ruby
+Dassets.configure do |c|
+  c.combination "css/special.css", [
+    'css/romo/normalize.css',
+    'css/romo/base.css',
+    'css/romo/component1.css'
+  ]
+end
+```
+
+This example tells Dassets that if it receives a request for the `css/special.css` asset it should return the content of the 3 files concatenated in that order.
+
+Combinations are treated just like regular asset files (think of them as a kind of alias).  They can be cached/digested/etc just as if they were a true asset file.  Again, see https://github.com/redding/romo/blob/master/lib/romo/dassets.rb for an example of using combinations to abstract the composition of 3rd-party asset files.
 
 ## Installation
 
