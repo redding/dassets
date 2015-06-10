@@ -5,11 +5,11 @@ require 'dassets/source_file'
 module Dassets; end
 class Dassets::SourceProxy
 
-  attr_reader :digest_path, :source_files, :cache
+  attr_reader :digest_path, :cache, :source_files
 
   def initialize(digest_path, cache = nil)
     @digest_path  = digest_path
-    @cache = cache || Dassets::Cache::NoCache.new
+    @cache        = cache || Dassets::Cache::NoCache.new
     @source_files = get_source_files(@digest_path, @cache)
   end
 
@@ -26,7 +26,7 @@ class Dassets::SourceProxy
   end
 
   def mtime
-    @source_files.map{ |f| f.mtime }.max
+    @source_files.map{ |f| f.mtime }.compact.max
   end
 
   def exists?
