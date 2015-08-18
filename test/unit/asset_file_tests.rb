@@ -15,8 +15,8 @@ class Dassets::AssetFile
     subject{ @asset_file }
 
     should have_readers :digest_path, :dirname, :extname, :basename, :source_proxy
-    should have_imeths  :digest!, :url, :fingerprint, :content
-    should have_imeths  :href, :mtime, :size, :mime_type, :exists?, :==
+    should have_imeths  :digest!, :path, :url, :href, :fingerprint, :content
+    should have_imeths  :mtime, :size, :mime_type, :exists?, :==
 
     should "know its digest path, dirname, extname, and basename" do
       assert_equal 'file1.txt', subject.digest_path
@@ -68,28 +68,39 @@ class Dassets::AssetFile
       assert_equal exp_content, without_output.content
     end
 
-    should "build it's url from the path and the fingerprint" do
-      assert_match /^file1-[a-f0-9]{32}\.txt$/, subject.url
+    should "build it's path from the file and the fingerprint" do
+      assert_match /^file1-[a-f0-9]{32}\.txt$/, subject.path
 
       nested = Dassets::AssetFile.new('nested/file1.txt')
-      assert_equal "nested/file1-.txt", nested.url
+      assert_equal "nested/file1-.txt", nested.path
     end
 
-    should "build it's href from the url" do
-      assert_match /^\/file1-[a-f0-9]{32}\.txt$/, subject.href
+    should "build it's url/href from the path and any configured base url" do
+      assert_match /^\/file1-[a-f0-9]{32}\.txt$/, subject.url
+      assert_match subject.url, subject.href
 
       nested = Dassets::AssetFile.new('nested/file1.txt')
-      assert_equal "/nested/file1-.txt", nested.href
+      assert_equal "/nested/file1-.txt", nested.url
+      assert_equal nested.url, nested.href
+
+      base_url = Factory.url
+      Dassets.config.base_url base_url
+
+      assert_match /^#{base_url}\/file1-[a-f0-9]{32}\.txt$/, subject.url
+      assert_match subject.url, subject.href
+
+      assert_equal "#{base_url}/nested/file1-.txt", nested.url
+      assert_equal nested.url, nested.href
     end
 
     should "not memoize its attributes" do
+      path1 = subject.path
+      path2 = subject.path
+      assert_not_same path2, path1
+
       url1 = subject.url
       url2 = subject.url
       assert_not_same url2, url1
-
-      href1 = subject.href
-      href2 = subject.href
-      assert_not_same href2, href1
 
       fingerprint1 = subject.fingerprint
       fingerprint2 = subject.fingerprint
@@ -111,7 +122,7 @@ class Dassets::AssetFile
     setup do
       Dassets.config.file_store = TEST_SUPPORT_PATH.join('public').to_s
       @save_path = @asset_file.digest!
-      @outfile = Dassets.config.file_store.store_path(@asset_file.url)
+      @outfile = Dassets.config.file_store.store_path(@asset_file.path)
     end
     teardown do
       Dassets.config.file_store = Dassets::FileStore::NullStore.new
