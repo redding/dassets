@@ -21,8 +21,12 @@ module Dassets
     end
 
     def base_url(value = nil)
-      @base_url = value if !value.nil?
+      set_base_url(value) if !value.nil?
       @base_url
+    end
+
+    def set_base_url(value)
+      @base_url = value
     end
 
     def source(path, &block)

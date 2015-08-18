@@ -85,11 +85,11 @@ class Dassets::Server::Request
     desc "when a base url is configured"
     setup do
       @orig_base_url = Dassets.config.base_url
-      @new_base_url = Factory.url
+      @new_base_url  = Factory.url
       Dassets.config.base_url(@new_base_url)
     end
     teardown do
-      Dassets.config.base_url(@orig_base_url)
+      Dassets.config.set_base_url(@orig_base_url)
     end
 
     should "have the same base url as is configured" do

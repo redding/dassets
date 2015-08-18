@@ -18,17 +18,29 @@ class Dassets::Config
 
     should have_options :file_store, :cache
     should have_readers :combinations
-    should have_imeths :base_url, :source, :combination, :combination?
+    should have_imeths :base_url, :set_base_url
+    should have_imeths :source, :combination, :combination?
 
     should "have no base url by default" do
       assert_nil subject.base_url
     end
 
-    should "set a base url" do
+    should "set non-nil base urls" do
       url = Factory.url
       subject.base_url url
-
       assert_equal url, subject.base_url
+
+      subject.base_url(nil)
+      assert_equal url, subject.base_url
+    end
+
+    should "force set any base urls" do
+      url = Factory.url
+      subject.set_base_url url
+      assert_equal url, subject.base_url
+
+      subject.set_base_url(nil)
+      assert_nil subject.base_url
     end
 
     should "default the file store option to a null file store" do
