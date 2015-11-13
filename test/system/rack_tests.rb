@@ -38,6 +38,45 @@ module Dassets
       assert_empty resp.body
     end
 
+    should "return a partial content response on valid partial content requests" do
+      content = Dassets['file1.txt'].content
+      size    = Factory.integer(content.length)
+
+      # see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
+      env = { 'HTTP_RANGE' => "bytes=0-#{size}" }
+
+      resp = get '/file1-daa05c683a4913b268653f7a7e36a5b4.txt', {}, env
+      assert_equal 206, resp.status
+      assert_equal content[0..size], resp.body
+    end
+
+    should "return a full response on no-range partial content requests" do
+      # see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
+      env = { 'HTTP_RANGE' => 'bytes=' }
+
+      resp = get '/file1-daa05c683a4913b268653f7a7e36a5b4.txt', {}, env
+      assert_equal 200, resp.status
+      assert_equal Dassets['file1.txt'].content, resp.body
+    end
+
+    should "return a full response on multiple-range partial content requests" do
+      # see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
+      env = { 'HTTP_RANGE' => 'bytes=0-1,2-3' }
+
+      resp = get '/file1-daa05c683a4913b268653f7a7e36a5b4.txt', {}, env
+      assert_equal 200, resp.status
+      assert_equal Dassets['file1.txt'].content, resp.body
+    end
+
+    should "return a full response on invalid-range partial content requests" do
+      # see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
+      env = { 'HTTP_RANGE' => ['bytes=3-2', 'bytes=abc'].choice }
+
+      resp = get '/file1-daa05c683a4913b268653f7a7e36a5b4.txt', {}, env
+      assert_equal 200, resp.status
+      assert_equal Dassets['file1.txt'].content, resp.body
+    end
+
   end
 
   class DigestTests < SuccessTests
