@@ -17,16 +17,13 @@ class Dassets::AssetFile
 
   def digest!
     return if !self.exists?
-    Dassets.config.file_store.save(self.path){ self.content }
-  end
-
-  def path
-    path_basename = "#{@basename}-#{self.fingerprint}#{@extname}"
-    File.join(@dirname, path_basename).sub(/^\.\//, '').sub(/^\//, '')
+    Dassets.config.file_store.save(self.url){ self.content }
   end
 
   def url
-    "#{dassets_base_url}/#{self.path}"
+    path_basename = "#{@basename}-#{self.fingerprint}#{@extname}"
+    path = File.join(@dirname, path_basename).sub(/^\.\//, '').sub(/^\//, '')
+    "#{dassets_base_url}/#{path}"
   end
 
   alias_method :href, :url

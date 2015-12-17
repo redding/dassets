@@ -19,7 +19,8 @@ Dassets.configure do |c|
 
   # (optional) tell Dassets where to store digested asset files
   # if none given, Dassets will not write any digested output
-  # use this to "cache" digested assets to the public dir (for example)
+  # use this to "cache" digested assets to the public dir so that
+  # your web server can serve them directly
   c.file_store '/path/to/public' # default: `FileStore::NullStore.new`
 
 end

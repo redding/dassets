@@ -81,19 +81,21 @@ module Dassets
 
   class DigestTests < SuccessTests
     setup do
+      base_url = Factory.base_url
+      Assert.stub(Dassets.config, :base_url){ base_url }
       Dassets.config.file_store = TEST_SUPPORT_PATH.join('public').to_s
-      @url = 'file1-daa05c683a4913b268653f7a7e36a5b4.txt'
+      @url = Dassets['file1.txt'].url
       @url_file = Dassets.config.file_store.store_path(@url)
-      FileUtils.rm(@url_file)
     end
     teardown do
+      FileUtils.rm(@url_file)
       Dassets.config.file_store = FileStore::NullStore.new
     end
 
     should "digest the asset" do
       assert_not_file_exists @url_file
 
-      resp = get "/#{@url}"
+      resp = get @url
       assert_equal 200, resp.status
       assert_file_exists @url_file
     end

@@ -1,4 +1,4 @@
-require 'rack/request'
+require 'rack'
 
 module Dassets; end
 class Dassets::Server
