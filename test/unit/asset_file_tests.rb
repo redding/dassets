@@ -15,7 +15,7 @@ class Dassets::AssetFile
     subject{ @asset_file }
 
     should have_readers :digest_path, :dirname, :extname, :basename, :source_proxy
-    should have_imeths  :digest!, :path, :url, :href, :fingerprint, :content
+    should have_imeths  :digest!, :url, :href, :fingerprint, :content
     should have_imeths  :mtime, :size, :mime_type, :exists?, :==
 
     should "know its digest path, dirname, extname, and basename" do
@@ -68,14 +68,7 @@ class Dassets::AssetFile
       assert_equal exp_content, without_output.content
     end
 
-    should "build it's path from the file and the fingerprint" do
-      assert_match /^file1-[a-f0-9]{32}\.txt$/, subject.path
-
-      nested = Dassets::AssetFile.new('nested/file1.txt')
-      assert_equal "nested/file1-.txt", nested.path
-    end
-
-    should "build it's url/href from the path and any configured base url" do
+    should "build it's url/href from the file, fingerpint and any configured base url" do
       assert_match /^\/file1-[a-f0-9]{32}\.txt$/, subject.url
       assert_match subject.url, subject.href
 
@@ -84,7 +77,7 @@ class Dassets::AssetFile
       assert_equal nested.url, nested.href
 
       base_url = Factory.url
-      Dassets.config.base_url base_url
+      Assert.stub(Dassets.config, :base_url){ base_url }
 
       assert_match /^#{base_url}\/file1-[a-f0-9]{32}\.txt$/, subject.url
       assert_match subject.url, subject.href
@@ -94,10 +87,6 @@ class Dassets::AssetFile
     end
 
     should "not memoize its attributes" do
-      path1 = subject.path
-      path2 = subject.path
-      assert_not_same path2, path1
-
       url1 = subject.url
       url2 = subject.url
       assert_not_same url2, url1
@@ -120,11 +109,15 @@ class Dassets::AssetFile
   class DigestTests < UnitTests
     desc "being digested with an output path configured"
     setup do
+      base_url = Factory.base_url
+      Assert.stub(Dassets.config, :base_url){ base_url }
       Dassets.config.file_store = TEST_SUPPORT_PATH.join('public').to_s
+
       @save_path = @asset_file.digest!
-      @outfile = Dassets.config.file_store.store_path(@asset_file.path)
+      @outfile = Dassets.config.file_store.store_path(@asset_file.url)
     end
     teardown do
+      FileUtils.rm(@outfile)
       Dassets.config.file_store = Dassets::FileStore::NullStore.new
     end
 
