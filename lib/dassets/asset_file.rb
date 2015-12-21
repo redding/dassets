@@ -12,7 +12,10 @@ class Dassets::AssetFile
     @dirname  = File.dirname(@digest_path)
     @extname  = File.extname(@digest_path)
     @basename = File.basename(@digest_path, @extname)
-    @source_proxy = Dassets::SourceProxy.new(@digest_path, Dassets.config.cache)
+    @source_proxy = Dassets::SourceProxy.new(@digest_path, {
+      :content_cache     => Dassets.config.content_cache,
+      :fingerprint_cache => Dassets.config.fingerprint_cache
+    })
   end
 
   def digest!

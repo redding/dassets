@@ -4,7 +4,7 @@ module Dassets::Cache
   class MemCache
     require 'thread'
 
-    # this is a thread-safe in-memory cache for use with the `SourceCache`
+    # this is a thread-safe in-memory cache
 
     def initialize
       @hash = {}
