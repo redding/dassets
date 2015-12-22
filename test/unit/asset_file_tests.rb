@@ -39,9 +39,12 @@ class Dassets::AssetFile
     end
 
     should "know its source proxy" do
-      assert_not_nil subject.source_proxy
-      assert_kind_of Dassets::SourceProxy, subject.source_proxy
-      assert_equal subject.digest_path, subject.source_proxy.digest_path
+      source_proxy = subject.source_proxy
+      assert_not_nil source_proxy
+      assert_kind_of Dassets::SourceProxy, source_proxy
+      assert_equal subject.digest_path, source_proxy.digest_path
+      assert_equal Dassets.config.content_cache, source_proxy.content_cache
+      assert_equal Dassets.config.fingerprint_cache, source_proxy.fingerprint_cache
     end
 
     should "have a fingerprint" do

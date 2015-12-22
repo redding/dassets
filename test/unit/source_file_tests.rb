@@ -2,6 +2,7 @@ require 'assert'
 require 'dassets/source_file'
 
 require 'dassets/asset_file'
+require 'dassets/cache'
 require 'dassets/source_proxy'
 
 class Dassets::SourceFile
@@ -61,6 +62,12 @@ class Dassets::SourceFile
   end
 
   class NullSourceTests < UnitTests
+    setup do
+      Dassets.config.combination 'file3.txt', ['file1.txt', 'file2.txt']
+    end
+    teardown do
+      Dassets.config.combinations.delete('file3.txt')
+    end
 
     should "find a null src file if finding by an unknown digest path" do
       null_src = Dassets::NullSourceFile.new('not/found/digest/path')
@@ -75,16 +82,49 @@ class Dassets::SourceFile
       assert_nil null_src.mtime
     end
 
+    should "pass options to a null src when finding by an unknown digest path" do
+      null_src = Dassets::NullSourceFile.new('not/found/digest/path')
+      null_src_new_called_with = []
+      Assert.stub(Dassets::NullSourceFile, :new) do |*args|
+        null_src_new_called_with = args
+        null_src
+      end
+
+      options = {
+        :content_cache     => Dassets::Cache::NoCache.new,
+        :fingerprint_cache => Dassets::Cache::NoCache.new
+      }
+      Dassets::SourceFile.find_by_digest_path('not/found/digest/path', options)
+
+      exp = ['not/found/digest/path', options]
+      assert_equal exp, null_src_new_called_with
+    end
+
     should "'proxy' the digest path if the path is a combination" do
-      Dassets.config.combination 'file3.txt', ['file1.txt', 'file2.txt']
       src_proxy      = Dassets::SourceProxy.new('file3.txt')
       null_combo_src = Dassets::NullSourceFile.new('file3.txt')
 
       assert_equal src_proxy.exists?, null_combo_src.exists?
       assert_equal src_proxy.content, null_combo_src.compiled
       assert_equal src_proxy.mtime,   null_combo_src.mtime
+    end
 
-      Dassets.config.combinations.delete('file3.txt')
+    should "pass options to its source proxy when the path is a combination" do
+      src_proxy = Dassets::SourceProxy.new('file3.txt')
+      src_proxy_new_called_with = []
+      Assert.stub(Dassets::SourceProxy, :new) do |*args|
+        src_proxy_new_called_with = args
+        src_proxy
+      end
+
+      options = {
+        :content_cache     => Dassets::Cache::NoCache.new,
+        :fingerprint_cache => Dassets::Cache::NoCache.new
+      }
+      Dassets::NullSourceFile.new('file3.txt', options)
+
+      exp = ['file3.txt', options]
+      assert_equal exp, src_proxy_new_called_with
     end
 
   end

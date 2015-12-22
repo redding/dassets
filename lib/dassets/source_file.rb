@@ -7,13 +7,13 @@ module Dassets
 
   class SourceFile
 
-    def self.find_by_digest_path(path, cache = nil)
+    def self.find_by_digest_path(path, options = nil)
       # look in the configured source list
       source_files = Dassets.source_list.map{ |p| self.new(p) }
 
       # get the last matching one (in case two source files have the same digest
       # path the last one *should* be correct since it was last to be configured)
-      source_files.select{ |s| s.digest_path == path }.last || NullSourceFile.new(path, cache)
+      source_files.select{ |s| s.digest_path == path }.last || NullSourceFile.new(path, options)
     end
 
     attr_reader :file_path
@@ -86,11 +86,11 @@ module Dassets
 
   class NullSourceFile < SourceFile
 
-    def initialize(digest_path, cache = nil)
+    def initialize(digest_path, options = nil)
       @file_path, @ext_list = '', []
       @digest_path = digest_path
       @source_proxy = if Dassets.config.combination?(@digest_path)
-        SourceProxy.new(@digest_path, cache)
+        SourceProxy.new(@digest_path, options)
       else
         NullSourceProxy.new
       end

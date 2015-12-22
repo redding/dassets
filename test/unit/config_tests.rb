@@ -16,9 +16,10 @@ class Dassets::Config
     end
     subject{ @config }
 
-    should have_options :file_store, :cache
+    should have_options :file_store
     should have_readers :combinations
     should have_imeths :base_url, :set_base_url
+    should have_imeths :content_cache, :fingerprint_cache
     should have_imeths :source, :combination, :combination?
 
     should "have no base url by default" do
@@ -47,8 +48,30 @@ class Dassets::Config
       assert_kind_of Dassets::FileStore::NullStore, subject.file_store
     end
 
-    should "default the cache option to no caching" do
-      assert_kind_of Dassets::Cache::NoCache, subject.cache
+    should "default its content cache" do
+      assert_instance_of Dassets::Cache::NoCache, subject.content_cache
+    end
+
+    should "allow configuring non-nil content caches" do
+      cache = Dassets::Cache::MemCache.new
+      subject.content_cache(cache)
+      assert_equal cache, subject.content_cache
+
+      subject.content_cache(nil)
+      assert_equal cache, subject.content_cache
+    end
+
+    should "default its fingerprint cache" do
+      assert_instance_of Dassets::Cache::NoCache, subject.fingerprint_cache
+    end
+
+    should "allow configuring non-nil fingerprint caches" do
+      cache = Dassets::Cache::MemCache.new
+      subject.fingerprint_cache(cache)
+      assert_equal cache, subject.fingerprint_cache
+
+      subject.fingerprint_cache(nil)
+      assert_equal cache, subject.fingerprint_cache
     end
 
     should "register new sources with the `source` method" do

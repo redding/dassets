@@ -15,7 +15,8 @@ class Dassets::SourceProxy
     end
     subject{ @source_proxy }
 
-    should have_readers :digest_path, :cache, :source_files
+    should have_readers :digest_path, :content_cache, :fingerprint_cache
+    should have_readers :source_files
     should have_imeths :key, :content, :fingerprint, :mtime, :exists?
 
   end
@@ -30,8 +31,9 @@ class Dassets::SourceProxy
       assert_equal 'file1.txt', subject.digest_path
     end
 
-    should "use a `NoCache` cache handler by default" do
-      assert_kind_of Dassets::Cache::NoCache, subject.cache
+    should "use no cache by default" do
+      assert_kind_of Dassets::Cache::NoCache, subject.content_cache
+      assert_kind_of Dassets::Cache::NoCache, subject.fingerprint_cache
     end
 
     should "have a single source file" do
@@ -155,7 +157,10 @@ class Dassets::SourceProxy
     desc "with a `NoCache` cache handler"
     setup do
       @cache = Dassets::Cache::NoCache.new
-      @source_proxy = Dassets::SourceProxy.new('file1.txt', @cache)
+      @source_proxy = Dassets::SourceProxy.new('file1.txt', {
+        :content_cache     => @cache,
+        :fingerprint_cache => @cache
+      })
     end
 
     should "not cache its source content/fingerprint" do
@@ -173,8 +178,12 @@ class Dassets::SourceProxy
   class MemCacheTests < UnitTests
     desc "with a `MemCache` cache handler"
     setup do
-      @cache = Dassets::Cache::MemCache.new
-      @source_proxy = Dassets::SourceProxy.new('file1.txt', @cache)
+      @content_cache     = Dassets::Cache::MemCache.new
+      @fingerprint_cache = Dassets::Cache::MemCache.new
+      @source_proxy = Dassets::SourceProxy.new('file1.txt', {
+        :content_cache     => @content_cache,
+        :fingerprint_cache => @fingerprint_cache
+      })
     end
 
     should "cache its source content/fingerprint in memory" do

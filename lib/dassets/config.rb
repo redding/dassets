@@ -10,14 +10,15 @@ module Dassets
     include NsOptions::Proxy
 
     option :file_store, FileStore, :default => proc{ FileStore::NullStore.new }
-    option :cache, :default => proc{ Cache::NoCache.new }
 
     attr_reader :sources, :combinations
 
     def initialize
       super
-      @sources = []
-      @combinations = Hash.new{ |h, k| [k] } # digest pass-thru if none defined
+      @sources           = []
+      @combinations      = Hash.new{ |h, k| [k] } # digest pass-thru if none defined
+      @content_cache     = Dassets::Cache::NoCache.new
+      @fingerprint_cache = Dassets::Cache::NoCache.new
     end
 
     def base_url(value = nil)
@@ -27,6 +28,16 @@ module Dassets
 
     def set_base_url(value)
       @base_url = value
+    end
+
+    def content_cache(cache = nil)
+      @content_cache = cache if !cache.nil?
+      @content_cache
+    end
+
+    def fingerprint_cache(cache = nil)
+      @fingerprint_cache = cache if !cache.nil?
+      @fingerprint_cache
     end
 
     def source(path, &block)
