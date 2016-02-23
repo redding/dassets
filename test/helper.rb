@@ -29,5 +29,6 @@ Dassets.configure do |c|
   c.source TEST_SUPPORT_PATH.join("app/assets") do |s|
     s.engine 'dumb', @dumb_engine
     s.engine 'useless', @useless_engine
+    s.response_headers[Factory.string] = Factory.string
   end
 end

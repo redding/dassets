@@ -17,7 +17,8 @@ class Dassets::SourceProxy
 
     should have_readers :digest_path, :content_cache, :fingerprint_cache
     should have_readers :source_files
-    should have_imeths :key, :content, :fingerprint, :mtime, :exists?
+    should have_imeths :key, :content, :fingerprint, :mtime, :response_headers
+    should have_imeths :exists?
 
   end
 
@@ -38,13 +39,13 @@ class Dassets::SourceProxy
 
     should "have a single source file" do
       assert_equal 1, subject.source_files.size
-      exp_source_file = Dassets::SourceFile.find_by_digest_path('file1.txt')
-      assert_equal exp_source_file, subject.source_files.first
+      exp = Dassets::SourceFile.find_by_digest_path('file1.txt')
+      assert_equal exp, subject.source_files.first
     end
 
     should "use its digest path and mtime as its key" do
-      exp_key = "#{subject.digest_path} -- #{subject.mtime}"
-      assert_equal exp_key, subject.key
+      exp = "#{subject.digest_path} -- #{subject.mtime}"
+      assert_equal exp, subject.key
     end
 
     should "get its content from the compiled source of the single source file" do
@@ -52,12 +53,16 @@ class Dassets::SourceProxy
     end
 
     should "get its fingerprint by MD5 hashing the content" do
-      exp_fp = Digest::MD5.new.hexdigest(subject.content)
-      assert_equal exp_fp, subject.fingerprint
+      exp = Digest::MD5.new.hexdigest(subject.content)
+      assert_equal exp, subject.fingerprint
     end
 
     should "use its single source file's max mtime as its mtime" do
       assert_equal subject.source_files.first.mtime, subject.mtime
+    end
+
+    should "use its single source file's response headers as its resonse headers" do
+      assert_equal subject.source_files.first.response_headers, subject.response_headers
     end
 
     should "exist if its single source file exists" do
@@ -100,18 +105,25 @@ class Dassets::SourceProxy
     end
 
     should "get its content from the compiled source of its source files" do
-      exp_content = subject.source_files.map{ |f| f.compiled }.join("\n")
-      assert_equal exp_content, subject.content
+      exp = subject.source_files.map{ |f| f.compiled }.join("\n")
+      assert_equal exp, subject.content
     end
 
     should "use its source files' max mtime as its mtime" do
-      exp_mtime = subject.source_files.map{ |f| f.mtime }.max
-      assert_equal exp_mtime, subject.mtime
+      exp = subject.source_files.map{ |f| f.mtime }.max
+      assert_equal exp, subject.mtime
+    end
+
+    should "use its source files' merged response headers as its response headers" do
+      exp = subject.source_files.inject(Hash.new) do |hash, file|
+        hash.merge!(file.response_headers)
+      end
+      assert_equal exp, subject.response_headers
     end
 
     should "exist if its all its source files exist" do
-      exp_exists = subject.source_files.inject(true){ |res, f| res && f.exists? }
-      assert_equal exp_exists, subject.exists?
+      exp = subject.source_files.inject(true){ |res, f| res && f.exists? }
+      assert_equal exp, subject.exists?
     end
 
   end

@@ -13,7 +13,7 @@ class Dassets::Source
     end
     subject{ @source }
 
-    should have_reader :path, :engines
+    should have_reader :path, :engines, :response_headers
     should have_imeth :files, :filter, :engine
 
     should "know its path and default filter" do
@@ -47,6 +47,14 @@ class Dassets::Source
     should "know its engines and return a NullEngine by default" do
       assert_kind_of ::Hash, subject.engines
       assert_kind_of Dassets::NullEngine, subject.engines['something']
+    end
+
+    should "know its response headers" do
+      assert_equal Hash.new, subject.response_headers
+
+      name, value = Factory.string, Factory.string
+      subject.response_headers[name] = value
+      assert_equal value, subject.response_headers[name]
     end
 
   end

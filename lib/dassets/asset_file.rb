@@ -56,6 +56,10 @@ class Dassets::AssetFile
     Rack::Mime.mime_type(@extname)
   end
 
+  def response_headers
+    @source_proxy.response_headers
+  end
+
   def exists?
     @source_proxy.exists?
   end

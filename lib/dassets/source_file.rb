@@ -60,6 +60,10 @@ module Dassets
       File.mtime(@file_path)
     end
 
+    def response_headers
+      self.source.nil? ? Hash.new : self.source.response_headers
+    end
+
     def ==(other_source_file)
       self.file_path == other_source_file.file_path
     end
