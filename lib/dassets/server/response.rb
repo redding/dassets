@@ -47,19 +47,7 @@ class Dassets::Server
 
       def initialize(env, asset_file)
         @asset_file = asset_file
-
-        content_size = @asset_file.size
-        ranges = Rack::Utils.byte_ranges(env, content_size)
-        if ranges.nil? || ranges.empty? || ranges.length > 1
-          # No ranges or multiple ranges are not supported
-          @range         = 0..content_size-1
-          @content_range = nil
-        else
-          # single range
-          @range         = ranges[0]
-          @content_range = "bytes #{@range.begin}-#{@range.end}/#{content_size}"
-        end
-
+        @range, @content_range = get_range_info(env, @asset_file)
         @size = self.range_end - self.range_begin + 1
       end
 
@@ -94,6 +82,23 @@ class Dassets::Server
         self.asset_file  == other_body.asset_file  &&
         self.range_begin == other_body.range_begin &&
         self.range_end   == other_body.range_end
+      end
+
+      private
+
+      def get_range_info(env, asset_file)
+        content_size = asset_file.size
+        # legacy rack version, just return full size
+        return full_size_range_info(content_size) if !Rack::Utils.respond_to?(:byte_ranges)
+        ranges = Rack::Utils.byte_ranges(env, content_size)
+        # No ranges or multiple ranges are not supported, just return full size
+        return full_size_range_info(content_size) if ranges.nil? || ranges.empty? || ranges.length > 1
+        # single range
+        [ranges[0], "bytes #{ranges[0].begin}-#{ranges[0].end}/#{content_size}"]
+      end
+
+      def full_size_range_info(content_size)
+        [(0..content_size-1), nil]
       end
 
     end
