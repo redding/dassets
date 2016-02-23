@@ -40,11 +40,11 @@ class Dassets::Server::Response
       exp_body = Body.new(@env, @asset_file)
       assert_equal exp_body, resp.body
 
-      exp_headers = {
+      exp_headers = @asset_file.response_headers.merge({
         'Content-Type'   => 'text/plain',
         'Content-Length' => Rack::Utils.bytesize(@asset_file.content).to_s,
         'Last-Modified'  => @asset_file.mtime.to_s
-      }
+      })
       assert_equal exp_headers, resp.headers
 
       assert_equal [200, exp_headers, exp_body], resp.to_rack

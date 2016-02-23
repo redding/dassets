@@ -3,12 +3,13 @@ require 'dassets/engine'
 module Dassets; end
 class Dassets::Source
 
-  attr_reader :path, :engines
+  attr_reader :path, :engines, :response_headers
 
   def initialize(path)
     @path = path.to_s
     @filter = proc{ |paths| paths }
     @engines = Hash.new{ |h,k| Dassets::NullEngine.new }
+    @response_headers = Hash.new
   end
 
   def filter(&block)

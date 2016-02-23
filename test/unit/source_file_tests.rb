@@ -17,11 +17,31 @@ class Dassets::SourceFile
 
     should have_readers :file_path
     should have_imeths :source, :asset_file, :digest_path
-    should have_imeths :compiled, :exists?, :mtime
+    should have_imeths :compiled, :exists?, :mtime, :response_headers
     should have_cmeth :find_by_digest_path
 
     should "know its file path" do
       assert_equal @file_path.to_s, subject.file_path
+    end
+
+    should "know its configured source" do
+      exp_source = Dassets.config.sources.select{ |s| @file_path.include?(s.path) }.last
+      assert_equal exp_source, subject.source
+    end
+
+    should "know its asset file" do
+      assert_kind_of Dassets::AssetFile, subject.asset_file
+      assert_equal Dassets::AssetFile.new(subject.digest_path), subject.asset_file
+    end
+
+    should "know its digest path" do
+      assert_equal 'file1.txt', subject.digest_path
+    end
+
+    should "not memoize its compiled source" do
+      compiled1 = subject.compiled
+      compiled2 = subject.compiled
+      assert_not_same compiled2, compiled1
     end
 
     should "know if it exists" do
@@ -32,18 +52,8 @@ class Dassets::SourceFile
       assert_equal File.mtime(subject.file_path), subject.mtime
     end
 
-    should "know its digest path" do
-      assert_equal 'file1.txt', subject.digest_path
-    end
-
-    should "know its asset file" do
-      assert_kind_of Dassets::AssetFile, subject.asset_file
-      assert_equal Dassets::AssetFile.new(subject.digest_path), subject.asset_file
-    end
-
-    should "know its configured source" do
-      exp_source = Dassets.config.sources.select{ |s| @file_path.include?(s.path) }.last
-      assert_equal exp_source, subject.source
+    should "use the response headers of its source as its response headers" do
+      assert_same subject.source.response_headers, subject.response_headers
     end
 
     should "be findable by its digest path" do
@@ -51,12 +61,6 @@ class Dassets::SourceFile
 
       assert_equal subject, found
       assert_not_same subject, found
-    end
-
-    should "not memoize its compiled source" do
-      compiled1 = subject.compiled
-      compiled2 = subject.compiled
-      assert_not_same compiled2, compiled1
     end
 
   end
@@ -80,6 +84,7 @@ class Dassets::SourceFile
       assert_equal false, null_src.exists?
       assert_nil null_src.compiled
       assert_nil null_src.mtime
+      assert_equal Hash.new, null_src.response_headers
     end
 
     should "pass options to a null src when finding by an unknown digest path" do

@@ -21,7 +21,7 @@ class Dassets::Server
         @asset_file.digest!
         body = Body.new(env, @asset_file)
         [ body.partial? ? 206 : 200,
-          Rack::Utils::HeaderHash.new.tap do |h|
+          Rack::Utils::HeaderHash.new.merge(@asset_file.response_headers).tap do |h|
             h['Last-Modified']  = mtime
             h['Content-Type']   = @asset_file.mime_type.to_s
             h['Content-Length'] = body.size.to_s

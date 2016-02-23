@@ -35,6 +35,10 @@ class Dassets::SourceProxy
     @source_files.map{ |f| f.mtime }.compact.max
   end
 
+  def response_headers
+    @source_files.inject(Hash.new){ |hash, f| hash.merge!(f.response_headers) }
+  end
+
   def exists?
     @source_files.inject(true){ |res, f| res && f.exists? }
   end

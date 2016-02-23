@@ -25,10 +25,11 @@ class Dassets::AssetFile
       assert_equal 'file1', subject.basename
     end
 
-    should "use its source file attrs as its own" do
+    should "use its source proxy attrs as its own" do
       assert_equal subject.source_proxy.mtime.httpdate, subject.mtime
       assert_equal Rack::Utils.bytesize(subject.content), subject.size
       assert_equal "text/plain", subject.mime_type
+      assert_equal subject.source_proxy.response_headers, subject.response_headers
       assert subject.exists?
 
       null_file = Dassets::AssetFile.new('')
@@ -36,6 +37,7 @@ class Dassets::AssetFile
       assert_nil null_file.size
       assert_nil null_file.mime_type
       assert_not null_file.exists?
+      assert_equal null_file.source_proxy.response_headers, null_file.response_headers
     end
 
     should "know its source proxy" do
