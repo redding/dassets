@@ -182,7 +182,7 @@ class Dassets::Server::Response
 
   end
 
-  class PartialBodyTests < BodyIOTests
+  class PartialBodySetupTests < BodyIOTests
     desc "for a partial content request"
     setup do
       @start_chunk    = Factory.boolean ? 0 : 1
@@ -191,8 +191,14 @@ class Dassets::Server::Response
       @partial_size   = @partial_chunks * Body::CHUNK_SIZE
       @partial_end    = @partial_begin + (@partial_size-1)
 
-      env = { 'HTTP_RANGE' => "bytes=#{@partial_begin}-#{@partial_end}" }
-      @body = Body.new(env, @asset_file)
+      @env = { 'HTTP_RANGE' => "bytes=#{@partial_begin}-#{@partial_end}" }
+    end
+
+  end
+
+  class PartialBodyTests < PartialBodySetupTests
+    setup do
+      @body = Body.new(@env, @asset_file)
     end
     subject{ @body }
 
@@ -223,6 +229,41 @@ class Dassets::Server::Response
 
       exp = @asset_file.content[@partial_begin..@partial_end]
       assert_equal exp, chunks.join('')
+    end
+
+  end
+
+  class LegacyRackTests < PartialBodySetupTests
+    desc "when using a legacy version of rack that can't interpret byte ranges"
+    setup do
+      Assert.stub(Rack::Utils, :respond_to?).with(:byte_ranges){ false }
+      @body = Body.new(@env, @asset_file)
+    end
+
+    should "not be partial" do
+      assert_false subject.partial?
+    end
+
+    should "be the full content size" do
+      assert_equal @asset_file.size, subject.size
+    end
+
+    should "have no content range" do
+      assert_nil subject.content_range
+    end
+
+    should "have the full content size as its range" do
+      assert_equal 0,              subject.range_begin
+      assert_equal subject.size-1, subject.range_end
+    end
+
+    should "chunk the full content when iterated" do
+      chunks = []
+      subject.each{ |chunk| chunks << chunk }
+
+      assert_equal @num_chunks,               chunks.size
+      assert_equal subject.class::CHUNK_SIZE, chunks.first.size
+      assert_equal @asset_file.content,       chunks.join('')
     end
 
   end
