@@ -22,7 +22,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency('assert-rack-test', ["~> 1.0.3"])
   gem.add_development_dependency("sinatra",          ["~> 1.4"])
 
-  gem.add_dependency('ns-options', ["~> 1.1.6"])
-  gem.add_dependency("rack",       ["~> 1.0"])
+  gem.add_dependency("rack", ["~> 1.0"])
 
 end

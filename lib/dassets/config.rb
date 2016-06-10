@@ -1,5 +1,4 @@
 require 'pathname'
-require 'ns-options'
 require 'dassets/cache'
 require 'dassets/file_store'
 require 'dassets/source'
@@ -7,9 +6,6 @@ require 'dassets/source'
 module Dassets
 
   class Config
-    include NsOptions::Proxy
-
-    option :file_store, FileStore, :default => proc{ FileStore::NullStore.new }
 
     attr_reader :sources, :combinations
 
@@ -19,6 +15,7 @@ module Dassets
       @combinations      = Hash.new{ |h, k| [k] } # digest pass-thru if none defined
       @content_cache     = Dassets::Cache::NoCache.new
       @fingerprint_cache = Dassets::Cache::NoCache.new
+      @file_store        = FileStore::NullStore.new
     end
 
     def base_url(value = nil)
@@ -28,6 +25,13 @@ module Dassets
 
     def set_base_url(value)
       @base_url = value
+    end
+
+    def file_store(value = nil)
+      if !value.nil?
+        @file_store = (value.kind_of?(FileStore) ? value : FileStore.new(value))
+      end
+      @file_store
     end
 
     def content_cache(cache = nil)
