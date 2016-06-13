@@ -149,7 +149,7 @@ class Dassets::Server::Response
   class NonPartialBodyTests < BodyIOTests
     desc "for non/multi/invalid partial content requests"
     setup do
-      range = [nil, 'bytes=', 'bytes=0-1,2-3', 'bytes=3-2', 'bytes=abc'].choice
+      range = [nil, 'bytes=', 'bytes=0-1,2-3', 'bytes=3-2', 'bytes=abc'].sample
       env = range.nil? ? {} : { 'HTTP_RANGE' => range }
       @body = Body.new(env, @asset_file)
     end

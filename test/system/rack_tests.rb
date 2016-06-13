@@ -70,7 +70,7 @@ module Dassets
 
     should "return a full response on invalid-range partial content requests" do
       # see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
-      env = { 'HTTP_RANGE' => ['bytes=3-2', 'bytes=abc'].choice }
+      env = { 'HTTP_RANGE' => ['bytes=3-2', 'bytes=abc'].sample }
 
       resp = get '/file1-daa05c683a4913b268653f7a7e36a5b4.txt', {}, env
       assert_equal 200, resp.status
