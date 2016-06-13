@@ -83,13 +83,13 @@ module Dassets
     setup do
       base_url = Factory.base_url
       Assert.stub(Dassets.config, :base_url){ base_url }
-      Dassets.config.file_store = TEST_SUPPORT_PATH.join('public').to_s
+      Dassets.config.file_store TEST_SUPPORT_PATH.join('public').to_s
       @url = Dassets['file1.txt'].url
       @url_file = Dassets.config.file_store.store_path(@url)
     end
     teardown do
       FileUtils.rm(@url_file)
-      Dassets.config.file_store = FileStore::NullStore.new
+      Dassets.config.file_store FileStore::NullStore.new
     end
 
     should "digest the asset" do

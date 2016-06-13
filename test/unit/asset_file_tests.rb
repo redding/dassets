@@ -116,14 +116,14 @@ class Dassets::AssetFile
     setup do
       base_url = Factory.base_url
       Assert.stub(Dassets.config, :base_url){ base_url }
-      Dassets.config.file_store = TEST_SUPPORT_PATH.join('public').to_s
+      Dassets.config.file_store TEST_SUPPORT_PATH.join('public').to_s
 
       @save_path = @asset_file.digest!
       @outfile = Dassets.config.file_store.store_path(@asset_file.url)
     end
     teardown do
       FileUtils.rm(@outfile)
-      Dassets.config.file_store = Dassets::FileStore::NullStore.new
+      Dassets.config.file_store Dassets::FileStore::NullStore.new
     end
 
     should "return the asset file url" do
