@@ -1,6 +1,7 @@
 require 'dassets/version'
 require 'dassets/asset_file'
 require 'dassets/config'
+require 'dassets/source_file'
 
 module Dassets
 
@@ -10,21 +11,33 @@ module Dassets
   end
 
   def self.init
-    @asset_files ||= {}
+    @asset_files  ||= {}
+    @source_files   = SourceFiles.new(self.config.sources)
   end
 
   def self.[](digest_path)
     @asset_files[digest_path] ||= AssetFile.new(digest_path)
   end
 
-  def self.source_list
-    SourceList.new(self.config.sources)
+  def self.source_files
+    @source_files
   end
 
-  module SourceList
+  module SourceFiles
+
     def self.new(sources)
-      sources.inject([]){ |list, source| list += source.files }
+      # use a hash to store the source files so in the case two source files
+      # have the same digest path, the last one *should* be correct since it
+      # was last to be configured
+      sources.inject({}) do |hash, source|
+        source.files.each do |file_path|
+          s = SourceFile.new(file_path)
+          hash[s.digest_path] = s
+        end
+        hash
+      end
     end
+
   end
 
 end

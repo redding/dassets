@@ -8,12 +8,7 @@ module Dassets
   class SourceFile
 
     def self.find_by_digest_path(path, options = nil)
-      # look in the configured source list
-      source_files = Dassets.source_list.map{ |p| self.new(p) }
-
-      # get the last matching one (in case two source files have the same digest
-      # path the last one *should* be correct since it was last to be configured)
-      source_files.select{ |s| s.digest_path == path }.last || NullSourceFile.new(path, options)
+      Dassets.source_files[path] || NullSourceFile.new(path, options)
     end
 
     attr_reader :file_path
