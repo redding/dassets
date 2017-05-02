@@ -6,9 +6,9 @@ class Dassets::Source
   attr_reader :path, :engines, :response_headers
 
   def initialize(path)
-    @path = path.to_s
-    @filter = proc{ |paths| paths }
-    @engines = Hash.new{ |h,k| Dassets::NullEngine.new }
+    @path             = path.to_s
+    @filter           = proc{ |paths| paths }
+    @engines          = Hash.new{ |h,k| Dassets::NullEngine.new }
     @response_headers = Hash.new
   end
 

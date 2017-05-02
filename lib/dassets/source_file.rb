@@ -15,7 +15,7 @@ module Dassets
 
     def initialize(file_path)
       @file_path = file_path.to_s
-      @ext_list = File.basename(@file_path).split('.').reverse
+      @ext_list  = File.basename(@file_path).split('.').reverse
     end
 
     # get the last matching one (in the case two sources with the same path are

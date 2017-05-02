@@ -6,7 +6,7 @@ module Dassets
     attr_reader :root
 
     def initialize(root)
-      @root = root
+      @root       = root
       @save_mutex = ::Mutex.new
     end
 

@@ -8,10 +8,10 @@ class Dassets::AssetFile
   attr_reader :digest_path, :dirname, :extname, :basename, :source_proxy
 
   def initialize(digest_path)
-    @digest_path = digest_path
-    @dirname  = File.dirname(@digest_path)
-    @extname  = File.extname(@digest_path)
-    @basename = File.basename(@digest_path, @extname)
+    @digest_path  = digest_path
+    @dirname      = File.dirname(@digest_path)
+    @extname      = File.extname(@digest_path)
+    @basename     = File.basename(@digest_path, @extname)
     @source_proxy = Dassets::SourceProxy.new(@digest_path, {
       :content_cache     => Dassets.config.content_cache,
       :fingerprint_cache => Dassets.config.fingerprint_cache
