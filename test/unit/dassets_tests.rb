@@ -11,7 +11,7 @@ module Dassets
     subject{ Dassets }
 
     should have_imeths :config, :configure, :init, :[]
-    should have_imeths :source_list
+    should have_imeths :source_files
 
     should "return a `Config` instance with the `config` method" do
       assert_kind_of Config, subject.config
@@ -38,8 +38,8 @@ module Dassets
     end
 
     should "know its list of configured source files" do
-      exp_configured_list = Dassets::SourceList.new(Dassets.config.sources)
-      assert_equal exp_configured_list, subject.source_list
+      exp = Dassets::SourceFiles.new(Dassets.config.sources)
+      assert_equal exp, subject.source_files
     end
 
   end

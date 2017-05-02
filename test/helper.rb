@@ -41,3 +41,5 @@ Dassets.configure do |c|
     s.response_headers[Factory.string] = Factory.string
   end
 end
+
+Dassets.init
