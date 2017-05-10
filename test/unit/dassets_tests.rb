@@ -10,17 +10,30 @@ module Dassets
     desc "Dassets"
     subject{ Dassets }
 
-    should have_imeths :config, :configure, :init, :[]
-    should have_imeths :source_files
+    should have_imeths :config, :configure, :init, :reset
+    should have_imeths :[], :source_files
 
     should "return a `Config` instance with the `config` method" do
       assert_kind_of Config, subject.config
     end
 
+    should "know how to reset itself" do
+      config_reset_called = false
+      Assert.stub(subject.config, :reset){ config_reset_called = true }
+
+      file1 = subject['nested/file3.txt']
+
+      subject.reset
+
+      file2 = subject['nested/file3.txt']
+      assert_not_same file2, file1
+      assert_true config_reset_called
+    end
+
     should "return asset files given a their digest path using the index operator" do
       file = subject['nested/file3.txt']
 
-      assert_kind_of Dassets::AssetFile, file
+      assert_kind_of subject::AssetFile, file
       assert_equal 'nested/file3.txt', file.digest_path
       assert_equal 'd41d8cd98f00b204e9800998ecf8427e', file.fingerprint
     end
@@ -38,7 +51,7 @@ module Dassets
     end
 
     should "know its list of configured source files" do
-      exp = Dassets::SourceFiles.new(Dassets.config.sources)
+      exp = Dassets::SourceFiles.new(subject.config.sources)
       assert_equal exp, subject.source_files
     end
 
