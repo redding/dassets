@@ -15,6 +15,11 @@ module Dassets
     @source_files   = SourceFiles.new(self.config.sources)
   end
 
+  def self.reset
+    @asset_files = {}
+    self.config.reset
+  end
+
   def self.[](digest_path)
     @asset_files[digest_path] ||= AssetFile.new(digest_path)
   end

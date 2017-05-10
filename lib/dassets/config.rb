@@ -11,11 +11,15 @@ module Dassets
 
     def initialize
       super
-      @sources           = []
-      @combinations      = Hash.new{ |h, k| [k] } # digest pass-thru if none defined
+      self.reset
       @content_cache     = Dassets::Cache::NoCache.new
       @fingerprint_cache = Dassets::Cache::NoCache.new
       @file_store        = FileStore::NullStore.new
+    end
+
+    def reset
+      @sources      = []
+      @combinations = Hash.new{ |h, k| [k] } # digest pass-thru if none defined
     end
 
     def base_url(value = nil)

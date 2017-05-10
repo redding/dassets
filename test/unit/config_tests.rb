@@ -14,9 +14,25 @@ class Dassets::Config
     subject{ @config }
 
     should have_readers :combinations
+    should have_imeths :reset
     should have_imeths :base_url, :set_base_url
     should have_imeths :file_store, :content_cache, :fingerprint_cache
     should have_imeths :source, :combination, :combination?
+
+    should "reset its sources and combination on `reset`" do
+      assert_empty subject.sources
+      assert_empty subject.combinations
+
+      path = Factory.path
+      subject.source(path)
+      subject.combination path, [Factory.path]
+      assert_equal 1, subject.sources.size
+      assert_equal 1, subject.combinations.size
+
+      subject.reset
+      assert_empty subject.sources
+      assert_empty subject.combinations
+    end
 
     should "have no base url by default" do
       assert_nil subject.base_url
@@ -84,7 +100,7 @@ class Dassets::Config
     end
 
     should "register new sources with the `source` method" do
-      path = '/path/to/app/assets'
+      path = Factory.path
       filter = proc{ |paths| [] }
       subject.source(path){ |s| s.filter(&filter) }
 
