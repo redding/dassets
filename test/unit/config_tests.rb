@@ -69,7 +69,7 @@ class Dassets::Config
       subject.file_store(store)
       assert_equal store, subject.file_store
 
-      subject.content_cache(nil)
+      subject.file_store(nil)
       assert_equal store, subject.file_store
     end
 
