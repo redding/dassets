@@ -14,7 +14,7 @@ class Dassets::FileStore
       @store = Dassets::FileStore.new(@root.to_s)
     end
     teardown do
-      FileUtils.rm_f(@root_path)
+      FileUtils.rm_rf(@root.to_s)
     end
     subject{ @store }
 

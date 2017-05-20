@@ -122,7 +122,7 @@ class Dassets::AssetFile
       @outfile = Dassets.config.file_store.store_path(@asset_file.url)
     end
     teardown do
-      FileUtils.rm(@outfile)
+      FileUtils.rm_rf(Dassets.config.file_store.root.to_s)
       Dassets.config.file_store Dassets::FileStore::NullStore.new
     end
 
