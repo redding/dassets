@@ -2,6 +2,7 @@ require 'assert'
 require 'dassets/server/response'
 
 require 'rack/utils'
+require 'dassets'
 require 'dassets/asset_file'
 
 class Dassets::Server::Response
@@ -59,13 +60,9 @@ class Dassets::Server::Response
     end
 
     should "handle not found files" do
-      af   = Dassets['not-found-file.txt']
-      resp = Dassets::Server::Response.new(@env, af)
-
-      assert_equal 404,                         resp.status
-      assert_equal ['Not Found'],               resp.body
-      assert_equal Rack::Utils::HeaderHash.new, resp.headers
-      assert_equal [404, {}, ['Not Found']],    resp.to_rack
+      assert_raises(Dassets::AssetFileError) do
+        Dassets['not-found-file.txt']
+      end
     end
 
   end

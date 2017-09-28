@@ -21,11 +21,41 @@ module Dassets
   end
 
   def self.[](digest_path)
-    @asset_files[digest_path] ||= AssetFile.new(digest_path)
+    @asset_files[digest_path] ||= AssetFile.new(digest_path).tap do |af|
+      if af.fingerprint.nil?
+        msg = "error digesting `#{digest_path}`.\n\nMake sure Dassets has " \
+              "either a combination or source file for this digest path. If " \
+              "this path is for a combination, make sure Dassets has either " \
+              "a combination or source file for each digest path of the " \
+              "combination.\n\n"
+
+        msg << "\nCombination digest paths:"
+        msg << (Dassets.combinations.keys.empty? ? " (none)\n\n" : "\n\n")
+        Dassets.combinations.keys.sort.each do |key|
+          bullet = "#{key} => "
+          values = Dassets.combinations[key].sort
+          msg << (
+            ["#{bullet}#{values.first}"] +
+            values[1..-1].map{ |v| "#{' '*bullet.size}#{v}" }
+          ).join("\n")
+          msg << "\n\n"
+        end
+
+        msg << "\nSource file digest paths:"
+        msg << (Dassets.source_files.keys.empty? ? " (none)\n\n" : "\n\n")
+        msg << Dassets.source_files.keys.sort.join("\n")
+
+        raise AssetFileError, msg
+      end
+    end
   end
 
   def self.source_files
     @source_files
+  end
+
+  def self.combinations
+    self.config.combinations
   end
 
   module SourceFiles
@@ -44,6 +74,8 @@ module Dassets
     end
 
   end
+
+  AssetFileError = Class.new(RuntimeError)
 
 end
 

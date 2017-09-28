@@ -11,7 +11,7 @@ module Dassets
     subject{ Dassets }
 
     should have_imeths :config, :configure, :init, :reset
-    should have_imeths :[], :source_files
+    should have_imeths :[], :source_files, :combinations
 
     should "return a `Config` instance with the `config` method" do
       assert_kind_of Config, subject.config
@@ -45,14 +45,20 @@ module Dassets
       assert_same file2, file1
     end
 
-    should "return an asset file that doesn't exist if digest path not found" do
-      file = subject['path/not/found.txt']
-      assert_not file.exists?
+    should "complain if digest path is not found using the index operator" do
+      assert_raises AssetFileError do
+        subject['path/not/found.txt']
+      end
     end
 
     should "know its list of configured source files" do
       exp = Dassets::SourceFiles.new(subject.config.sources)
       assert_equal exp, subject.source_files
+    end
+
+    should "know its configured combinations" do
+      exp = subject.config.combinations
+      assert_equal exp, subject.combinations
     end
 
   end
