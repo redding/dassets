@@ -1,7 +1,6 @@
 require 'assert'
 require 'dassets/server/request'
 
-require 'dassets'
 require 'dassets/asset_file'
 
 class Dassets::Server::Request
@@ -58,16 +57,16 @@ class Dassets::Server::Request
       req = file_request('GET', '/some-file.txt')
       assert_not req.for_asset_file?
 
-      # complain with an unknown file with a valid fingerprint
+      # not find an unknown file with a valid fingerprint
       req = file_request('GET', '/some-file-daa05c683a4913b268653f7a7e36a5b4.txt')
-      assert_raises(Dassets::AssetFileError){ req.for_asset_file? }
+      assert_not req.for_asset_file?
     end
 
-    should "return an asset path and complain if request not for asset file" do
+    should "return an empty path and file if request not for an asset file" do
       req = file_request('GET', '/some-file.txt')
 
       assert_equal '', req.asset_path
-      assert_raises(Dassets::AssetFileError){ req.asset_file }
+      assert_equal Dassets::AssetFile.new(''), req.asset_file
     end
 
     protected

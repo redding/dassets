@@ -11,7 +11,7 @@ module Dassets
     subject{ Dassets }
 
     should have_imeths :config, :configure, :init, :reset
-    should have_imeths :[], :source_files, :combinations
+    should have_imeths :asset_file, :[], :source_files, :combinations
 
     should "return a `Config` instance with the `config` method" do
       assert_kind_of Config, subject.config
@@ -30,15 +30,26 @@ module Dassets
       assert_true config_reset_called
     end
 
-    should "return asset files given a their digest path using the index operator" do
+    should "return asset files given their digest path " do
+      file = subject.asset_file('nested/file3.txt')
+
+      assert_kind_of subject::AssetFile, file
+      assert_equal 'nested/file3.txt',                 file.digest_path
+      assert_equal 'd41d8cd98f00b204e9800998ecf8427e', file.fingerprint
+
       file = subject['nested/file3.txt']
 
       assert_kind_of subject::AssetFile, file
-      assert_equal 'nested/file3.txt', file.digest_path
+      assert_equal 'nested/file3.txt',                 file.digest_path
       assert_equal 'd41d8cd98f00b204e9800998ecf8427e', file.fingerprint
     end
 
     should "cache asset files" do
+      file1 = subject.asset_file('nested/file3.txt')
+      file2 = subject.asset_file('nested/file3.txt')
+
+      assert_same file2, file1
+
       file1 = subject['nested/file3.txt']
       file2 = subject['nested/file3.txt']
 
@@ -46,6 +57,9 @@ module Dassets
     end
 
     should "complain if digest path is not found using the index operator" do
+      assert_nothing_raised do
+        subject.asset_file('path/not/found.txt')
+      end
       assert_raises AssetFileError do
         subject['path/not/found.txt']
       end

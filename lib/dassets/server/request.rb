@@ -33,7 +33,7 @@ class Dassets::Server
     end
 
     def asset_file
-      @asset_file ||= Dassets[asset_path]
+      @asset_file ||= Dassets.asset_file(asset_path)
     end
 
     private
