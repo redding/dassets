@@ -20,8 +20,12 @@ module Dassets
     self.config.reset
   end
 
+  def self.asset_file(digest_path)
+    @asset_files[digest_path] ||= AssetFile.new(digest_path)
+  end
+
   def self.[](digest_path)
-    @asset_files[digest_path] ||= AssetFile.new(digest_path).tap do |af|
+    self.asset_file(digest_path).tap do |af|
       if af.fingerprint.nil?
         msg = "error digesting `#{digest_path}`.\n\nMake sure Dassets has " \
               "either a combination or source file for this digest path. If " \
@@ -36,7 +40,7 @@ module Dassets
           values = Dassets.combinations[key].sort
           msg << (
             ["#{bullet}#{values.first}"] +
-            values[1..-1].map{ |v| "#{' '*bullet.size}#{v}" }
+            (values[1..-1] || []).map{ |v| "#{' '*bullet.size}#{v}" }
           ).join("\n")
           msg << "\n\n"
         end
