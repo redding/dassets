@@ -10,27 +10,25 @@ You have some css, js, images, etc files.  You want to update, deploy, and serve
 
 ```ruby
 # in config/dassets.rb
-require 'dassets'
+require "dassets"
 
 Dassets.configure do |c|
-
   # tell Dassets where to look for source files
-  c.source '/path/to/app/assets'
+  c.source "/path/to/app/assets"
 
   # (optional) tell Dassets where to store digested asset files
   # if none given, Dassets will not write any digested output
   # use this to "cache" digested assets to the public dir so that
   # your web server can serve them directly
-  c.file_store '/path/to/public' # default: `FileStore::NullStore.new`
-
+  c.file_store "/path/to/public" # default: `Dassets::NullFileStore.new`
 end
 ```
 
 ### Link To
 
-```rb
-Dassets['css/site.css'].url       # => "/css/site-123abc.css"
-Dassets['img/logos/main.jpg'].url # => "/img/logos/main-a1b2c3.jpg"
+```ruby
+Dassets["css/site.css"].url       # => "/css/site-123abc.css"
+Dassets["img/logos/main.jpg"].url # => "/img/logos/main-a1b2c3.jpg"
 ```
 
 ### Serve
@@ -39,7 +37,7 @@ Use the Dassets middleware to serve your digested asset files:
 
 ```ruby
 # `app` is a rack application
-require 'dassets/server'
+require "dassets/server"
 app.use Dassets::Server
 ```
 
@@ -75,9 +73,9 @@ Dassets.configure do |c|
   c.source /path/to/assets do |s|
     s.filter{ |paths| paths.reject{ |p| File.basename(p) =~ /^_/ } }
 
-    s.engine 'erb',  Dassets::Erb::Engine
-    s.engine 'scss', Dassets::Sass::Engine, {
-      :syntax => 'scss'
+    s.engine "erb",  Dassets::Erb::Engine
+    s.engine "scss", Dassets::Sass::Engine, {
+      "syntax" => "scss",
       # any other engine-specific options here
     }
   end
@@ -95,9 +93,9 @@ Combinations are a way to alias many asset files as a single asset.  Dassets res
 ```ruby
 Dassets.configure do |c|
   c.combination "css/special.css", [
-    'css/romo/normalize.css',
-    'css/romo/base.css',
-    'css/romo/component1.css'
+    "css/romo/normalize.css",
+    "css/romo/base.css",
+    "css/romo/component1.css",
   ]
 end
 ```
@@ -110,7 +108,7 @@ Combinations are treated just like regular asset files (think of them as a kind 
 
 Add this line to your application's Gemfile:
 
-    gem 'dassets'
+    gem "dassets"
 
 And then execute:
 

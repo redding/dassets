@@ -1,17 +1,17 @@
-require 'assert'
-require 'dassets/config'
+require "assert"
+require "dassets/config"
 
-require 'dassets/cache'
-require 'dassets/file_store'
+require "dassets/cache"
+require "dassets/file_store"
 
 class Dassets::Config
-
   class UnitTests < Assert::Context
     desc "Dassets::Config"
+    subject { @config }
+
     setup do
       @config = Dassets::Config.new
     end
-    subject{ @config }
 
     should have_readers :combinations
     should have_imeths :reset
@@ -20,83 +20,83 @@ class Dassets::Config
     should have_imeths :source, :combination, :combination?
 
     should "reset its sources and combination on `reset`" do
-      assert_empty subject.sources
-      assert_empty subject.combinations
+      assert_that(subject.sources).is_empty
+      assert_that(subject.combinations).is_empty
 
       path = Factory.path
       subject.source(path)
       subject.combination path, [Factory.path]
-      assert_equal 1, subject.sources.size
-      assert_equal 1, subject.combinations.size
+      assert_that(subject.sources.size).equals(1)
+      assert_that(subject.combinations.size).equals(1)
 
       subject.reset
-      assert_empty subject.sources
-      assert_empty subject.combinations
+      assert_that(subject.sources).is_empty
+      assert_that(subject.combinations).is_empty
     end
 
     should "have no base url by default" do
-      assert_nil subject.base_url
+      assert_that(subject.base_url).is_nil
     end
 
     should "set non-nil base urls" do
       url = Factory.url
       subject.base_url url
-      assert_equal url, subject.base_url
+      assert_that(subject.base_url).equals(url)
 
       subject.base_url(nil)
-      assert_equal url, subject.base_url
+      assert_that(subject.base_url).equals(url)
     end
 
     should "force set any base urls" do
       url = Factory.url
       subject.set_base_url url
-      assert_equal url, subject.base_url
+      assert_that(subject.base_url).equals(url)
 
       subject.set_base_url(nil)
-      assert_nil subject.base_url
+      assert_that(subject.base_url).is_nil
     end
 
     should "default the file store option to a null file store" do
-      assert_kind_of Dassets::FileStore::NullStore, subject.file_store
+      assert_that(subject.file_store).is_kind_of(Dassets::NullFileStore)
     end
 
     should "configure non-nil file stores" do
       store_root = Factory.path
       subject.file_store(store_root)
-      assert_equal store_root, subject.file_store.root
+      assert_that(subject.file_store.root).equals(store_root)
 
       store = Dassets::FileStore.new(Factory.path)
       subject.file_store(store)
-      assert_equal store, subject.file_store
+      assert_that(subject.file_store).equals(store)
 
       subject.file_store(nil)
-      assert_equal store, subject.file_store
+      assert_that(subject.file_store).equals(store)
     end
 
     should "default its content cache" do
-      assert_instance_of Dassets::Cache::NoCache, subject.content_cache
+      assert_that(subject.content_cache).is_instance_of(Dassets::NoCache)
     end
 
     should "configure non-nil content caches" do
-      cache = Dassets::Cache::MemCache.new
+      cache = Dassets::MemCache.new
       subject.content_cache(cache)
-      assert_equal cache, subject.content_cache
+      assert_that(subject.content_cache).equals(cache)
 
       subject.content_cache(nil)
-      assert_equal cache, subject.content_cache
+      assert_that(subject.content_cache).equals(cache)
     end
 
     should "default its fingerprint cache" do
-      assert_instance_of Dassets::Cache::NoCache, subject.fingerprint_cache
+      assert_instance_of Dassets::NoCache, subject.fingerprint_cache
     end
 
     should "configure non-nil fingerprint caches" do
-      cache = Dassets::Cache::MemCache.new
+      cache = Dassets::MemCache.new
       subject.fingerprint_cache(cache)
-      assert_equal cache, subject.fingerprint_cache
+      assert_that(subject.fingerprint_cache).equals(cache)
 
       subject.fingerprint_cache(nil)
-      assert_equal cache, subject.fingerprint_cache
+      assert_that(subject.fingerprint_cache).equals(cache)
     end
 
     should "register new sources with the `source` method" do
@@ -104,35 +104,39 @@ class Dassets::Config
       filter = proc{ |paths| [] }
       subject.source(path){ |s| s.filter(&filter) }
 
-      assert_equal 1, subject.sources.size
-      assert_kind_of Dassets::Source, subject.sources.first
-      assert_equal path, subject.sources.first.path
-      assert_equal filter, subject.sources.first.filter
+      assert_that(subject.sources.size).equals(1)
+      assert_that(subject.sources.first).is_kind_of(Dassets::Source)
+      assert_that(subject.sources.first.path).equals(path)
+      assert_that(subject.sources.first.filter).equals(filter)
     end
 
     should "know its combinations and return the keyed digest path by default" do
-      assert_kind_of ::Hash, subject.combinations
-      assert_equal ['some/digest.path'], subject.combinations['some/digest.path']
+      assert_that(subject.combinations).is_kind_of(::Hash)
+      assert_that(subject.combinations['some/digest.path'])
+        .equals(['some/digest.path'])
     end
 
     should "allow registering new combinations" do
-      assert_equal ['some/digest.path'], subject.combinations['some/digest.path']
+      assert_that(subject.combinations['some/digest.path'])
+        .equals(['some/digest.path'])
       exp_combination = ['some/other.path', 'and/another.path']
       subject.combination 'some/digest.path', exp_combination
-      assert_equal exp_combination, subject.combinations['some/digest.path']
+      assert_that(subject.combinations['some/digest.path'])
+        .equals(exp_combination)
 
-      assert_equal ['test/digest.path'], subject.combinations['test/digest.path']
+      assert_that(subject.combinations['test/digest.path'])
+        .equals(['test/digest.path'])
       subject.combination 'test/digest.path', ['some/other.path']
-      assert_equal ['some/other.path'], subject.combinations['test/digest.path']
+      assert_that(subject.combinations['test/digest.path'])
+        .equals(['some/other.path'])
     end
 
-    should "know which digest paths are actual combinations and which are just pass-thrus" do
+    should "know which digest paths are actual combinations and which are "\
+           "just pass-thrus" do
       subject.combination 'some/combination.path', ['some.path', 'another.path']
 
-      assert     subject.combination? 'some/combination.path'
-      assert_not subject.combination? 'some/non-combo.path'
+      assert_that(subject.combination?('some/combination.path')).is_true
+      assert_that(subject.combination?('some/non-combo.path')).is_false
     end
-
   end
-
 end

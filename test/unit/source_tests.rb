@@ -1,35 +1,35 @@
-require 'assert'
-require 'dassets/source'
+require "assert"
+require "dassets/source"
 
-require 'dassets/engine'
+require "dassets/engine"
 
 class Dassets::Source
-
   class UnitTests < Assert::Context
     desc "Dassets::Source"
+    subject { Dassets::Source.new(@source_path) }
+
     setup do
       @source_path = TEST_SUPPORT_PATH.join("source_files")
-      @source = Dassets::Source.new(@source_path)
     end
-    subject{ @source }
 
     should have_reader :path, :engines, :response_headers
     should have_imeth :files, :filter, :engine
 
     should "know its path and default filter" do
-      assert_equal @source_path.to_s, subject.path
-      assert_kind_of Proc, subject.filter
-      assert_equal ['file1', 'file2'], subject.filter.call(['file1', 'file2'])
+      assert_that(subject.path).equals(@source_path.to_s)
+      assert_that(subject.filter).is_kind_of(Proc)
+      assert_that(subject.filter.call(["file1", "file2"]))
+        .equals(["file1", "file2"])
     end
 
     should "know its files" do
       exp_files = [
-        @source_path.join('test1.txt').to_s,
-        @source_path.join('_ignored.txt').to_s,
-        @source_path.join('nested/test2.txt').to_s,
-        @source_path.join('nested/_nested_ignored.txt').to_s
+        @source_path.join("test1.txt").to_s,
+        @source_path.join("_ignored.txt").to_s,
+        @source_path.join("nested/test2.txt").to_s,
+        @source_path.join("nested/_nested_ignored.txt").to_s
       ].sort
-      assert_equal exp_files, subject.files
+      assert_that(subject.files).equals(exp_files)
     end
 
     should "run the supplied source filter on the paths" do
@@ -37,30 +37,30 @@ class Dassets::Source
         paths.reject{ |path| File.basename(path) =~ /^_/ }
       end
       exp_files = [
-        @source_path.join('test1.txt').to_s,
-        @source_path.join('nested/test2.txt').to_s,
+        @source_path.join("test1.txt").to_s,
+        @source_path.join("nested/test2.txt").to_s,
       ].sort
 
-      assert_equal exp_files, subject.files
+      assert_that(subject.files).equals(exp_files)
     end
 
     should "know its engines and return a NullEngine by default" do
-      assert_kind_of ::Hash, subject.engines
-      assert_kind_of Dassets::NullEngine, subject.engines['something']
+      assert_that(subject.engines).is_kind_of(::Hash)
+      assert_that(subject.engines["something"]).is_kind_of(Dassets::NullEngine)
     end
 
     should "know its response headers" do
-      assert_equal Hash.new, subject.response_headers
+      assert_that(subject.response_headers).equals(Hash.new)
 
       name, value = Factory.string, Factory.string
       subject.response_headers[name] = value
-      assert_equal value, subject.response_headers[name]
+      assert_that(subject.response_headers[name]).equals(value)
     end
-
   end
 
   class EmptySourceTests < UnitTests
     desc "with no source files"
+
     setup do
       @empty_source_path = TEST_SUPPORT_PATH.join("empty")
       @empty_source = Dassets::Source.new(@empty_source_path)
@@ -70,8 +70,8 @@ class Dassets::Source
     end
 
     should "have no files" do
-      assert_empty @empty_source.files
-      assert_empty @no_exist_source.files
+      assert_that(@empty_source.files).is_empty
+      assert_that(@no_exist_source.files).is_empty
     end
 
     should "hand filters an empty path list" do
@@ -82,47 +82,47 @@ class Dassets::Source
         paths.reject{ |path| File.basename(path) =~ /^_/ }
       end
 
-      assert_empty @empty_source.files
-      assert_empty @no_exist_source.files
+      assert_that(@empty_source.files).is_empty
+      assert_that(@no_exist_source.files).is_empty
     end
-
   end
 
   class EngineRegistrationTests < UnitTests
     desc "when registering an engine"
+
     setup do
-      @empty_engine = Class.new(Dassets::Engine) do
-        def ext(input_ext); ''; end
-        def compile(input); ''; end
-      end
+      @empty_engine =
+        Class.new(Dassets::Engine) do
+          def ext(input_ext); ""; end
+          def compile(input); ""; end
+        end
     end
 
     should "allow registering new engines" do
-      assert_kind_of Dassets::NullEngine, subject.engines['empty']
-      subject.engine 'empty', @empty_engine, 'an' => 'opt'
-      assert_kind_of @empty_engine, subject.engines['empty']
-      assert_equal 'opt', subject.engines['empty'].opts['an']
-      assert_equal '', subject.engines['empty'].ext('empty')
-      assert_equal '', subject.engines['empty'].compile('some content')
+      assert_that(subject.engines["empty"]).is_kind_of(Dassets::NullEngine)
+
+      subject.engine "empty", @empty_engine, "an" => "opt"
+      assert_that(subject.engines["empty"]).is_kind_of(@empty_engine)
+      assert_that(subject.engines["empty"].opts["an"]).equals("opt")
+      assert_that(subject.engines["empty"].ext("empty")).equals("")
+      assert_that(subject.engines["empty"].compile("some content")).equals("")
     end
 
     should "register with the source path as a default option" do
-      subject.engine 'empty', @empty_engine
-      exp_opts = { 'source_path' => subject.path }
-      assert_equal exp_opts, subject.engines['empty'].opts
+      subject.engine "empty", @empty_engine
+      exp_opts = { "source_path" => subject.path }
+      assert_that(subject.engines["empty"].opts).equals(exp_opts)
 
-      subject.engine 'empty', @empty_engine, 'an' => 'opt'
+      subject.engine "empty", @empty_engine, "an" => "opt"
       exp_opts = {
-        'source_path' => subject.path,
-        'an' => 'opt'
+        "source_path" => subject.path,
+        "an" => "opt"
       }
-      assert_equal exp_opts, subject.engines['empty'].opts
+      assert_that(subject.engines["empty"].opts).equals(exp_opts)
 
-      subject.engine 'empty', @empty_engine, 'source_path' => 'something'
-      exp_opts = { 'source_path' => 'something' }
-      assert_equal exp_opts, subject.engines['empty'].opts
+      subject.engine "empty", @empty_engine, "source_path" => "something"
+      exp_opts = { "source_path" => "something" }
+      assert_that(subject.engines["empty"].opts).equals(exp_opts)
     end
-
   end
-
 end

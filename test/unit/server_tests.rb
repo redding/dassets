@@ -1,17 +1,11 @@
-require 'assert'
-require 'dassets/server'
+require "assert"
+require "dassets/server"
 
 class Dassets::Server
-
   class UnitTests < Assert::Context
     desc "Dassets::Server"
-    setup do
-      @server = Dassets::Server.new('a rack app goes here')
-    end
-    subject{ @server }
+    subject { Dassets::Server.new("test rack app") }
 
     should have_imeths :call, :call!
-
   end
-
 end

@@ -1,53 +1,32 @@
-require 'assert'
-require 'dassets/cache'
+require "assert"
+require "dassets/cache"
 
-module Dassets::Cache
-
+class Dassets::MemCache
   class UnitTests < Assert::Context
-    desc "Dassets::Cache"
-
-    should "define an in-memory cache handler" do
-      assert MemCache
-    end
-
-    should "define a no-op cache handler" do
-      assert NoCache
-    end
-
-  end
-
-  class MemCacheTests < UnitTests
-    desc "MemCache"
-    setup do
-      @cache = MemCache.new
-    end
-    subject{ @cache }
+    desc "Dassets::MemCache"
+    subject { Dassets::MemCache.new }
 
     should have_imeths :keys, :[], :[]=
 
     should "cache given key/value pairs in memory" do
       val = []
       subject['something'] = val
-      assert_same val, subject['something']
+      assert_that(subject['something']).is_the_same_as(val)
     end
-
   end
+end
 
-  class NoCacheTests < UnitTests
-    desc "NoCache"
-    setup do
-      @cache = NoCache.new
-    end
-    subject{ @cache }
+class Dassets::NoCache
+  class UnitTests < Assert::Context
+    desc "Dassets::NoCache"
+    subject { Dassets::NoCache.new }
 
     should have_imeths :keys, :[], :[]=
 
     should "not cache given key/value pairs in memory" do
       val = []
       subject['something'] = val
-      assert_not_same val, subject['something']
+      assert_that(subject['something']).is_not_the_same_as(val)
     end
-
   end
-
 end

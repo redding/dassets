@@ -1,22 +1,23 @@
-require 'digest/md5'
-require 'dassets/cache'
-require 'dassets/source_file'
+require "digest/md5"
+require "dassets/cache"
+require "dassets/source_file"
 
 module Dassets; end
-class Dassets::SourceProxy
 
+class Dassets::SourceProxy
   attr_reader :digest_path, :content_cache, :fingerprint_cache
   attr_reader :source_files
 
-  def initialize(digest_path, options = nil)
-    options ||= {}
+  def initialize(digest_path, **options)
     @digest_path       = digest_path
-    @content_cache     = options[:content_cache]     || Dassets::Cache::NoCache.new
-    @fingerprint_cache = options[:fingerprint_cache] || Dassets::Cache::NoCache.new
-    @source_files      = get_source_files(@digest_path, {
-      :content_cache     => @content_cache,
-      :fingerprint_cache => @fingerprint_cache
-    })
+    @content_cache     = options[:content_cache]     || Dassets::NoCache.new
+    @fingerprint_cache = options[:fingerprint_cache] || Dassets::NoCache.new
+    @source_files      =
+      get_source_files(
+        @digest_path,
+        content_cache:     @content_cache,
+        fingerprint_cache: @fingerprint_cache,
+      )
   end
 
   def key
@@ -53,10 +54,23 @@ class Dassets::SourceProxy
     Digest::MD5.new.hexdigest(source_content)
   end
 
-  def get_source_files(digest_path, options)
-    Dassets.config.combinations[digest_path.to_s].map do |source_digest_path|
-      Dassets::SourceFile.find_by_digest_path(source_digest_path, options)
-    end
+  def get_source_files(digest_path, **options)
+    Dassets.config.combinations[digest_path.to_s].map { |source_digest_path|
+      Dassets::SourceFile.find_by_digest_path(source_digest_path, **options)
+    }
+  end
+end
+
+class Dassets::NullSourceProxy
+  def content
+    nil
   end
 
+  def exists?
+    false
+  end
+
+  def mtime
+    nil
+  end
 end
