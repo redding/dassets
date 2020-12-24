@@ -1,59 +1,46 @@
-require 'assert'
-require 'dassets/engine'
+require "assert"
+require "dassets/engine"
 
 class Dassets::Engine
-
   class UnitTests < Assert::Context
     desc "Dassets::Engine"
-    setup do
-      @engine = Dassets::Engine.new
-    end
-    subject{ @engine }
+    subject { Dassets::Engine.new }
 
     should have_reader :opts
     should have_imeths :ext, :compile
 
     should "default the opts if none given" do
       exp_opts = {}
-      assert_equal exp_opts, subject.opts
+      assert_that(subject.opts).equals(exp_opts)
     end
 
     should "raise NotImplementedError on `ext` and `compile`" do
-      assert_raises NotImplementedError do
-        subject.ext('foo')
-      end
-
-      assert_raises NotImplementedError do
-        subject.compile('some content')
-      end
+      assert_that(-> { subject.ext("foo") }).raises(NotImplementedError)
+      assert_that(-> { subject.compile("some content") })
+        .raises(NotImplementedError)
     end
-
   end
+end
 
-  class NullEngineTests < Assert::Context
+class Dassets::NullEngine
+  class UnitTests < Assert::Context
     desc "Dassets::NullEngine"
-    setup do
-      @engine = Dassets::NullEngine.new('some' => 'opts')
-    end
-    subject{ @engine }
+    subject { Dassets::NullEngine.new("some" => "opts") }
 
     should "be a Engine" do
-      assert_kind_of Dassets::Engine, subject
+      assert_that(subject).is_kind_of(Dassets::Engine)
     end
 
     should "know its opts" do
-      exp_opts = {'some' => 'opts'}
-      assert_equal exp_opts, subject.opts
+      assert_that(subject.opts).equals({ "some" => "opts" })
     end
 
     should "return the given extension on `ext`" do
-      assert_equal 'foo', subject.ext('foo')
+      assert_that(subject.ext('foo')).equals("foo")
     end
 
     should "return the given input on `compile" do
-      assert_equal 'some content', subject.compile('some content')
+      assert_that(subject.compile("some content")).equals("some content")
     end
-
   end
-
 end

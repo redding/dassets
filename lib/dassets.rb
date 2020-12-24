@@ -1,18 +1,22 @@
-require 'dassets/version'
-require 'dassets/asset_file'
-require 'dassets/config'
-require 'dassets/source_file'
+require "dassets/version"
+require "dassets/asset_file"
+require "dassets/config"
+require "dassets/source_file"
 
 module Dassets
+  AssetFileError = Class.new(RuntimeError)
 
-  def self.config; @config ||= Config.new; end
+  def self.config
+    @config ||= Config.new
+  end
+
   def self.configure(&block)
     block.call(self.config)
   end
 
   def self.init
-    @asset_files  ||= {}
-    @source_files   = SourceFiles.new(self.config.sources)
+    @asset_files ||= {}
+    @source_files = SourceFiles.new(self.config.sources)
   end
 
   def self.reset
@@ -27,11 +31,12 @@ module Dassets
   def self.[](digest_path)
     self.asset_file(digest_path).tap do |af|
       if af.fingerprint.nil?
-        msg = "error digesting `#{digest_path}`.\n\nMake sure Dassets has " \
-              "either a combination or source file for this digest path. If " \
-              "this path is for a combination, make sure Dassets has either " \
-              "a combination or source file for each digest path of the " \
-              "combination.\n\n"
+        msg =
+          "error digesting `#{digest_path}`.\n\nMake sure Dassets has " \
+          "either a combination or source file for this digest path. If " \
+          "this path is for a combination, make sure Dassets has either " \
+          "a combination or source file for each digest path of the " \
+          "combination.\n\n"
 
         msg << "\nCombination digest paths:"
         msg << (Dassets.combinations.keys.empty? ? " (none)\n\n" : "\n\n")
@@ -63,7 +68,6 @@ module Dassets
   end
 
   module SourceFiles
-
     def self.new(sources)
       # use a hash to store the source files so in the case two source files
       # have the same digest path, the last one *should* be correct since it
@@ -76,11 +80,7 @@ module Dassets
         hash
       end
     end
-
   end
-
-  AssetFileError = Class.new(RuntimeError)
-
 end
 
 Dassets.init

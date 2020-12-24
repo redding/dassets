@@ -1,19 +1,18 @@
-require 'assert'
-require 'dassets/source_file'
+require "assert"
+require "dassets/source_file"
 
-require 'dassets/asset_file'
-require 'dassets/cache'
-require 'dassets/source_proxy'
+require "dassets/asset_file"
+require "dassets/cache"
+require "dassets/source_proxy"
 
 class Dassets::SourceFile
-
   class UnitTests < Assert::Context
     desc "Dassets::SourceFile"
+    subject { Dassets::SourceFile.new(@file_path) }
+
     setup do
       @file_path = TEST_SUPPORT_PATH.join('app/assets/file1.txt').to_s
-      @source_file = Dassets::SourceFile.new(@file_path)
     end
-    subject{ @source_file }
 
     should have_readers :file_path
     should have_imeths :source, :asset_file, :digest_path
@@ -21,74 +20,98 @@ class Dassets::SourceFile
     should have_cmeth :find_by_digest_path
 
     should "know its file path" do
-      assert_equal @file_path.to_s, subject.file_path
+      assert_that(subject.file_path).equals(@file_path.to_s)
     end
 
     should "know its configured source" do
-      exp_source = Dassets.config.sources.select{ |s| @file_path.include?(s.path) }.last
-      assert_equal exp_source, subject.source
+      exp_source =
+        Dassets.config.sources.select{ |s| @file_path.include?(s.path) }.last
+      assert_that(subject.source).equals(exp_source)
     end
 
     should "know its asset file" do
-      assert_kind_of Dassets::AssetFile, subject.asset_file
-      assert_equal Dassets::AssetFile.new(subject.digest_path), subject.asset_file
+      assert_that(subject.asset_file).is_kind_of(Dassets::AssetFile)
+      assert_that(subject.asset_file)
+        .equals(Dassets::AssetFile.new(subject.digest_path))
     end
 
     should "know its digest path" do
-      assert_equal 'file1.txt', subject.digest_path
+      assert_that(subject.digest_path).equals("file1.txt")
     end
 
     should "not memoize its compiled source" do
       compiled1 = subject.compiled
       compiled2 = subject.compiled
-      assert_not_same compiled2, compiled1
+      assert_that(compiled2).is_not_the_same_as(compiled1)
     end
 
     should "know if it exists" do
-      assert subject.exists?
+      assert_that(subject.exists?).is_true
     end
 
     should "use the mtime of its file as its mtime" do
-      assert_equal File.mtime(subject.file_path), subject.mtime
+      assert_that(subject.mtime).equals(File.mtime(subject.file_path))
     end
 
     should "use the response headers of its source as its response headers" do
-      assert_same subject.source.response_headers, subject.response_headers
+      assert_that(subject.response_headers)
+        .is_the_same_as(subject.source.response_headers)
     end
 
     should "be findable by its digest path" do
       found = Dassets::SourceFile.find_by_digest_path(subject.digest_path)
 
-      assert_equal subject, found
-      assert_not_same subject, found
+      assert_that(found).equals(subject)
+      assert_that(found).is_not_the_same_as(subject)
     end
-
   end
 
-  class NullSourceTests < UnitTests
+  class EngineTests < UnitTests
+    desc "compiled against engines"
+
     setup do
-      Dassets.config.combination 'file3.txt', ['file1.txt', 'file2.txt']
+      @file_path =
+        TEST_SUPPORT_PATH.join('app/assets/nested/a-thing.txt.useless.dumb')
     end
+
+    should "build the digest path appropriately" do
+      assert_that(subject.digest_path).equals("nested/a-thing.txt.no-use")
+    end
+
+    should "compile the source content appropriately" do
+      file_content = File.read(@file_path)
+      exp_compiled_content = [file_content, "DUMB", "USELESS"].join("\n")
+      assert_that(subject.compiled).equals(exp_compiled_content)
+    end
+  end
+end
+
+class Dassets::NullSourceFile
+  class UnitTests < Assert::Context
+    setup do
+      Dassets.config.combination "file3.txt", ["file1.txt", "file2.txt"]
+    end
+
     teardown do
-      Dassets.config.combinations.delete('file3.txt')
+      Dassets.config.combinations.delete("file3.txt")
     end
 
     should "find a null src file if finding by an unknown digest path" do
-      null_src = Dassets::NullSourceFile.new('not/found/digest/path')
-      found = Dassets::SourceFile.find_by_digest_path('not/found/digest/path')
+      null_src = Dassets::NullSourceFile.new("not/found/digest/path")
+      found = Dassets::SourceFile.find_by_digest_path("not/found/digest/path")
 
-      assert_equal    null_src, found
-      assert_not_same null_src, found
+      assert_that(found).equals(null_src)
+      assert_that(found).is_not_the_same_as(null_src)
 
-      assert_equal '',    null_src.file_path
-      assert_equal false, null_src.exists?
-      assert_nil null_src.compiled
-      assert_nil null_src.mtime
-      assert_equal Hash.new, null_src.response_headers
+      assert_that(null_src.file_path).equals("")
+      assert_that(null_src.exists?).equals(false)
+      assert_that(null_src.compiled).is_nil
+      assert_that(null_src.mtime).is_nil
+      assert_that(null_src.response_headers).equals(Hash.new)
     end
 
     should "pass options to a null src when finding by an unknown digest path" do
-      null_src = Dassets::NullSourceFile.new('not/found/digest/path')
+      null_src = Dassets::NullSourceFile.new("not/found/digest/path")
       null_src_new_called_with = []
       Assert.stub(Dassets::NullSourceFile, :new) do |*args|
         null_src_new_called_with = args
@@ -96,26 +119,26 @@ class Dassets::SourceFile
       end
 
       options = {
-        :content_cache     => Dassets::Cache::NoCache.new,
-        :fingerprint_cache => Dassets::Cache::NoCache.new
+        content_cache:     Dassets::NoCache.new,
+        fingerprint_cache: Dassets::NoCache.new,
       }
-      Dassets::SourceFile.find_by_digest_path('not/found/digest/path', options)
+      Dassets::SourceFile.find_by_digest_path("not/found/digest/path", **options)
 
       exp = ['not/found/digest/path', options]
-      assert_equal exp, null_src_new_called_with
+      assert_that(null_src_new_called_with).equals(exp)
     end
 
     should "'proxy' the digest path if the path is a combination" do
-      src_proxy      = Dassets::SourceProxy.new('file3.txt')
-      null_combo_src = Dassets::NullSourceFile.new('file3.txt')
+      src_proxy      = Dassets::SourceProxy.new("file3.txt")
+      null_combo_src = Dassets::NullSourceFile.new("file3.txt")
 
-      assert_equal src_proxy.exists?, null_combo_src.exists?
-      assert_equal src_proxy.content, null_combo_src.compiled
-      assert_equal src_proxy.mtime,   null_combo_src.mtime
+      assert_that(null_combo_src.exists?).equals(src_proxy.exists?)
+      assert_that(null_combo_src.compiled).equals(src_proxy.content)
+      assert_that(null_combo_src.mtime).equals(src_proxy.mtime)
     end
 
     should "pass options to its source proxy when the path is a combination" do
-      src_proxy = Dassets::SourceProxy.new('file3.txt')
+      src_proxy = Dassets::SourceProxy.new("file3.txt")
       src_proxy_new_called_with = []
       Assert.stub(Dassets::SourceProxy, :new) do |*args|
         src_proxy_new_called_with = args
@@ -123,34 +146,13 @@ class Dassets::SourceFile
       end
 
       options = {
-        :content_cache     => Dassets::Cache::NoCache.new,
-        :fingerprint_cache => Dassets::Cache::NoCache.new
+        content_cache:     Dassets::NoCache.new,
+        fingerprint_cache: Dassets::NoCache.new,
       }
-      Dassets::NullSourceFile.new('file3.txt', options)
+      Dassets::NullSourceFile.new("file3.txt", **options)
 
-      exp = ['file3.txt', options]
-      assert_equal exp, src_proxy_new_called_with
+      exp = ["file3.txt", options]
+      assert_that(src_proxy_new_called_with).equals(exp)
     end
-
   end
-
-  class EngineTests < UnitTests
-    desc "compiled against engines"
-    setup do
-      @file_path = TEST_SUPPORT_PATH.join('app/assets/nested/a-thing.txt.useless.dumb')
-      @source_file = Dassets::SourceFile.new(@file_path)
-    end
-
-    should "build the digest path appropriately" do
-      assert_equal 'nested/a-thing.txt.no-use', subject.digest_path
-    end
-
-    should "compile the source content appropriately" do
-      file_content = File.read(@file_path)
-      exp_compiled_content = [ file_content, 'DUMB', 'USELESS' ].join("\n")
-      assert_equal exp_compiled_content, subject.compiled
-    end
-
-  end
-
 end

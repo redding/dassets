@@ -1,10 +1,9 @@
-require 'rack/utils'
-require 'rack/mime'
-require 'dassets/source_proxy'
+require "dassets/source_proxy"
+require "rack/utils"
+require "rack/mime"
 
 module Dassets; end
 class Dassets::AssetFile
-
   attr_reader :digest_path, :dirname, :extname, :basename, :source_proxy
 
   def initialize(digest_path)
@@ -12,10 +11,12 @@ class Dassets::AssetFile
     @dirname      = File.dirname(@digest_path)
     @extname      = File.extname(@digest_path)
     @basename     = File.basename(@digest_path, @extname)
-    @source_proxy = Dassets::SourceProxy.new(@digest_path, {
-      :content_cache     => Dassets.config.content_cache,
-      :fingerprint_cache => Dassets.config.fingerprint_cache
-    })
+    @source_proxy =
+      Dassets::SourceProxy.new(
+        @digest_path,
+        content_cache:     Dassets.config.content_cache,
+        fingerprint_cache: Dassets.config.fingerprint_cache,
+      )
   end
 
   def digest!
@@ -25,10 +26,10 @@ class Dassets::AssetFile
 
   def url
     path_basename = "#{@basename}-#{self.fingerprint}#{@extname}"
-    path = File.join(@dirname, path_basename).sub(/^\.\//, '').sub(/^\//, '')
+    path =
+      File.join(@dirname, path_basename).sub(/^\.\//, "").sub(/^\//, "")
     "#{dassets_base_url}/#{path}"
   end
-
   alias_method :href, :url
 
   def fingerprint
@@ -48,7 +49,7 @@ class Dassets::AssetFile
 
   def size
     return nil if !self.exists?
-    Rack::Utils.bytesize(self.content)
+    self.content.bytesize
   end
 
   def mime_type
@@ -75,5 +76,4 @@ class Dassets::AssetFile
   def dassets_base_url
     Dassets.config.base_url.to_s
   end
-
 end

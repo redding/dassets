@@ -1,8 +1,7 @@
-require 'dassets/engine'
+require "dassets/engine"
 
 module Dassets; end
 class Dassets::Source
-
   attr_reader :path, :engines, :response_headers
 
   def initialize(path)
@@ -16,8 +15,8 @@ class Dassets::Source
     block.nil? ? @filter : @filter = block
   end
 
-  def engine(input_ext, engine_class, registered_opts=nil)
-    default_opts = { 'source_path' => @path }
+  def engine(input_ext, engine_class, registered_opts = nil)
+    default_opts = { "source_path" => @path }
     engine_opts = default_opts.merge(registered_opts || {})
     @engines[input_ext.to_s] = engine_class.new(engine_opts)
   end
@@ -35,5 +34,4 @@ class Dassets::Source
   def apply_filter(files)
     @filter.call(files)
   end
-
 end
