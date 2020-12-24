@@ -27,8 +27,13 @@ class Dassets::Source
 
   private
 
+  # Use "**{,/*/**}/*" to glob following symlinks and returning immediate-child
+  # matches. See https://stackoverflow.com/a/2724048.
   def glob_files
-    Dir.glob(File.join(@path, "**/*")).reject!{ |p| !File.file?(p) }
+    Dir
+      .glob(File.join(@path, "**{,/*/**}/*"))
+      .uniq
+      .reject{ |path| !File.file?(path) }
   end
 
   def apply_filter(files)

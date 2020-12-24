@@ -27,7 +27,9 @@ class Dassets::Source
         @source_path.join("test1.txt").to_s,
         @source_path.join("_ignored.txt").to_s,
         @source_path.join("nested/test2.txt").to_s,
-        @source_path.join("nested/_nested_ignored.txt").to_s
+        @source_path.join("nested/_nested_ignored.txt").to_s,
+        @source_path.join("linked/linked_file.txt").to_s,
+        @source_path.join("linked_file2.txt").to_s,
       ].sort
       assert_that(subject.files).equals(exp_files)
     end
@@ -39,6 +41,8 @@ class Dassets::Source
       exp_files = [
         @source_path.join("test1.txt").to_s,
         @source_path.join("nested/test2.txt").to_s,
+        @source_path.join("linked/linked_file.txt").to_s,
+        @source_path.join("linked_file2.txt").to_s,
       ].sort
 
       assert_that(subject.files).equals(exp_files)
