@@ -112,31 +112,31 @@ class Dassets::Config
 
     should "know its combinations and return the keyed digest path by default" do
       assert_that(subject.combinations).is_kind_of(::Hash)
-      assert_that(subject.combinations['some/digest.path'])
-        .equals(['some/digest.path'])
+      assert_that(subject.combinations["some/digest.path"])
+        .equals(["some/digest.path"])
     end
 
     should "allow registering new combinations" do
-      assert_that(subject.combinations['some/digest.path'])
-        .equals(['some/digest.path'])
-      exp_combination = ['some/other.path', 'and/another.path']
-      subject.combination 'some/digest.path', exp_combination
-      assert_that(subject.combinations['some/digest.path'])
+      assert_that(subject.combinations["some/digest.path"])
+        .equals(["some/digest.path"])
+      exp_combination = ["some/other.path", "and/another.path"]
+      subject.combination "some/digest.path", exp_combination
+      assert_that(subject.combinations["some/digest.path"])
         .equals(exp_combination)
 
-      assert_that(subject.combinations['test/digest.path'])
-        .equals(['test/digest.path'])
-      subject.combination 'test/digest.path', ['some/other.path']
-      assert_that(subject.combinations['test/digest.path'])
-        .equals(['some/other.path'])
+      assert_that(subject.combinations["test/digest.path"])
+        .equals(["test/digest.path"])
+      subject.combination "test/digest.path", ["some/other.path"]
+      assert_that(subject.combinations["test/digest.path"])
+        .equals(["some/other.path"])
     end
 
     should "know which digest paths are actual combinations and which are "\
            "just pass-thrus" do
-      subject.combination 'some/combination.path', ['some.path', 'another.path']
+      subject.combination "some/combination.path", ["some.path", "another.path"]
 
-      assert_that(subject.combination?('some/combination.path')).is_true
-      assert_that(subject.combination?('some/non-combo.path')).is_false
+      assert_that(subject.combination?("some/combination.path")).is_true
+      assert_that(subject.combination?("some/non-combo.path")).is_false
     end
   end
 end

@@ -45,7 +45,7 @@ module Dassets
           values = Dassets.combinations[key].sort
           msg << (
             ["#{bullet}#{values.first}"] +
-            (values[1..-1] || []).map{ |v| "#{' '*bullet.size}#{v}" }
+            (values[1..-1] || []).map{ |v| "#{" "*bullet.size}#{v}" }
           ).join("\n")
           msg << "\n\n"
         end

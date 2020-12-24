@@ -10,7 +10,7 @@ class Dassets::Server::Request
 
     setup do
       @path = "/file1-daa05c683a4913b268653f7a7e36a5b4.txt"
-      @req = file_request('GET', @path)
+      @req = file_request("GET", @path)
     end
 
     should have_imeths :dassets_base_url
@@ -19,7 +19,7 @@ class Dassets::Server::Request
     should "know its attributes" do
       assert_that(subject.dassets_base_url).equals(Dassets.config.base_url.to_s)
       assert_that(subject.path_info).equals(@path)
-      assert_that(subject.asset_path).equals('file1.txt')
+      assert_that(subject.asset_path).equals("file1.txt")
       assert_that(subject.asset_file).equals(Dassets["file1.txt"])
     end
 
@@ -93,8 +93,8 @@ class Dassets::Server::Request
     end
 
     should "remove the configured base url from the path info" do
-      assert_that(file_request('GET', @path).path_info).equals(@path)
-      assert_that(file_request('GET', "#{@new_base_url}#{@path}").path_info)
+      assert_that(file_request("GET", @path).path_info).equals(@path)
+      assert_that(file_request("GET", "#{@new_base_url}#{@path}").path_info)
         .equals(@path)
     end
   end

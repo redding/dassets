@@ -11,7 +11,7 @@ class Dassets::AssetFile
     subject { @asset_file }
 
     setup do
-      @asset_file = Dassets::AssetFile.new('file1.txt')
+      @asset_file = Dassets::AssetFile.new("file1.txt")
     end
 
     should have_readers :digest_path, :dirname, :extname, :basename, :source_proxy
@@ -33,7 +33,7 @@ class Dassets::AssetFile
       .equals(subject.source_proxy.response_headers)
       assert_that(subject.exists?).is_true
 
-      null_file = Dassets::AssetFile.new('')
+      null_file = Dassets::AssetFile.new("")
       assert_that(null_file.mtime).is_nil
       assert_that(null_file.size).is_nil
       assert_that(null_file.mime_type).is_nil

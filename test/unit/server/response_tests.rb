@@ -27,7 +27,7 @@ class Dassets::Server::Response
       assert_that(resp.body).equals([])
 
       exp_headers =
-        Rack::Utils::HeaderHash.new('Last-Modified' => @asset_file.mtime.to_s)
+        Rack::Utils::HeaderHash.new("Last-Modified" => @asset_file.mtime.to_s)
       assert_that(resp.headers).equals(exp_headers)
       assert_that(resp.to_rack).equals([304, exp_headers.to_hash, []])
     end
@@ -64,9 +64,9 @@ class Dassets::Server::Response
       resp = Dassets::Server::Response.new(@env, af)
 
       assert_that(resp.status).equals(404)
-      assert_that(resp.body).equals(['Not Found'])
+      assert_that(resp.body).equals(["Not Found"])
       assert_that(resp.headers).equals(Rack::Utils::HeaderHash.new)
-      assert_that(resp.to_rack).equals([404, {}, ['Not Found']])
+      assert_that(resp.to_rack).equals([404, {}, ["Not Found"]])
     end
   end
 
@@ -118,7 +118,7 @@ class Dassets::Server::Response
       Assert.stub(same_af_same_range, :range_end){ subject.range_end }
       assert_that(subject).equals(same_af_same_range)
 
-      other_af_same_range = Body.new(@env, Dassets['file2.txt'])
+      other_af_same_range = Body.new(@env, Dassets["file2.txt"])
       Assert.stub(other_af_same_range, :range_begin){ subject.range_begin }
       Assert.stub(other_af_same_range, :range_end){ subject.range_end }
       assert_that(subject).does_not_equal(other_af_same_range)
@@ -140,7 +140,7 @@ class Dassets::Server::Response
       @min_num_chunks = 3
       @num_chunks     = @min_num_chunks + Factory.integer(3)
 
-      content = 'a' * (@num_chunks * Body::CHUNK_SIZE)
+      content = "a" * (@num_chunks * Body::CHUNK_SIZE)
       Assert.stub(@asset_file, :content){ content }
     end
   end
@@ -149,8 +149,8 @@ class Dassets::Server::Response
     desc "for non/multi/invalid partial content requests"
 
     setup do
-      range = [nil, 'bytes=', 'bytes=0-1,2-3', 'bytes=3-2', 'bytes=abc'].sample
-      env = range.nil? ? {} : { 'HTTP_RANGE' => range }
+      range = [nil, "bytes=", "bytes=0-1,2-3", "bytes=3-2", "bytes=abc"].sample
+      env = range.nil? ? {} : { "HTTP_RANGE" => range }
       @body = Body.new(env, @asset_file)
     end
 
@@ -177,7 +177,7 @@ class Dassets::Server::Response
 
       assert_that(chunks.size).equals(@num_chunks)
       assert_that(chunks.first.size).equals(subject.class::CHUNK_SIZE)
-      assert_that(chunks.join('')).equals(@asset_file.content)
+      assert_that(chunks.join("")).equals(@asset_file.content)
     end
   end
 
@@ -191,7 +191,7 @@ class Dassets::Server::Response
       @partial_size   = @partial_chunks * Body::CHUNK_SIZE
       @partial_end    = @partial_begin + (@partial_size-1)
 
-      @env = { 'HTTP_RANGE' => "bytes=#{@partial_begin}-#{@partial_end}" }
+      @env = { "HTTP_RANGE" => "bytes=#{@partial_begin}-#{@partial_end}" }
     end
   end
 
@@ -228,7 +228,7 @@ class Dassets::Server::Response
       assert_that(chunks.first.size).equals(subject.class::CHUNK_SIZE)
 
       exp = @asset_file.content[@partial_begin..@partial_end]
-      assert_that(chunks.join('')).equals(exp)
+      assert_that(chunks.join("")).equals(exp)
     end
   end
 
@@ -263,7 +263,7 @@ class Dassets::Server::Response
 
       assert_that(chunks.size).equals(@num_chunks)
       assert_that(chunks.first.size).equals(subject.class::CHUNK_SIZE)
-      assert_that(chunks.join('')).equals(@asset_file.content)
+      assert_that(chunks.join("")).equals(@asset_file.content)
     end
   end
 end
