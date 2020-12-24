@@ -82,7 +82,7 @@ Dassets.configure do |c|
 end
 ```
 
-This configuration says that Dassets, for assets in `/path/to/assets`, should 1) ignore any files beginning in `_` 2) process any files ending in `.erb` with the Erb engine and 3) process any files ending in `.scss` with the Sass engine (using 'scss' syntax).
+This configuration says that Dassets, for assets in `/path/to/assets`, should 1) ignore any files beginning in `_` 2) process any files ending in `.erb` with the Erb engine and 3) process any files ending in `.scss` with the Sass engine (using scss syntax).
 
 The goal here is to allow you to control how certain asset files are handled based on their location root.  This is handy for 3rd-paty gems that provide asset source files (such as [Romo](https://github.com/redding/romo)).  See https://github.com/redding/romo/blob/master/lib/romo/dassets.rb for an example of how Romo integrates with Dassets.
 

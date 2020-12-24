@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Dassets; end
 
 class Dassets::Engine

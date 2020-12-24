@@ -62,7 +62,7 @@ class Dassets::NullFileStore
     end
 
     should "know its root" do
-      assert_that(subject.root).equals('')
+      assert_that(subject.root).equals("")
     end
 
     should "return the store path on save but not save a file" do

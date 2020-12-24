@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rack/response"
 require "rack/utils"
 require "rack/mime"
@@ -14,7 +16,7 @@ class Dassets::Server::Response
     @status, @headers, @body = if env["HTTP_IF_MODIFIED_SINCE"] == mtime
       [
         304,
-        Rack::Utils::HeaderHash.new('Last-Modified' => mtime),
+        Rack::Utils::HeaderHash.new("Last-Modified" => mtime),
         [],
       ]
     elsif !@asset_file.exists?
@@ -83,7 +85,7 @@ class Dassets::Server::Response
     end
 
     def inspect
-      "#<#{self.class}:#{'0x0%x' % (self.object_id << 1)} " \
+      "#<#{self.class}:#{"0x0%x" % (self.object_id << 1)} " \
         "digest_path=#{self.asset_file.digest_path} " \
         "range_begin=#{self.range_begin} range_end=#{self.range_end}>"
     end

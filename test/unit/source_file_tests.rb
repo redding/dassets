@@ -11,7 +11,7 @@ class Dassets::SourceFile
     subject { Dassets::SourceFile.new(@file_path) }
 
     setup do
-      @file_path = TEST_SUPPORT_PATH.join('app/assets/file1.txt').to_s
+      @file_path = TEST_SUPPORT_PATH.join("app/assets/file1.txt").to_s
     end
 
     should have_readers :file_path
@@ -70,7 +70,7 @@ class Dassets::SourceFile
 
     setup do
       @file_path =
-        TEST_SUPPORT_PATH.join('app/assets/nested/a-thing.txt.useless.dumb')
+        TEST_SUPPORT_PATH.join("app/assets/nested/a-thing.txt.useless.dumb")
     end
 
     should "build the digest path appropriately" do
@@ -123,11 +123,11 @@ class Dassets::NullSourceFile
       }
       Dassets::SourceFile.find_by_digest_path("not/found/digest/path", **options)
 
-      exp = ['not/found/digest/path', options]
+      exp = ["not/found/digest/path", options]
       assert_that(null_src_new_called_with).equals(exp)
     end
 
-    should "'proxy' the digest path if the path is a combination" do
+    should "proxy the digest path if the path is a combination" do
       src_proxy      = Dassets::SourceProxy.new("file3.txt")
       null_combo_src = Dassets::NullSourceFile.new("file3.txt")
 

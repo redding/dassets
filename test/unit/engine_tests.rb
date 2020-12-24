@@ -36,7 +36,7 @@ class Dassets::NullEngine
     end
 
     should "return the given extension on `ext`" do
-      assert_that(subject.ext('foo')).equals("foo")
+      assert_that(subject.ext("foo")).equals("foo")
     end
 
     should "return the given input on `compile" do

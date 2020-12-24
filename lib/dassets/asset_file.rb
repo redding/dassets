@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dassets/source_proxy"
 require "rack/utils"
 require "rack/mime"

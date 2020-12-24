@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "pathname"
 require "dassets/cache"
 require "dassets/file_store"

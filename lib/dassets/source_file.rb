@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fileutils"
 require "dassets"
 require "dassets/asset_file"
@@ -13,7 +15,7 @@ class Dassets::SourceFile
 
   def initialize(file_path)
     @file_path = file_path.to_s
-    @ext_list  = File.basename(@file_path).split('.').reverse
+    @ext_list  = File.basename(@file_path).split(".").reverse
   end
 
   # Get the last matching one (in the case two sources with the same path are
