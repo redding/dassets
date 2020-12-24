@@ -89,9 +89,13 @@ class Dassets::Server::Response
     end
 
     def ==(other_body)
-      self.asset_file  == other_body.asset_file  &&
-      self.range_begin == other_body.range_begin &&
-      self.range_end   == other_body.range_end
+      if other_body.is_a?(self.class)
+        self.asset_file  == other_body.asset_file  &&
+        self.range_begin == other_body.range_begin &&
+        self.range_end   == other_body.range_end
+      else
+        super
+      end
     end
 
     private

@@ -25,7 +25,7 @@ module Dassets
       subject.reset
 
       file2 = subject["nested/file3.txt"]
-      assert_that(file2).is_not_the_same_as(file1)
+      assert_that(file2).is_not(file1)
       assert_that(config_reset_called).is_true
     end
 
@@ -41,7 +41,7 @@ module Dassets
       file1 = subject.asset_file("nested/file3.txt")
       file2 = subject.asset_file("nested/file3.txt")
 
-      assert_that(file2).is_the_same_as(file1)
+      assert_that(file2).is(file1)
     end
 
     should "complain if digest path is not found using the index operator" do
@@ -49,9 +49,7 @@ module Dassets
         subject.asset_file("path/not/found.txt")
       }).does_not_raise
 
-      assert_that(-> {
-        subject["path/not/found.txt"]
-      }).raises(AssetFileError)
+      assert_that { subject["path/not/found.txt"] }.raises(AssetFileError)
     end
 
     should "know its list of configured source files" do

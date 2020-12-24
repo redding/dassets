@@ -15,8 +15,8 @@ class Dassets::Engine
     end
 
     should "raise NotImplementedError on `ext` and `compile`" do
-      assert_that(-> { subject.ext("foo") }).raises(NotImplementedError)
-      assert_that(-> { subject.compile("some content") })
+      assert_that { subject.ext("foo") }.raises(NotImplementedError)
+      assert_that { subject.compile("some content") }
         .raises(NotImplementedError)
     end
   end
