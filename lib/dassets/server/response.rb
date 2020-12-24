@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rack/response"
 require "rack/utils"
 require "rack/mime"

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "fileutils"
 require "dassets"
 require "dassets/asset_file"

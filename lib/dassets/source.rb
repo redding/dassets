@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dassets/engine"
 
 module Dassets; end

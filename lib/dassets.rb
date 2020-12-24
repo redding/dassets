@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dassets/version"
 require "dassets/asset_file"
 require "dassets/config"
@@ -32,7 +34,7 @@ module Dassets
     self.asset_file(digest_path).tap do |af|
       if af.fingerprint.nil?
         msg =
-          "error digesting `#{digest_path}`.\n\nMake sure Dassets has " \
+          +"error digesting `#{digest_path}`.\n\nMake sure Dassets has " \
           "either a combination or source file for this digest path. If " \
           "this path is for a combination, make sure Dassets has either " \
           "a combination or source file for each digest path of the " \
