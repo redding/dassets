@@ -168,11 +168,11 @@ class Dassets::SourceProxy
     should "not cache its source content/fingerprint" do
       content1 = subject.content
       content2 = subject.content
-      assert_that(content2).is_not_the_same_as(content1)
+      assert_that(content2).is_not(content1)
 
       finger1 = subject.fingerprint
       finger2 = subject.fingerprint
-      assert_that(finger2).is_not_the_same_as(finger1)
+      assert_that(finger2).is_not(finger1)
     end
   end
 
@@ -192,11 +192,11 @@ class Dassets::SourceProxy
     should "cache its source content/fingerprint in memory" do
       content1 = subject.content
       content2 = subject.content
-      assert_that(content2).is_the_same_as(content1)
+      assert_that(content2).is(content1)
 
       finger1 = subject.fingerprint
       finger2 = subject.fingerprint
-      assert_that(finger2).is_the_same_as(finger1)
+      assert_that(finger2).is(finger1)
     end
   end
 end

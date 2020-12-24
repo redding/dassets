@@ -42,7 +42,7 @@ class Dassets::SourceFile
     should "not memoize its compiled source" do
       compiled1 = subject.compiled
       compiled2 = subject.compiled
-      assert_that(compiled2).is_not_the_same_as(compiled1)
+      assert_that(compiled2).is_not(compiled1)
     end
 
     should "know if it exists" do
@@ -54,15 +54,14 @@ class Dassets::SourceFile
     end
 
     should "use the response headers of its source as its response headers" do
-      assert_that(subject.response_headers)
-        .is_the_same_as(subject.source.response_headers)
+      assert_that(subject.response_headers).is(subject.source.response_headers)
     end
 
     should "be findable by its digest path" do
       found = Dassets::SourceFile.find_by_digest_path(subject.digest_path)
 
       assert_that(found).equals(subject)
-      assert_that(found).is_not_the_same_as(subject)
+      assert_that(found).is_not(subject)
     end
   end
 
@@ -101,7 +100,7 @@ class Dassets::NullSourceFile
       found = Dassets::SourceFile.find_by_digest_path("not/found/digest/path")
 
       assert_that(found).equals(null_src)
-      assert_that(found).is_not_the_same_as(null_src)
+      assert_that(found).is_not(null_src)
 
       assert_that(null_src.file_path).equals("")
       assert_that(null_src.exists?).equals(false)

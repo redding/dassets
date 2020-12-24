@@ -11,7 +11,7 @@ class Dassets::MemCache
     should "cache given key/value pairs in memory" do
       val = []
       subject['something'] = val
-      assert_that(subject['something']).is_the_same_as(val)
+      assert_that(subject['something']).is(val)
     end
   end
 end
@@ -26,7 +26,7 @@ class Dassets::NoCache
     should "not cache given key/value pairs in memory" do
       val = []
       subject['something'] = val
-      assert_that(subject['something']).is_not_the_same_as(val)
+      assert_that(subject['something']).is_not(val)
     end
   end
 end

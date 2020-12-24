@@ -65,7 +65,11 @@ class Dassets::SourceFile
   end
 
   def ==(other_source_file)
-    self.file_path == other_source_file.file_path
+    if other_source_file.is_a?(self.class)
+      self.file_path == other_source_file.file_path
+    else
+      super
+    end
   end
 
   private
@@ -112,6 +116,10 @@ class Dassets::NullSourceFile < Dassets::SourceFile
   end
 
   def ==(other_source_file)
-    self.file_path == other_source_file.file_path
+    if other_source_file.is_a?(self.class)
+      self.file_path == other_source_file.file_path
+    else
+      super
+    end
   end
 end

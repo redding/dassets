@@ -99,19 +99,19 @@ class Dassets::AssetFile
     should "not memoize its attributes" do
       url1 = subject.url
       url2 = subject.url
-      assert_that(url1).is_not_the_same_as(url2)
+      assert_that(url1).is_not(url2)
 
       fingerprint1 = subject.fingerprint
       fingerprint2 = subject.fingerprint
-      assert_that(fingerprint1).is_not_the_same_as(fingerprint2)
+      assert_that(fingerprint1).is_not(fingerprint2)
 
       content1 = subject.content
       content2 = subject.content
-      assert_that(content1).is_not_the_same_as(content2)
+      assert_that(content1).is_not(content2)
 
       mtime1 = subject.mtime
       mtime2 = subject.mtime
-      assert_that(mtime1).is_not_the_same_as(mtime2)
+      assert_that(mtime1).is_not(mtime2)
     end
   end
 
