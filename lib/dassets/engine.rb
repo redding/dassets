@@ -17,13 +17,3 @@ class Dassets::Engine
     raise NotImplementedError
   end
 end
-
-class Dassets::NullEngine < Dassets::Engine
-  def ext(input_ext)
-    input_ext
-  end
-
-  def compile(input)
-    input
-  end
-end

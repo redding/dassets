@@ -9,7 +9,7 @@ class Dassets::Source
   def initialize(path)
     @path             = path.to_s
     @filter           = proc{ |paths| paths }
-    @engines          = Hash.new{ |h,k| Dassets::NullEngine.new }
+    @engines          = Hash.new{ |hash, key| hash[key] = [] }
     @response_headers = Hash.new
   end
 
@@ -20,7 +20,7 @@ class Dassets::Source
   def engine(input_ext, engine_class, registered_opts = nil)
     default_opts = { "source_path" => @path }
     engine_opts = default_opts.merge(registered_opts || {})
-    @engines[input_ext.to_s] = engine_class.new(engine_opts)
+    @engines[input_ext.to_s] << engine_class.new(engine_opts)
   end
 
   def files

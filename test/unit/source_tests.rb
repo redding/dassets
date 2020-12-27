@@ -48,9 +48,10 @@ class Dassets::Source
       assert_that(subject.files).equals(exp_files)
     end
 
-    should "know its engines and return a NullEngine by default" do
+    should "know its extension-specific engines and return an empty Array by "\
+           "default" do
       assert_that(subject.engines).is_kind_of(::Hash)
-      assert_that(subject.engines["something"]).is_kind_of(Dassets::NullEngine)
+      assert_that(subject.engines["something"]).equals([])
     end
 
     should "know its response headers" do
@@ -103,30 +104,33 @@ class Dassets::Source
     end
 
     should "allow registering new engines" do
-      assert_that(subject.engines["empty"]).is_kind_of(Dassets::NullEngine)
+      assert_that(subject.engines["empty"]).equals([])
 
       subject.engine "empty", @empty_engine, "an" => "opt"
-      assert_that(subject.engines["empty"]).is_kind_of(@empty_engine)
-      assert_that(subject.engines["empty"].opts["an"]).equals("opt")
-      assert_that(subject.engines["empty"].ext("empty")).equals("")
-      assert_that(subject.engines["empty"].compile("some content")).equals("")
+      assert_that(subject.engines["empty"]).is_kind_of(Array)
+      assert_that(subject.engines["empty"].size).equals(1)
+      assert_that(subject.engines["empty"].first.opts["an"]).equals("opt")
+      assert_that(subject.engines["empty"].first.ext("empty")).equals("")
+      assert_that(subject.engines["empty"].first.compile("some content")).equals("")
     end
 
     should "register with the source path as a default option" do
       subject.engine "empty", @empty_engine
       exp_opts = { "source_path" => subject.path }
-      assert_that(subject.engines["empty"].opts).equals(exp_opts)
+      assert_that(subject.engines["empty"].first.opts).equals(exp_opts)
 
+      subject.engines["empty"] = []
       subject.engine "empty", @empty_engine, "an" => "opt"
       exp_opts = {
         "source_path" => subject.path,
         "an" => "opt"
       }
-      assert_that(subject.engines["empty"].opts).equals(exp_opts)
+      assert_that(subject.engines["empty"].first.opts).equals(exp_opts)
 
+      subject.engines["empty"] = []
       subject.engine "empty", @empty_engine, "source_path" => "something"
       exp_opts = { "source_path" => "something" }
-      assert_that(subject.engines["empty"].opts).equals(exp_opts)
+      assert_that(subject.engines["empty"].first.opts).equals(exp_opts)
     end
   end
 end
