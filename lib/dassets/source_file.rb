@@ -38,7 +38,10 @@ class Dassets::SourceFile
         digest_basename =
           @ext_list
             .reduce([]) { |digest_ext_list, ext|
-              digest_ext_list << self.source.engines[ext].ext(ext)
+              digest_ext_list <<
+                self.source.engines[ext].reduce(ext) { |ext_acc, engine|
+                  engine.ext(ext_acc)
+                }
             }
             .reject(&:empty?)
             .reverse
@@ -49,8 +52,10 @@ class Dassets::SourceFile
   end
 
   def compiled
-    @ext_list.reduce(read_file(@file_path)) { |content, ext|
-      self.source.engines[ext].compile(content)
+    @ext_list.reduce(read_file(@file_path)) { |file_acc, ext|
+      self.source.engines[ext].reduce(file_acc) { |ext_acc, engine|
+        engine.compile(ext_acc)
+      }
     }
   end
 
