@@ -21,6 +21,7 @@ class Dassets::Config
   def reset
     @sources      = []
     @combinations = Hash.new { |h, k| [k] } # digest pass-thru if none defined
+    @file_store   = Dassets::NullFileStore.new
   end
 
   def base_url(value = nil)
