@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "dassets/source_file"
 
@@ -8,7 +10,7 @@ require "dassets/source_proxy"
 class Dassets::SourceFile
   class UnitTests < Assert::Context
     desc "Dassets::SourceFile"
-    subject { Dassets::SourceFile.new(@file_path) }
+    subject{ Dassets::SourceFile.new(@file_path) }
 
     setup do
       @file_path = TEST_SUPPORT_PATH.join("app/assets/file1.txt").to_s
@@ -106,10 +108,11 @@ class Dassets::NullSourceFile
       assert_that(null_src.exists?).equals(false)
       assert_that(null_src.compiled).is_nil
       assert_that(null_src.mtime).is_nil
-      assert_that(null_src.response_headers).equals(Hash.new)
+      assert_that(null_src.response_headers).equals({})
     end
 
-    should "pass options to a null src when finding by an unknown digest path" do
+    should "pass options to a null src when finding by an unknown digest "\
+           "path" do
       null_src = Dassets::NullSourceFile.new("not/found/digest/path")
       null_src_new_called_with = []
       Assert.stub(Dassets::NullSourceFile, :new) do |*args|
@@ -118,10 +121,13 @@ class Dassets::NullSourceFile
       end
 
       options = {
-        content_cache:     Dassets::NoCache.new,
+        content_cache: Dassets::NoCache.new,
         fingerprint_cache: Dassets::NoCache.new,
       }
-      Dassets::SourceFile.find_by_digest_path("not/found/digest/path", **options)
+      Dassets::SourceFile.find_by_digest_path(
+        "not/found/digest/path",
+        **options,
+      )
 
       exp = ["not/found/digest/path", options]
       assert_that(null_src_new_called_with).equals(exp)
@@ -145,7 +151,7 @@ class Dassets::NullSourceFile
       end
 
       options = {
-        content_cache:     Dassets::NoCache.new,
+        content_cache: Dassets::NoCache.new,
         fingerprint_cache: Dassets::NoCache.new,
       }
       Dassets::NullSourceFile.new("file3.txt", **options)

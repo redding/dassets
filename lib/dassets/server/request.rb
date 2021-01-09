@@ -4,6 +4,7 @@ require "rack"
 
 module Dassets; end
 class Dassets::Server; end
+
 class Dassets::Server::Request < Rack::Request
   # The HTTP request method. This is the standard implementation of this
   # method but is respecified here due to libraries that attempt to modify
@@ -46,7 +47,7 @@ class Dassets::Server::Request < Rack::Request
 
   def path_digest_match
     @path_digest_match ||= begin
-      path_info.match(/\/(.+)-[a-f0-9]{32}(\..+|)$/i) || NullDigestMatch.new
+      path_info.match(%r{/(.+)-[a-f0-9]{32}(\..+|)$}i) || NullDigestMatch.new
     end
   end
 

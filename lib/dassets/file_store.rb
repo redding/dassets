@@ -14,10 +14,10 @@ class Dassets::FileStore
 
   def save(url_path, &block)
     @save_mutex.synchronize do
-      store_path(url_path).tap { |path|
+      store_path(url_path).tap do |path|
         FileUtils.mkdir_p(File.dirname(path))
-        File.open(path, "w") { |f| f.write(block.call) }
-      }
+        File.open(path, "w"){ |f| f.write(block.call) }
+      end
     end
   end
 
@@ -31,7 +31,7 @@ class Dassets::NullFileStore < Dassets::FileStore
     super("")
   end
 
-  def save(url_path, &block)
+  def save(url_path)
     # No-op, just return the store path like the base does.
     store_path(url_path)
   end

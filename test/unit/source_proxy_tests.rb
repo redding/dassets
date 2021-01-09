@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "dassets/source_proxy"
 
@@ -9,7 +11,7 @@ require "dassets/source_proxy"
 class Dassets::SourceProxy
   class UnitTests < Assert::Context
     desc "Dassets::SourceProxy"
-    subject { Dassets::SourceProxy.new(Factory.string) }
+    subject{ Dassets::SourceProxy.new(Factory.string) }
 
     should have_readers :digest_path, :content_cache, :fingerprint_cache
     should have_readers :source_files
@@ -19,7 +21,7 @@ class Dassets::SourceProxy
 
   class NotComboTests < UnitTests
     desc "when the digest path is not a combination"
-    subject { Dassets::SourceProxy.new("file1.txt") }
+    subject{ Dassets::SourceProxy.new("file1.txt") }
 
     should "know its digest path" do
       assert_that(subject.digest_path).equals("file1.txt")
@@ -41,7 +43,8 @@ class Dassets::SourceProxy
       assert_that(subject.key).equals(exp)
     end
 
-    should "get its content from the compiled source of the single source file" do
+    should "get its content from the compiled source of the single "\
+           "source file" do
       assert_that(subject.content).equals(subject.source_files.first.compiled)
     end
 
@@ -54,7 +57,8 @@ class Dassets::SourceProxy
       assert_that(subject.mtime).equals(subject.source_files.first.mtime)
     end
 
-    should "use its single source file's response headers as its resonse headers" do
+    should "use its single source file's response headers as its resonse "\
+           "headers" do
       assert_that(subject.response_headers)
         .equals(subject.source_files.first.response_headers)
     end
@@ -80,12 +84,12 @@ class Dassets::SourceProxy
 
   class ComboTests < ComboSetupTests
     desc "when the digest path is a combination to multiple source files"
-    subject { Dassets::SourceProxy.new("file3.txt") }
+    subject{ Dassets::SourceProxy.new("file3.txt") }
 
     setup do
       @exp_source_files = [
         Dassets::SourceFile.find_by_digest_path("file1.txt"),
-        Dassets::SourceFile.find_by_digest_path("file2.txt")
+        Dassets::SourceFile.find_by_digest_path("file2.txt"),
       ]
     end
 
@@ -99,32 +103,33 @@ class Dassets::SourceProxy
     end
 
     should "get its content from the compiled source of its source files" do
-      exp = subject.source_files.map { |f| f.compiled }.join("\n")
+      exp = subject.source_files.map(&:compiled).join("\n")
       assert_that(subject.content).equals(exp)
     end
 
     should "use its source files' max mtime as its mtime" do
-      exp = subject.source_files.map { |f| f.mtime }.max
+      exp = subject.source_files.map(&:mtime).max
       assert_that(subject.mtime).equals(exp)
     end
 
-    should "use its source files' merged response headers as its response headers" do
+    should "use its source files' merged response headers as its response "\
+           "headers" do
       exp =
-        subject.source_files.reduce(Hash.new) { |hash, file|
+        subject.source_files.reduce({}) do |hash, file|
           hash.merge!(file.response_headers)
-        }
+        end
       assert_that(subject.response_headers).equals(exp)
     end
 
     should "exist if its all its source files exist" do
-      exp = subject.source_files.reduce(true) { |res, f| res && f.exists? }
+      exp = subject.source_files.reduce(true){ |res, f| res && f.exists? }
       assert_that(subject.exists?).equals(exp)
     end
   end
 
   class EmptyComboTests < ComboSetupTests
     desc "when the digest path is an empty combination"
-    subject { Dassets::SourceProxy.new("file4.txt") }
+    subject{ Dassets::SourceProxy.new("file4.txt") }
 
     should "not have any source files" do
       assert_that(subject.source_files.size).equals(0)
@@ -146,24 +151,24 @@ class Dassets::SourceProxy
   class ComboWithEmptyComboTests < ComboSetupTests
     desc "when the digest path is a combination that includes an empty "\
          "combination"
-    subject { Dassets::SourceProxy.new("file5.txt") }
+    subject{ Dassets::SourceProxy.new("file5.txt") }
 
     should "ignore the mtime of the empty combination" do
-      exp_mtime = subject.source_files.map { |f| f.mtime }.compact.max
+      exp_mtime = subject.source_files.map(&:mtime).compact.max
       assert_that(subject.mtime).equals(exp_mtime)
     end
   end
 
   class NoCacheTests < UnitTests
     desc "with a `NoCache` cache handler"
-    subject {
+    subject do
       cache = Dassets::NoCache.new
       Dassets::SourceProxy.new(
         "file1.txt",
         content_cache:     cache,
         fingerprint_cache: cache,
       )
-    }
+    end
 
     should "not cache its source content/fingerprint" do
       content1 = subject.content
@@ -178,7 +183,7 @@ class Dassets::SourceProxy
 
   class MemCacheTests < UnitTests
     desc "with a `MemCache` cache handler"
-    subject {
+    subject do
       content_cache     = Dassets::MemCache.new
       fingerprint_cache = Dassets::MemCache.new
 
@@ -187,7 +192,7 @@ class Dassets::SourceProxy
         content_cache:     content_cache,
         fingerprint_cache: fingerprint_cache,
       )
-    }
+    end
 
     should "cache its source content/fingerprint in memory" do
       content1 = subject.content

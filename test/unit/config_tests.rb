@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "dassets/config"
 
@@ -7,7 +9,7 @@ require "dassets/file_store"
 class Dassets::Config
   class UnitTests < Assert::Context
     desc "Dassets::Config"
-    subject { @config }
+    subject{ @config }
 
     setup do
       @config = Dassets::Config.new
@@ -101,7 +103,7 @@ class Dassets::Config
 
     should "register new sources with the `source` method" do
       path = Factory.path
-      filter = proc{ |paths| [] }
+      filter = proc{ |_paths| [] }
       subject.source(path){ |s| s.filter(&filter) }
 
       assert_that(subject.sources.size).equals(1)
@@ -110,7 +112,8 @@ class Dassets::Config
       assert_that(subject.sources.first.filter).equals(filter)
     end
 
-    should "know its combinations and return the keyed digest path by default" do
+    should "know its combinations and return the keyed digest path by "\
+           "default" do
       assert_that(subject.combinations).is_kind_of(::Hash)
       assert_that(subject.combinations["some/digest.path"])
         .equals(["some/digest.path"])

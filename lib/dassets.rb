@@ -13,17 +13,17 @@ module Dassets
   end
 
   def self.configure(&block)
-    block.call(self.config)
+    block.call(config)
   end
 
   def self.init
     @asset_files ||= {}
-    @source_files = SourceFiles.new(self.config.sources)
+    @source_files = SourceFiles.new(config.sources)
   end
 
   def self.reset
     @asset_files = {}
-    self.config.reset
+    config.reset
   end
 
   def self.asset_file(digest_path)
@@ -31,7 +31,7 @@ module Dassets
   end
 
   def self.[](digest_path)
-    self.asset_file(digest_path).tap do |af|
+    asset_file(digest_path).tap do |af|
       if af.fingerprint.nil?
         msg =
           +"error digesting `#{digest_path}`.\n\nMake sure Dassets has " \
@@ -47,7 +47,7 @@ module Dassets
           values = Dassets.combinations[key].sort
           msg << (
             ["#{bullet}#{values.first}"] +
-            (values[1..-1] || []).map{ |v| "#{" "*bullet.size}#{v}" }
+            (values[1..-1] || []).map{ |v| "#{" " * bullet.size}#{v}" }
           ).join("\n")
           msg << "\n\n"
         end
@@ -66,7 +66,7 @@ module Dassets
   end
 
   def self.combinations
-    self.config.combinations
+    config.combinations
   end
 
   module SourceFiles

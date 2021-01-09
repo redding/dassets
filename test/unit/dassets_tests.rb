@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "dassets"
 
@@ -7,7 +9,7 @@ require "dassets/asset_file"
 module Dassets
   class UnitTests < Assert::Context
     desc "Dassets"
-    subject { Dassets }
+    subject{ Dassets }
 
     should have_imeths :config, :configure, :init, :reset
     should have_imeths :asset_file, :[], :source_files, :combinations
@@ -18,7 +20,7 @@ module Dassets
 
     should "know how to reset itself" do
       config_reset_called = false
-      Assert.stub(subject.config, :reset) { config_reset_called = true }
+      Assert.stub(subject.config, :reset){ config_reset_called = true }
 
       file1 = subject["nested/file3.txt"]
 
@@ -45,11 +47,11 @@ module Dassets
     end
 
     should "complain if digest path is not found using the index operator" do
-      assert_that(-> {
+      assert_that(->{
         subject.asset_file("path/not/found.txt")
       }).does_not_raise
 
-      assert_that { subject["path/not/found.txt"] }.raises(AssetFileError)
+      assert_that{ subject["path/not/found.txt"] }.raises(AssetFileError)
     end
 
     should "know its list of configured source files" do

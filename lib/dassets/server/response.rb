@@ -6,6 +6,7 @@ require "rack/mime"
 
 module Dassets; end
 class Dassets::Server; end
+
 class Dassets::Server::Response
   attr_reader :asset_file, :status, :headers, :body
 
@@ -30,13 +31,15 @@ class Dassets::Server::Response
       body = Body.new(env, @asset_file)
       [
         body.partial? ? 206 : 200,
-        Rack::Utils::HeaderHash.new.merge(@asset_file.response_headers).tap do |h|
-          h["Last-Modified"]  = mtime.to_s
-          h["Content-Type"]   = @asset_file.mime_type.to_s
-          h["Content-Length"] = body.size.to_s
-          h["Content-Range"]  = body.content_range if body.partial?
-        end,
-        env["REQUEST_METHOD"] == "HEAD" ? [] : body
+        Rack::Utils::HeaderHash
+          .new
+          .merge(@asset_file.response_headers).tap do |h|
+            h["Last-Modified"]  = mtime.to_s
+            h["Content-Type"]   = @asset_file.mime_type.to_s
+            h["Content-Length"] = body.size.to_s
+            h["Content-Range"]  = body.content_range if body.partial?
+          end,
+        env["REQUEST_METHOD"] == "HEAD" ? [] : body,
       ]
     end
   end
@@ -48,14 +51,14 @@ class Dassets::Server::Response
   # This class borrows from the body range handling in Rack::File and adapts
   # it for use with Dasset's asset files and their generic string content.
   class Body
-    CHUNK_SIZE = (8*1024).freeze # 8k
+    CHUNK_SIZE = (8 * 1024) # 8k
 
     attr_reader :asset_file, :size, :content_range
 
     def initialize(env, asset_file)
       @asset_file = asset_file
       @range, @content_range = get_range_info(env, @asset_file)
-      @size = self.range_end - self.range_begin + 1
+      @size = range_end - range_begin + 1
     end
 
     def partial?
@@ -73,7 +76,7 @@ class Dassets::Server::Response
     def each
       StringIO.open(@asset_file.content, "rb") do |io|
         io.seek(@range.begin)
-        remaining_len = self.size
+        remaining_len = size
         while remaining_len > 0
           part = io.read([CHUNK_SIZE, remaining_len].min)
           break if part.nil?
@@ -85,16 +88,16 @@ class Dassets::Server::Response
     end
 
     def inspect
-      "#<#{self.class}:#{"0x0%x" % (self.object_id << 1)} " \
-        "digest_path=#{self.asset_file.digest_path} " \
-        "range_begin=#{self.range_begin} range_end=#{self.range_end}>"
+      "#<#{self.class}:#{"0x0%x" % (object_id << 1)} " \
+        "digest_path=#{asset_file.digest_path} " \
+        "range_begin=#{range_begin} range_end=#{range_end}>"
     end
 
-    def ==(other_body)
-      if other_body.is_a?(self.class)
-        self.asset_file  == other_body.asset_file  &&
-        self.range_begin == other_body.range_begin &&
-        self.range_end   == other_body.range_end
+    def ==(other)
+      if other.is_a?(self.class)
+        asset_file  == other.asset_file  &&
+        range_begin == other.range_begin &&
+        range_end   == other.range_end
       else
         super
       end
@@ -105,16 +108,22 @@ class Dassets::Server::Response
     def get_range_info(env, asset_file)
       content_size = asset_file.size
       # legacy rack version, just return full size
-      return full_size_range_info(content_size) if !Rack::Utils.respond_to?(:byte_ranges)
+      unless Rack::Utils.respond_to?(:byte_ranges)
+        return full_size_range_info(content_size)
+      end
+
       ranges = Rack::Utils.byte_ranges(env, content_size)
       # No ranges or multiple ranges are not supported, just return full size
-      return full_size_range_info(content_size) if ranges.nil? || ranges.empty? || ranges.length > 1
+      if ranges.nil? || ranges.empty? || ranges.length > 1
+        return full_size_range_info(content_size)
+      end
+
       # single range
       [ranges[0], "bytes #{ranges[0].begin}-#{ranges[0].end}/#{content_size}"]
     end
 
     def full_size_range_info(content_size)
-      [(0..content_size-1), nil]
+      [(0..content_size - 1), nil]
     end
   end
 end

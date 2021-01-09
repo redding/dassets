@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "dassets/asset_file"
 
@@ -8,13 +10,14 @@ require "dassets/source_proxy"
 class Dassets::AssetFile
   class UnitTests < Assert::Context
     desc "Dassets::AssetFile"
-    subject { @asset_file }
+    subject{ @asset_file }
 
     setup do
       @asset_file = Dassets::AssetFile.new("file1.txt")
     end
 
-    should have_readers :digest_path, :dirname, :extname, :basename, :source_proxy
+    should have_readers :digest_path, :dirname, :extname, :basename
+    should have_readers :source_proxy
     should have_imeths  :digest!, :url, :href, :fingerprint, :content
     should have_imeths  :mtime, :size, :mime_type, :exists?, :==
 
@@ -30,7 +33,7 @@ class Dassets::AssetFile
       assert_that(subject.size).equals(subject.content.bytesize)
       assert_that(subject.mime_type).equals("text/plain")
       assert_that(subject.response_headers)
-      .equals(subject.source_proxy.response_headers)
+        .equals(subject.source_proxy.response_headers)
       assert_that(subject.exists?).is_true
 
       null_file = Dassets::AssetFile.new("")
@@ -79,7 +82,7 @@ class Dassets::AssetFile
 
     should "build it's url/href from the file, fingerpint, and "\
            "any configured base url" do
-      assert_that(subject.url).matches(/^\/file1-[a-f0-9]{32}\.txt$/)
+      assert_that(subject.url).matches(%r{^/file1-[a-f0-9]{32}\.txt$})
       assert_that(subject.href).matches(subject.url)
 
       nested = Dassets::AssetFile.new("nested/file1.txt")
@@ -89,7 +92,8 @@ class Dassets::AssetFile
       base_url = Factory.url
       Assert.stub(Dassets.config, :base_url){ base_url }
 
-      assert_that(subject.url).matches(/^#{base_url}\/file1-[a-f0-9]{32}\.txt$/)
+      assert_that(subject.url)
+        .matches(%r{^#{base_url}/file1-[a-f0-9]{32}\.txt$})
       assert_that(subject.href).matches(subject.url)
 
       assert_that(nested.url).equals("#{base_url}/nested/file1-.txt")

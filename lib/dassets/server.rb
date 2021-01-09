@@ -6,6 +6,7 @@ require "dassets/server/response"
 # Rack middleware for serving Dassets asset files
 
 module Dassets; end
+
 class Dassets::Server
   def initialize(app)
     @app = app
