@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "dassets/server/request"
 
@@ -6,7 +8,7 @@ require "dassets/asset_file"
 class Dassets::Server::Request
   class UnitTests < Assert::Context
     desc "Dassets::Server::Request"
-    subject { @req }
+    subject{ @req }
 
     setup do
       @path = "/file1-daa05c683a4913b268653f7a7e36a5b4.txt"
@@ -28,7 +30,7 @@ class Dassets::Server::Request
       req =
         file_request(
           "GET",
-          "/nested/file3-d41d8cd98f00b204e9800998ecf8427e.txt"
+          "/nested/file3-d41d8cd98f00b204e9800998ecf8427e.txt",
         )
       assert_that(req.for_asset_file?).is_true
 
@@ -36,7 +38,8 @@ class Dassets::Server::Request
       req = file_request("HEAD", "/file1-daa05c683a4913b268653f7a7e36a5b4.txt")
       assert_that(req.for_asset_file?).is_true
 
-      # find even if fingerprint is *not* matching - just need to have any fingerprint
+      # find even if fingerprint is *not* matching - just need to have any
+      # fingerprint
       req = file_request("GET", "/file1-d41d8cd98f00b204e9800998ecf8427e.txt")
       assert_that(req.for_asset_file?).is_true
 
@@ -70,7 +73,7 @@ class Dassets::Server::Request
     def file_request(method, path_info)
       Dassets::Server::Request.new({
         "REQUEST_METHOD" => method,
-        "PATH_INFO"      => path_info
+        "PATH_INFO" => path_info,
       })
     end
   end

@@ -5,6 +5,7 @@ require "rack/utils"
 require "rack/mime"
 
 module Dassets; end
+
 class Dassets::AssetFile
   attr_reader :digest_path, :dirname, :extname, :basename, :source_proxy
 
@@ -22,40 +23,40 @@ class Dassets::AssetFile
   end
 
   def digest!
-    return if !self.exists?
-    Dassets.config.file_store.save(self.url){ self.content }
+    return unless exists?
+    Dassets.config.file_store.save(url){ content }
   end
 
   def url
-    path_basename = "#{@basename}-#{self.fingerprint}#{@extname}"
+    path_basename = "#{@basename}-#{fingerprint}#{@extname}"
     path =
-      File.join(@dirname, path_basename).sub(/^\.\//, "").sub(/^\//, "")
+      File.join(@dirname, path_basename).sub(%r{^\./}, "").sub(%r{^/}, "")
     "#{dassets_base_url}/#{path}"
   end
   alias_method :href, :url
 
   def fingerprint
-    return nil if !self.exists?
+    return nil unless exists?
     @source_proxy.fingerprint
   end
 
   def content
-    return nil if !self.exists?
+    return nil unless exists?
     @source_proxy.content
   end
 
   def mtime
-    return nil if !self.exists?
+    return nil unless exists?
     @source_proxy.mtime.httpdate
   end
 
   def size
-    return nil if !self.exists?
-    self.content.bytesize
+    return nil unless exists?
+    content.bytesize
   end
 
   def mime_type
-    return nil if !self.exists?
+    return nil unless exists?
     Rack::Mime.mime_type(@extname)
   end
 
@@ -67,10 +68,10 @@ class Dassets::AssetFile
     @source_proxy.exists?
   end
 
-  def ==(other_asset_file)
-    other_asset_file.kind_of?(Dassets::AssetFile) &&
-    self.digest_path == other_asset_file.digest_path &&
-    self.fingerprint == other_asset_file.fingerprint
+  def ==(other)
+    other.is_a?(Dassets::AssetFile) &&
+    digest_path == other.digest_path &&
+    fingerprint == other.fingerprint
   end
 
   private

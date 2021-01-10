@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require "assert"
 require "dassets/cache"
 
 class Dassets::MemCache
   class UnitTests < Assert::Context
     desc "Dassets::MemCache"
-    subject { Dassets::MemCache.new }
+    subject{ Dassets::MemCache.new }
 
     should have_imeths :keys, :[], :[]=
 
@@ -19,7 +21,7 @@ end
 class Dassets::NoCache
   class UnitTests < Assert::Context
     desc "Dassets::NoCache"
-    subject { Dassets::NoCache.new }
+    subject{ Dassets::NoCache.new }
 
     should have_imeths :keys, :[], :[]=
 

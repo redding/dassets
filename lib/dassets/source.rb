@@ -3,6 +3,7 @@
 require "dassets/engine"
 
 module Dassets; end
+
 class Dassets::Source
   attr_reader :path, :engines, :response_headers
 
@@ -10,7 +11,7 @@ class Dassets::Source
     @path             = path.to_s
     @filter           = proc{ |paths| paths }
     @engines          = Hash.new{ |hash, key| hash[key] = [] }
-    @response_headers = Hash.new
+    @response_headers = {}
   end
 
   def filter(&block)

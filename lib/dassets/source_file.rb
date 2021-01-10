@@ -6,6 +6,7 @@ require "dassets/asset_file"
 require "dassets/source_proxy"
 
 module Dassets; end
+
 class Dassets::SourceFile
   def self.find_by_digest_path(path, **options)
     Dassets.source_files[path] || Dassets::NullSourceFile.new(path, **options)
@@ -23,13 +24,13 @@ class Dassets::SourceFile
   # configured source) in `find_by_digest_path` above.
   def source
     @source ||=
-      Dassets.config.sources.select { |source|
+      Dassets.config.sources.select{ |source|
         @file_path =~ /^#{slash_path(source.path)}/
       }.last
   end
 
   def asset_file
-    @asset_file ||= Dassets::AssetFile.new(self.digest_path)
+    @asset_file ||= Dassets::AssetFile.new(digest_path)
   end
 
   def digest_path
@@ -37,26 +38,28 @@ class Dassets::SourceFile
       begin
         digest_basename =
           @ext_list
-            .reduce([]) { |digest_ext_list, ext|
+            .reduce([]){ |digest_ext_list, ext|
               digest_ext_list <<
-                self.source.engines[ext].reduce(ext) { |ext_acc, engine|
+                source.engines[ext].reduce(ext)do |ext_acc, engine|
                   engine.ext(ext_acc)
-                }
+                end
             }
             .reject(&:empty?)
             .reverse
             .join(".")
 
-        File.join([digest_dirname(@file_path), digest_basename].reject(&:empty?))
+        File.join(
+          [digest_dirname(@file_path), digest_basename].reject(&:empty?),
+        )
       end
   end
 
   def compiled
-    @ext_list.reduce(read_file(@file_path)) { |file_acc, ext|
-      self.source.engines[ext].reduce(file_acc) { |ext_acc, engine|
+    @ext_list.reduce(read_file(@file_path)) do |file_acc, ext|
+      source.engines[ext].reduce(file_acc) do |ext_acc, engine|
         engine.compile(ext_acc)
-      }
-    }
+      end
+    end
   end
 
   def exists?
@@ -68,12 +71,12 @@ class Dassets::SourceFile
   end
 
   def response_headers
-    self.source.nil? ? Hash.new : self.source.response_headers
+    source.nil? ? {} : source.response_headers
   end
 
-  def ==(other_source_file)
-    if other_source_file.is_a?(self.class)
-      self.file_path == other_source_file.file_path
+  def ==(other)
+    if other.is_a?(self.class)
+      file_path == other.file_path
     else
       super
     end
@@ -83,7 +86,7 @@ class Dassets::SourceFile
 
   # remove the source path from the dirname (if it exists)
   def digest_dirname(file_path)
-    slash_path(File.dirname(file_path)).sub(slash_path(self.source.path), "")
+    slash_path(File.dirname(file_path)).sub(slash_path(source.path), "")
   end
 
   def slash_path(path)
@@ -122,9 +125,9 @@ class Dassets::NullSourceFile < Dassets::SourceFile
     @source_proxy.mtime
   end
 
-  def ==(other_source_file)
-    if other_source_file.is_a?(self.class)
-      self.file_path == other_source_file.file_path
+  def ==(other)
+    if other.is_a?(self.class)
+      file_path == other.file_path
     else
       super
     end

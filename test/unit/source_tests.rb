@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "dassets/source"
 
@@ -6,7 +8,7 @@ require "dassets/engine"
 class Dassets::Source
   class UnitTests < Assert::Context
     desc "Dassets::Source"
-    subject { Dassets::Source.new(@source_path) }
+    subject{ Dassets::Source.new(@source_path) }
 
     setup do
       @source_path = TEST_SUPPORT_PATH.join("source_files")
@@ -55,7 +57,7 @@ class Dassets::Source
     end
 
     should "know its response headers" do
-      assert_that(subject.response_headers).equals(Hash.new)
+      assert_that(subject.response_headers).equals({})
 
       name, value = Factory.string, Factory.string
       subject.response_headers[name] = value
@@ -98,8 +100,13 @@ class Dassets::Source
     setup do
       @empty_engine =
         Class.new(Dassets::Engine) do
-          def ext(input_ext); ""; end
-          def compile(input); ""; end
+          def ext(_input_ext)
+            ""
+          end
+
+          def compile(_input)
+            ""
+          end
         end
     end
 
@@ -111,7 +118,8 @@ class Dassets::Source
       assert_that(subject.engines["empty"].size).equals(1)
       assert_that(subject.engines["empty"].first.opts["an"]).equals("opt")
       assert_that(subject.engines["empty"].first.ext("empty")).equals("")
-      assert_that(subject.engines["empty"].first.compile("some content")).equals("")
+      assert_that(subject.engines["empty"].first.compile("some content"))
+        .equals("")
     end
 
     should "register with the source path as a default option" do
@@ -123,7 +131,7 @@ class Dassets::Source
       subject.engine "empty", @empty_engine, "an" => "opt"
       exp_opts = {
         "source_path" => subject.path,
-        "an" => "opt"
+        "an" => "opt",
       }
       assert_that(subject.engines["empty"].first.opts).equals(exp_opts)
 

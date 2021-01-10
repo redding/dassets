@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "dassets/server/response"
 
@@ -7,7 +9,7 @@ require "dassets/asset_file"
 class Dassets::Server::Response
   class UnitTests < Assert::Context
     desc "Dassets::Server::Response"
-    subject { @response }
+    subject{ @response }
 
     setup do
       @env = {}
@@ -42,9 +44,9 @@ class Dassets::Server::Response
 
       exp_headers =
         @asset_file.response_headers.merge({
-          "Content-Type"   => "text/plain",
+          "Content-Type" => "text/plain",
           "Content-Length" => @asset_file.size.to_s,
-          "Last-Modified"  => @asset_file.mtime.to_s,
+          "Last-Modified" => @asset_file.mtime.to_s,
         })
       assert_that(resp.headers).equals(exp_headers)
 
@@ -94,7 +96,7 @@ class Dassets::Server::Response
 
   class BodyTests < UnitTests
     desc "Body"
-    subject { @body }
+    subject{ @body }
 
     setup do
       @body = Body.new(@env, @asset_file)
@@ -189,14 +191,14 @@ class Dassets::Server::Response
       @partial_begin  = @start_chunk * Body::CHUNK_SIZE
       @partial_chunks = @num_chunks - Factory.integer(@min_num_chunks)
       @partial_size   = @partial_chunks * Body::CHUNK_SIZE
-      @partial_end    = @partial_begin + (@partial_size-1)
+      @partial_end    = @partial_begin + (@partial_size - 1)
 
       @env = { "HTTP_RANGE" => "bytes=#{@partial_begin}-#{@partial_end}" }
     end
   end
 
   class PartialBodyTests < PartialBodySetupTests
-    subject { @body }
+    subject{ @body }
 
     setup do
       @body = Body.new(@env, @asset_file)

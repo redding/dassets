@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require "assert"
 require "dassets/file_store"
 
 class Dassets::FileStore
   class UnitTests < Assert::Context
     desc "Dassets::FileStore"
-    subject { Dassets::FileStore.new(@root.to_s) }
+    subject{ Dassets::FileStore.new(@root.to_s) }
 
     setup do
       @root      = TEST_SUPPORT_PATH.join("public")
@@ -32,7 +34,7 @@ class Dassets::FileStore
       content = Factory.text
       assert_that(@root_path).is_not_a_file
 
-      path = subject.save(@url_path) { content }
+      path = subject.save(@url_path){ content }
 
       assert_that(path).equals(@root_path)
       assert_that(@root_path).is_a_file
@@ -44,7 +46,7 @@ end
 class Dassets::NullFileStore
   class UnitTests < Assert::Context
     desc "Dassets::NullFileStore"
-    subject { Dassets::NullFileStore.new }
+    subject{ Dassets::NullFileStore.new }
 
     setup do
       @root      = TEST_SUPPORT_PATH.join("public")

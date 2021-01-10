@@ -6,12 +6,13 @@ require "dassets/file_store"
 require "dassets/source"
 
 module Dassets; end
+
 class Dassets::Config
   attr_reader :sources, :combinations
 
   def initialize
     super
-    self.reset
+    reset
 
     @content_cache     = Dassets::NoCache.new
     @fingerprint_cache = Dassets::NoCache.new
@@ -20,12 +21,12 @@ class Dassets::Config
 
   def reset
     @sources      = []
-    @combinations = Hash.new { |h, k| [k] } # digest pass-thru if none defined
+    @combinations = Hash.new{ |_h, k| [k] } # digest pass-thru if none defined
     @file_store   = Dassets::NullFileStore.new
   end
 
   def base_url(value = nil)
-    set_base_url(value) if !value.nil?
+    set_base_url(value) unless value.nil?
     @base_url
   end
 
@@ -34,9 +35,9 @@ class Dassets::Config
   end
 
   def file_store(value = nil)
-    if !value.nil?
+    unless value.nil?
       @file_store =
-        if value.kind_of?(Dassets::FileStore)
+        if value.is_a?(Dassets::FileStore)
           value
         else
           Dassets::FileStore.new(value)
@@ -46,12 +47,12 @@ class Dassets::Config
   end
 
   def content_cache(cache = nil)
-    @content_cache = cache if !cache.nil?
+    @content_cache = cache unless cache.nil?
     @content_cache
   end
 
   def fingerprint_cache(cache = nil)
-    @fingerprint_cache = cache if !cache.nil?
+    @fingerprint_cache = cache unless cache.nil?
     @fingerprint_cache
   end
 

@@ -23,23 +23,23 @@ class Dassets::SourceProxy
   end
 
   def key
-    "#{self.digest_path} -- #{self.mtime}"
+    "#{digest_path} -- #{mtime}"
   end
 
   def content
-    @content_cache[self.key] ||= source_content
+    @content_cache[key] ||= source_content
   end
 
   def fingerprint
-    @fingerprint_cache[self.key] ||= source_fingerprint
+    @fingerprint_cache[key] ||= source_fingerprint
   end
 
   def mtime
-    @source_files.map{ |f| f.mtime }.compact.max
+    @source_files.map(&:mtime).compact.max
   end
 
   def response_headers
-    @source_files.inject(Hash.new){ |hash, f| hash.merge!(f.response_headers) }
+    @source_files.inject({}){ |hash, f| hash.merge!(f.response_headers) }
   end
 
   def exists?
@@ -49,7 +49,7 @@ class Dassets::SourceProxy
   private
 
   def source_content
-    @source_files.map{ |f| f.compiled }.join("\n")
+    @source_files.map(&:compiled).join("\n")
   end
 
   def source_fingerprint
@@ -57,9 +57,9 @@ class Dassets::SourceProxy
   end
 
   def get_source_files(digest_path, **options)
-    Dassets.config.combinations[digest_path.to_s].map { |source_digest_path|
+    Dassets.config.combinations[digest_path.to_s].map do |source_digest_path|
       Dassets::SourceFile.find_by_digest_path(source_digest_path, **options)
-    }
+    end
   end
 end
 
