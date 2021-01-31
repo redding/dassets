@@ -15,6 +15,7 @@ class Dassets::Source
     end
 
     should have_reader :path, :engines, :response_headers
+    should have_imeths :base_path, :set_base_path
     should have_imeth :files, :filter, :engine
 
     should "know its path and default filter" do
@@ -22,6 +23,28 @@ class Dassets::Source
       assert_that(subject.filter).is_kind_of(Proc)
       assert_that(subject.filter.call(["file1", "file2"]))
         .equals(["file1", "file2"])
+    end
+
+    should "have no base path by default" do
+      assert_that(subject.base_path).is_nil
+    end
+
+    should "set non-nil base paths" do
+      path = Factory.path
+      subject.base_path path
+      assert_that(subject.base_path).equals(path)
+
+      subject.base_path(nil)
+      assert_that(subject.base_path).equals(path)
+    end
+
+    should "force set any base paths" do
+      path = Factory.path
+      subject.set_base_path path
+      assert_that(subject.base_path).equals(path)
+
+      subject.set_base_path(nil)
+      assert_that(subject.base_path).is_nil
     end
 
     should "know its files" do

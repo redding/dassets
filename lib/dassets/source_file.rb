@@ -49,7 +49,11 @@ class Dassets::SourceFile
             .join(".")
 
         File.join(
-          [digest_dirname(@file_path), digest_basename].reject(&:empty?),
+          [
+            base_path,
+            digest_dirname(@file_path),
+            digest_basename,
+          ].reject(&:empty?),
         )
       end
   end
@@ -68,6 +72,10 @@ class Dassets::SourceFile
 
   def mtime
     File.mtime(@file_path)
+  end
+
+  def base_path
+    source&.base_path.to_s
   end
 
   def response_headers

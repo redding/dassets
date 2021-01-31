@@ -18,7 +18,8 @@ class Dassets::SourceFile
 
     should have_readers :file_path
     should have_imeths :source, :asset_file, :digest_path
-    should have_imeths :compiled, :exists?, :mtime, :response_headers
+    should have_imeths :compiled, :exists?, :mtime
+    should have_imeths :base_path, :response_headers
     should have_cmeth :find_by_digest_path
 
     should "know its file path" do
@@ -57,6 +58,10 @@ class Dassets::SourceFile
 
     should "use the response headers of its source as its response headers" do
       assert_that(subject.response_headers).is(subject.source.response_headers)
+    end
+
+    should "use the base path of its source as its base path" do
+      assert_that(subject.base_path).equals(subject.source.base_path.to_s)
     end
 
     should "be findable by its digest path" do
