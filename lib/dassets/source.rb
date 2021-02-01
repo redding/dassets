@@ -14,6 +14,15 @@ class Dassets::Source
     @response_headers = {}
   end
 
+  def base_path(value = nil)
+    set_base_path(value) unless value.nil?
+    @base_path
+  end
+
+  def set_base_path(value)
+    @base_path = value
+  end
+
   def filter(&block)
     block.nil? ? @filter : @filter = block
   end
