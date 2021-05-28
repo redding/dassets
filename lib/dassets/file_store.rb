@@ -16,7 +16,7 @@ class Dassets::FileStore
     @save_mutex.synchronize do
       store_path(url_path).tap do |path|
         FileUtils.mkdir_p(File.dirname(path))
-        File.open(path, "w"){ |f| f.write(block.call) }
+        File.open(path, "wb"){ |f| f.write(block.call) }
       end
     end
   end
